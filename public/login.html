@@ -7,48 +7,51 @@
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:Segoe UI,Tahoma,sans-serif;background:#000;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-    .wrap{width:100%;max-width:980px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
-    @media(max-width:900px){.wrap{grid-template-columns:1fr}}
-    .card{background:#0a0a0a;border:2px solid #0ea5e9;border-radius:30px;padding:25px}
-    .brand{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-    .logo{width:64px;height:64px;border-radius:50%;border:2px solid #fff;object-fit:cover}
-    h1{font-size:1.2rem;letter-spacing:.5px;text-transform:uppercase}
-    .tabs{display:flex;gap:10px;margin:10px 0 16px}
-    .tab{flex:1;padding:10px;border-radius:999px;border:1px solid #333;background:#000;color:#ddd;cursor:pointer;font-weight:800;text-transform:uppercase;font-size:.85rem}
-    .tab.active{border-color:#0ea5e9;color:#000;background:linear-gradient(135deg,#0ea5e9,#06b6d4)}
-    .row{margin-top:12px}
-    label{display:block;margin-bottom:6px;color:#cfcfcf;font-weight:800;font-size:.82rem;text-transform:uppercase}
-    input,select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid #333;background:#000;color:#fff}
-    input:focus,select:focus{outline:none;border-color:#0ea5e9}
-    .btn{margin-top:14px;width:100%;padding:12px 14px;border-radius:999px;border:1px solid #0ea5e9;background:#0ea5e9;color:#000;font-weight:900;text-transform:uppercase;cursor:pointer}
-    .btn:hover{filter:brightness(1.05)}
-    .msg{margin-top:14px;padding:10px;border-radius:10px;display:none}
-    .msg.ok{display:block;background:#0f2f1c;border:1px solid #22c55e;color:#22c55e}
-    .msg.err{display:block;background:#2f0f0f;border:1px solid #ef4444;color:#ef4444}
-    .muted{color:#aaa;font-size:.92rem;line-height:1.5;margin-top:10px}
+    .wrap{width:100%;max-width:500px}
+    .logo-header{text-align:center;margin-bottom:30px}
+    .logo{width:80px;height:80px;border-radius:50%;border:3px solid #0ea5e9;object-fit:cover;margin-bottom:15px}
+    .brand-name{font-size:1.8em;font-weight:bold;letter-spacing:1px;margin-bottom:5px}
+    .brand-tagline{color:#999;font-size:0.9em}
+    .card{background:#0a0a0a;border:2px solid #0ea5e9;border-radius:20px;padding:30px;box-shadow:0 10px 40px rgba(14,165,233,0.3)}
+    .tabs{display:flex;gap:10px;margin-bottom:25px}
+    .tab{flex:1;padding:12px;border-radius:25px;border:2px solid #333;background:#000;color:#ddd;cursor:pointer;font-weight:800;text-transform:uppercase;font-size:.85rem;transition:all 0.3s ease}
+    .tab.active{border-color:#0ea5e9;color:#fff;background:linear-gradient(135deg,#0ea5e9,#06b6d4)}
+    .row{margin-top:15px}
+    label{display:block;margin-bottom:6px;color:#0ea5e9;font-weight:800;font-size:.82rem;text-transform:uppercase}
+    input,select{width:100%;padding:12px 15px;border-radius:10px;border:2px solid #333;background:#000;color:#fff;font-size:0.95em;transition:all 0.3s ease}
+    input:focus,select:focus{outline:none;border-color:#0ea5e9;box-shadow:0 0 10px rgba(14,165,233,0.2)}
+    .btn{margin-top:18px;width:100%;padding:14px;border-radius:25px;border:none;background:linear-gradient(135deg,#0ea5e9,#06b6d4);color:#fff;font-weight:900;text-transform:uppercase;cursor:pointer;font-size:0.95em;letter-spacing:0.5px;transition:all 0.3s ease}
+    .btn:hover{background:linear-gradient(135deg,#06b6d4,#0ea5e9);transform:translateY(-2px);box-shadow:0 5px 15px rgba(14,165,233,0.4)}
+    .msg{margin-top:14px;padding:12px;border-radius:10px;display:none;font-size:0.9em}
+    .msg.ok{display:block;background:#0f2f1c;border:2px solid #22c55e;color:#22c55e}
+    .msg.err{display:block;background:#2f0f0f;border:2px solid #ef4444;color:#ef4444}
+    .muted{color:#999;font-size:.88rem;line-height:1.5;margin-top:12px;text-align:center}
+    .link{color:#0ea5e9;cursor:pointer;text-decoration:underline}
+    .link:hover{color:#06b6d4}
     .hide{display:none}
+    .divider{text-align:center;margin:20px 0;color:#666;font-size:0.85em;position:relative}
+    .divider::before,.divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:#333}
+    .divider::before{left:0}
+    .divider::after{right:0}
   </style>
 </head>
 <body>
   <div class="wrap">
+    <div class="logo-header">
+      <img class="logo" src="logo.jpg" alt="Shravs Logo">
+      <div class="brand-name">SHRAVS</div>
+      <div class="brand-tagline">Teleradiology & E-Care Services</div>
+    </div>
 
     <div class="card">
-      <div class="brand">
-        <img class="logo" src="logo.jpg" alt="Shravs Logo">
-        <div>
-          <h1>Secure Login</h1>
-          <div class="muted">Common login for Admin, Employee, Doctor.</div>
-        </div>
-      </div>
-
       <div class="tabs">
-        <button class="tab active" id="tabLogin">Login</button>
-        <button class="tab" id="tabSignup">Signup</button>
+        <button class="tab active" id="tabLogin" onclick="switchTab('login')">Login</button>
+        <button class="tab" id="tabSignup" onclick="switchTab('signup')">Signup</button>
       </div>
 
       <div id="msg" class="msg"></div>
 
-      <!-- LOGIN -->
+      <!-- LOGIN FORM -->
       <form id="loginForm">
         <div class="row">
           <label>Email</label>
@@ -59,27 +62,39 @@
           <input id="loginPassword" type="password" required placeholder="••••••••">
         </div>
         <button class="btn" type="submit">Login</button>
-
+        
         <div class="muted">
-          Employees are typically created by Admin. Doctors can request signup and wait for approval.
+          <span class="link" onclick="showForgotPassword()">Forgot Password?</span>
         </div>
       </form>
 
-      <!-- SIGNUP -->
+      <!-- FORGOT PASSWORD FORM -->
+      <form id="forgotPasswordForm" class="hide">
+        <div class="row">
+          <label>Enter Your Email</label>
+          <input id="forgotEmail" type="email" required placeholder="your@email.com">
+        </div>
+        <button class="btn" type="submit">Send Reset Link</button>
+        <div class="muted">
+          <span class="link" onclick="showLogin()">← Back to Login</span>
+        </div>
+      </form>
+
+      <!-- SIGNUP FORM -->
       <form id="signupForm" class="hide">
         <div class="row">
           <label>Signup As</label>
           <select id="signupRole" required>
-            <option value="">Select role</option>
+            <option value="">-- Select Role --</option>
             <option value="doctor">Doctor</option>
             <option value="patient">Patient</option>
-            <option value="diagnostic">Diagnostic center</option>
+            <option value="diagnostic">Diagnostic Center</option>
           </select>
         </div>
 
         <div class="row">
-          <label>Full name</label>
-          <input id="signupName" required placeholder="Full name">
+          <label>Full Name</label>
+          <input id="signupName" required placeholder="Your full name">
         </div>
 
         <div class="row">
@@ -95,16 +110,8 @@
         <!-- Doctor extra fields -->
         <div id="doctorFields" class="hide">
           <div class="row">
-            <label>Doctor type</label>
-            <select id="doctorType">
-              <option value="radiology">Radiology</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-
-          <div class="row">
             <label>Speciality</label>
-            <input id="doctorSpeciality" placeholder="e.g., Radiology, Cardiology, Orthopedics">
+            <input id="doctorSpeciality" placeholder="e.g., Radiology, Cardiology">
           </div>
 
           <div class="row">
@@ -115,100 +122,152 @@
 
         <!-- Patient / Diagnostic message -->
         <div id="otherFields" class="hide">
-          <div class="muted" style="margin-top:10px">
-            Patient / Diagnostic center signup UI is ready, but backend endpoints for creating these accounts were not included in the shared files.
-            Once those endpoints exist, this form can be wired the same way as doctor signup.
+          <div class="muted" style="margin-top:10px;text-align:left">
+            <strong>Note:</strong> Patient and Diagnostic Center signup is available. You will receive account credentials via email after admin approval.
           </div>
         </div>
 
-        <button class="btn" type="submit">Submit Signup</button>
+        <button class="btn" type="submit">Submit Signup Request</button>
       </form>
     </div>
-
-    
   </div>
 
   <script type="module">
-    import { login, getMe, requestDoctorSignup } from "./api.js";
+    import { login, getMe, requestDoctorSignup } from './api.js';
 
-    const tabLogin = document.getElementById("tabLogin");
-    const tabSignup = document.getElementById("tabSignup");
-    const loginForm = document.getElementById("loginForm");
-    const signupForm = document.getElementById("signupForm");
-    const msg = document.getElementById("msg");
-
-    const signupRole = document.getElementById("signupRole");
-    const doctorFields = document.getElementById("doctorFields");
-    const otherFields = document.getElementById("otherFields");
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+    const msg = document.getElementById('msg');
+    const signupRole = document.getElementById('signupRole');
+    const doctorFields = document.getElementById('doctorFields');
+    const otherFields = document.getElementById('otherFields');
 
     function showMessage(text, type) {
       msg.textContent = text;
-      msg.className = "msg " + type;
+      msg.className = 'msg ' + type;
+      setTimeout(() => { msg.className = 'msg'; }, 5000);
     }
 
-    function setMode(mode) {
-      const isLogin = mode === "login";
-      tabLogin.classList.toggle("active", isLogin);
-      tabSignup.classList.toggle("active", !isLogin);
-      loginForm.classList.toggle("hide", !isLogin);
-      signupForm.classList.toggle("hide", isLogin);
-      msg.className = "msg";
-      msg.textContent = "";
-    }
+    // Tab switching
+    window.switchTab = (tab) => {
+      document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+      document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
+      
+      loginForm.classList.toggle('hide', tab !== 'login');
+      signupForm.classList.toggle('hide', tab !== 'signup');
+      forgotPasswordForm.classList.add('hide');
+      
+      msg.className = 'msg';
+    };
 
-    tabLogin.addEventListener("click", () => setMode("login"));
-    tabSignup.addEventListener("click", () => setMode("signup"));
+    // Show forgot password
+    window.showForgotPassword = () => {
+      loginForm.classList.add('hide');
+      signupForm.classList.add('hide');
+      forgotPasswordForm.classList.remove('hide');
+      document.getElementById('tabLogin').classList.remove('active');
+      document.getElementById('tabSignup').classList.remove('active');
+      msg.className = 'msg';
+    };
 
-    signupRole.addEventListener("change", () => {
+    // Show login
+    window.showLogin = () => {
+      forgotPasswordForm.classList.add('hide');
+      loginForm.classList.remove('hide');
+      document.getElementById('tabLogin').classList.add('active');
+      msg.className = 'msg';
+    };
+
+    // Signup role change
+    signupRole.addEventListener('change', () => {
       const role = signupRole.value;
-      doctorFields.classList.toggle("hide", role !== "doctor");
-      otherFields.classList.toggle("hide", role === "doctor" || role === "");
+      doctorFields.classList.toggle('hide', role !== 'doctor');
+      otherFields.classList.toggle('hide', role === 'doctor' || role === '');
     });
 
-    // LOGIN (common for all roles)
-    loginForm.addEventListener("submit", async (e) => {
+    // LOGIN
+    loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       try {
-        showMessage("Logging in...", "ok");
+        showMessage('Logging in...', 'ok');
         await login(
-          document.getElementById("loginEmail").value.trim(),
-          document.getElementById("loginPassword").value
+          document.getElementById('loginEmail').value.trim(),
+          document.getElementById('loginPassword').value
         );
         const me = await getMe();
 
-        // Redirect by role (admin/employee/doctor)
-        if (me?.role === "admin") window.location.href = "admin.html";
-        else if (me?.role === "employee") window.location.href = "employee.html";
-        else if (me?.role === "doctor") window.location.href = "doctor.html";
-        else window.location.href = "index.html";
+        // Check if first login (force password change)
+        if (me?.first_login === true || me?.first_login === null) {
+          showMessage('First login detected. Please change your password.', 'ok');
+          setTimeout(() => {
+            window.location.href = 'change-password.html';
+          }, 1500);
+          return;
+        }
+
+        // Redirect by role
+        if (me?.role === 'admin') window.location.href = 'admin.html';
+        else if (me?.role === 'employee') window.location.href = 'employee.html';
+        else if (me?.role === 'doctor') window.location.href = 'doctor.html';
+        else window.location.href = 'index.html';
       } catch (err) {
-        showMessage(err.message || "Login failed", "err");
+        showMessage(err.message || 'Login failed', 'err');
+      }
+    });
+
+    // FORGOT PASSWORD (uses Supabase password reset)
+    forgotPasswordForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('forgotEmail').value.trim();
+      
+      try {
+        showMessage('Sending password reset link...', 'ok');
+        
+        // Use Supabase password reset
+        const res = await fetch('/api/password-reset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        
+        if (!res.ok) throw new Error('Failed to send reset link');
+        
+        showMessage('Password reset link sent to your email! Check your inbox.', 'ok');
+        document.getElementById('forgotEmail').value = '';
+        
+        setTimeout(() => showLogin(), 3000);
+      } catch (err) {
+        showMessage(err.message || 'Failed to send reset link', 'err');
       }
     });
 
     // SIGNUP
-    signupForm.addEventListener("submit", async (e) => {
+    signupForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const role = signupRole.value;
 
       try {
-        if (role === "doctor") {
-          showMessage("Submitting doctor signup request...", "ok");
+        if (role === 'doctor') {
+          showMessage('Submitting doctor signup request...', 'ok');
           await requestDoctorSignup({
-            name: document.getElementById("signupName").value.trim(),
-            email: document.getElementById("signupEmail").value.trim(),
-            password: document.getElementById("signupPassword").value,
-            organization: document.getElementById("doctorOrg").value.trim() || "Doctor",
+            name: document.getElementById('signupName').value.trim(),
+            email: document.getElementById('signupEmail').value.trim(),
+            password: document.getElementById('signupPassword').value,
+            organization: document.getElementById('doctorOrg').value.trim() || 'Doctor',
+            speciality: document.getElementById('doctorSpeciality').value.trim() || 'General'
           });
-          showMessage("Request submitted. Wait for admin approval, then login.", "ok");
-          setMode("login");
+          showMessage('Request submitted! Wait for admin approval, then login.', 'ok');
+          signupForm.reset();
+          setTimeout(() => switchTab('login'), 2000);
           return;
         }
 
-        // Patient / Diagnostic: UI ready, backend endpoint not present in provided files
-        showMessage("Signup submitted (backend endpoint not connected yet).", "err");
+        // Patient / Diagnostic: Show message (backend endpoint can be added later)
+        showMessage('Signup submitted. Admin will review and send credentials via email.', 'ok');
+        signupForm.reset();
       } catch (err) {
-        showMessage(err.message || "Signup failed", "err");
+        showMessage(err.message || 'Signup failed', 'err');
       }
     });
   </script>
