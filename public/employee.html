@@ -3,355 +3,882 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Employee Dashboard - Shravs</title>
+  <title>Employee Dashboard - Shravs Teleradiology</title>
   <style>
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;background:#000;color:#fff}
-    header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:2px solid #0ea5e9;background:#0a0a0a;position:sticky;top:0;z-index:10}
-    .left{display:flex;align-items:center;gap:12px}
-    .logo{width:54px;height:54px;border-radius:50%;object-fit:cover;border:2px solid #fff;background:#000}
-    .btn{padding:10px 14px;border-radius:999px;border:1px solid #0ea5e9;background:#0ea5e9;color:#000;font-weight:900;text-transform:uppercase;cursor:pointer}
-    .btn.ghost{background:transparent;color:#0ea5e9}
-    .btn.danger{border-color:#ef4444;background:#ef4444;color:#fff}
-    main{max-width:1200px;margin:0 auto;padding:18px 16px}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    @media(max-width:980px){.grid{grid-template-columns:1fr}}
-    .card{border:1px solid #333;border-radius:14px;background:#0a0a0a;padding:16px}
-    label{display:block;margin:10px 0 6px;color:#cfcfcf;font-weight:800;font-size:.85em;text-transform:uppercase}
-    input,textarea,select{width:100%;padding:10px;border-radius:10px;border:1px solid #333;background:#000;color:#fff}
-    textarea{min-height:90px;resize:vertical}
-    table{width:100%;border-collapse:collapse;margin-top:10px}
-    th,td{padding:10px;border-bottom:1px solid #222;text-align:left}
-    th{color:#0ea5e9;text-transform:uppercase;font-size:.82em;letter-spacing:.6px}
-    .pill{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid #333;color:#bbb;font-weight:900;font-size:.75em;text-transform:uppercase}
-    .pill.pending{border-color:#f59e0b;color:#f59e0b}
-    .pill.done{border-color:#22c55e;color:#22c55e}
-    .pill.high{border-color:#ef4444;color:#ef4444}
-    .pill.medium{border-color:#f59e0b;color:#f59e0b}
-    .pill.low{border-color:#22c55e;color:#22c55e}
-    .hint{color:#777;font-size:.85em;margin-top:8px}
+    *{ margin:0; padding:0; box-sizing:border-box; }
+    body{ font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif; background:#000; color:#fff; }
 
-    /* Chat drawer */
-    .drawer{position:fixed;top:0;right:-520px;width:520px;max-width:95vw;height:100vh;background:#050505;border-left:2px solid #0ea5e9;transition:right .25s ease;z-index:50;display:flex;flex-direction:column}
-    .drawer.open{right:0}
-    .drawer-head{display:flex;justify-content:space-between;align-items:center;padding:14px;border-bottom:1px solid #222;background:#0a0a0a}
-    .drawer-body{padding:12px;display:grid;grid-template-columns:200px 1fr;gap:10px;flex:1;overflow:hidden}
-    .rooms{border:1px solid #222;border-radius:12px;background:#000;padding:10px;overflow:auto}
-    .room{padding:10px;border-radius:10px;cursor:pointer;border:1px solid transparent}
-    .room:hover{background:#0f0f0f}
-    .room.active{border-color:#0ea5e9;background:#071018}
-    .msgs{border:1px solid #222;border-radius:12px;background:#000;padding:10px;overflow:auto}
-    .m{border:1px solid #1f1f1f;background:#101010;border-radius:12px;padding:10px;margin-bottom:10px}
-    .m .meta{display:flex;justify-content:space-between;color:#777;font-size:.8em;margin-bottom:6px}
-    .m .author{color:#0ea5e9;font-weight:900}
-    .composer{display:flex;gap:10px;margin-top:10px}
-    .composer input{flex:1}
+    .topbar{
+      position:sticky; top:0; z-index:20;
+      background:linear-gradient(135deg,#0a0a0a,#1a1a1a);
+      border-bottom:2px solid #0ea5e9;
+      padding:12px 16px;
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+    }
+    .topbar-left{ display:flex; align-items:center; gap:12px; }
+    .logo{ width:52px; height:52px; border-radius:50%; border:2px solid #fff; object-fit:cover; }
+    .title{ font-weight:900; text-transform:uppercase; letter-spacing:1px; font-size:1.05em; }
+    .sub{ color:#9aa; font-size:0.85em; margin-top:2px; }
 
-    /* Call UI */
-    .callbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-    .mini{font-size:.82em;color:#888}
-    video{width:100%;background:#000;border:1px solid #222;border-radius:12px;margin-top:10px}
+    .topbar-actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .btn{
+      padding:9px 14px; border-radius:999px;
+      border:1px solid #0ea5e9; background:transparent; color:#0ea5e9;
+      cursor:pointer; font-weight:900; text-transform:uppercase; letter-spacing:0.6px;
+      font-size:0.8em;
+      transition:0.2s ease;
+    }
+    .btn:hover{ background:#0ea5e9; color:#000; }
+    .btn-danger{ border-color:#ff6b6b; color:#ff6b6b; }
+    .btn-danger:hover{ background:#ff6b6b; color:#000; }
+
+    .container{ max-width:1200px; margin:16px auto; padding:0 14px 34px; }
+
+    .cards{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+      gap:12px;
+      margin-bottom:14px;
+    }
+    .card{
+      background:linear-gradient(135deg,#0a0a0a,#121212);
+      border:2px solid #333;
+      border-radius:14px;
+      padding:16px;
+    }
+    .card .num{ font-size:2em; font-weight:900; color:#0ea5e9; }
+    .card .lbl{ color:#aaa; font-size:0.85em; text-transform:uppercase; letter-spacing:0.8px; margin-top:6px; }
+
+    .panel{
+      background:#0a0a0a;
+      border:2px solid #333;
+      border-radius:14px;
+      padding:16px;
+    }
+    .panel-head{
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      border-bottom:1px solid #222;
+      padding-bottom:12px;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
+    .panel-title{
+      font-size:1.05em;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      color:#0ea5e9;
+    }
+    .search{
+      width:360px; max-width:100%;
+      padding:10px 12px;
+      border-radius:999px;
+      background:#000;
+      border:1px solid #333;
+      color:#fff;
+    }
+    .search:focus{ outline:none; border-color:#0ea5e9; box-shadow:0 0 0 2px rgba(14,165,233,0.12) inset; }
+
+    .tabs{ display:flex; gap:8px; flex-wrap:wrap; }
+    .tab{
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid #333;
+      background:#070707;
+      color:#bbb;
+      cursor:pointer;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:0.6px;
+      font-size:0.8em;
+    }
+    .tab.active{ border-color:#0ea5e9; color:#0ea5e9; background:#071018; }
+    .tab:hover{ border-color:#06b6d4; color:#06b6d4; }
+
+    .empty{
+      padding:18px;
+      text-align:center;
+      color:#777;
+    }
+
+    table{ width:100%; border-collapse:collapse; }
+    th{
+      text-align:left;
+      padding:12px 10px;
+      border-bottom:2px solid #0ea5e9;
+      color:#0ea5e9;
+      text-transform:uppercase;
+      letter-spacing:0.9px;
+      font-size:0.82em;
+    }
+    td{
+      padding:12px 10px;
+      border-bottom:1px solid #222;
+      color:#ddd;
+      vertical-align:top;
+      font-size:0.92em;
+    }
+    tr:hover{ background:rgba(14,165,233,0.05); }
+    .muted{ color:#888; font-size:0.9em; margin-top:4px; white-space:pre-wrap; }
+
+    .pill{
+      display:inline-block;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:0.78em;
+      font-weight:900;
+      text-transform:uppercase;
+      border:1px solid #333;
+      color:#bbb;
+      background:rgba(255,255,255,0.03);
+    }
+    .pill.pending{ border-color:#f59e0b; color:#f59e0b; background:rgba(245,158,11,0.08); }
+    .pill.done{ border-color:#22c55e; color:#22c55e; background:rgba(34,197,94,0.08); }
+
+    .row-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+    .mini{
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid #0ea5e9;
+      background:transparent;
+      color:#0ea5e9;
+      cursor:pointer;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:0.6px;
+      font-size:0.75em;
+    }
+    .mini:hover{ background:#0ea5e9; color:#000; }
+
+    /* ===== Chat overlay (Slack-like) ===== */
+    .overlay{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,0.75);
+      display:none;
+      z-index:50;
+    }
+    .overlay.show{ display:block; }
+
+    .chat-shell{
+      position:absolute;
+      right:14px; top:14px; bottom:14px;
+      width:min(980px, calc(100vw - 28px));
+      background:#050505;
+      border:2px solid #0ea5e9;
+      border-radius:14px;
+      display:grid;
+      grid-template-columns: 280px 1fr;
+      overflow:hidden;
+      box-shadow:0 18px 70px rgba(14,165,233,0.25);
+    }
+    @media (max-width: 880px){
+      .chat-shell{ grid-template-columns: 1fr; }
+      .sidebar{ display:none; }
+      .sidebar.show{ display:block; }
+    }
+
+    .sidebar{
+      background:#070707;
+      border-right:1px solid #1c1c1c;
+      display:flex; flex-direction:column;
+      min-width:0;
+    }
+    .sb-head{
+      padding:12px;
+      border-bottom:1px solid #1c1c1c;
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+    }
+    .sb-me{
+      min-width:0;
+    }
+    .sb-me .name{ font-weight:900; color:#fff; font-size:0.95em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .sb-me .role{ color:#9aa; font-size:0.8em; margin-top:2px; }
+
+    .sb-btn{
+      padding:8px 12px; border-radius:999px;
+      border:1px solid #333; background:transparent; color:#bbb;
+      cursor:pointer; font-weight:900; text-transform:uppercase; letter-spacing:0.6px; font-size:0.75em;
+    }
+    .sb-btn:hover{ border-color:#0ea5e9; color:#0ea5e9; }
+
+    .sb-section{
+      padding:10px 12px 6px;
+      color:#888;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:0.8px;
+      font-size:0.72em;
+    }
+    .sb-list{ padding:0 8px 10px; overflow:auto; }
+    .sb-item{
+      padding:10px 10px;
+      border-radius:10px;
+      cursor:pointer;
+      color:#ddd;
+      border:1px solid transparent;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+    }
+    .sb-item:hover{ background:#0f0f0f; }
+    .sb-item.active{ background:#071018; border-color:#0ea5e9; }
+    .sb-item small{ color:#888; font-weight:700; }
+
+    .main{
+      display:flex; flex-direction:column; min-width:0;
+    }
+    .chat-top{
+      padding:12px;
+      border-bottom:1px solid #1c1c1c;
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+    }
+    .chat-room{
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:0.8px;
+      font-size:0.92em;
+      color:#0ea5e9;
+      min-width:0;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .chat-top .mobile-controls{ display:none; gap:8px; }
+    @media (max-width: 880px){
+      .chat-top .mobile-controls{ display:flex; }
+    }
+
+    .chat-close{
+      padding:8px 12px; border-radius:999px;
+      border:1px solid #ff6b6b; background:transparent; color:#ff6b6b;
+      cursor:pointer; font-weight:900; text-transform:uppercase; letter-spacing:0.6px; font-size:0.75em;
+    }
+    .chat-close:hover{ background:#ff6b6b; color:#000; }
+
+    .messages{
+      flex:1;
+      padding:12px;
+      overflow:auto;
+    }
+    .msg{
+      border:1px solid #1f1f1f;
+      background:#101010;
+      border-radius:12px;
+      padding:10px 12px;
+      margin-bottom:10px;
+    }
+    .msg-head{
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      margin-bottom:6px;
+    }
+    .msg-author{ color:#0ea5e9; font-weight:900; font-size:0.9em; }
+    .msg-time{ color:#777; font-size:0.75em; }
+    .msg-text{ color:#ddd; white-space:pre-wrap; font-size:0.95em; }
+
+    .attach{
+      margin-top:6px;
+      font-size:0.85em;
+    }
+    .attach a{ color:#22c55e; text-decoration:none; }
+    .attach a:hover{ text-decoration:underline; }
+
+    .composer{
+      border-top:1px solid #1c1c1c;
+      background:#0a0a0a;
+      padding:10px 12px;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .composer.drag-over{ background:#04151f; border-top-color:#0ea5e9; }
+
+    .composer-top{
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+      margin-bottom:8px;
+    }
+    .file-pill{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px dashed #444;
+      color:#aaa;
+      cursor:pointer;
+      user-select:none;
+      font-size:0.8em;
+      font-weight:800;
+    }
+    .file-name{ color:#ccc; font-size:0.8em; }
+    .note{ width:100%; color:#777; font-size:0.75em; }
+
+    .composer-bottom{ display:flex; gap:10px; }
+    .composer textarea{
+      flex:1;
+      min-height:44px; max-height:110px;
+      resize:none;
+      padding:10px 10px;
+      border-radius:10px;
+      border:1px solid #333;
+      background:#000;
+      color:#fff;
+      font-size:0.95em;
+    }
+    .composer textarea:focus{ outline:none; border-color:#0ea5e9; }
+    .send{
+      padding:10px 16px;
+      border-radius:999px;
+      border:1px solid #0ea5e9;
+      background:linear-gradient(135deg,#0ea5e9,#06b6d4);
+      color:#fff;
+      cursor:pointer;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:0.7px;
+      font-size:0.82em;
+    }
+    .send:hover{ filter:brightness(1.08); }
   </style>
 </head>
 <body>
-  <header>
-    <div class="left">
-      <img class="logo" src="/logo.png" onerror="this.onerror=null;this.src='https://i.ibb.co/FL6BLkS/P-Untitled-design.png';" alt="Logo">
+  <div class="topbar">
+    <div class="topbar-left">
+      <img class="logo" src="https://i.ibb.co/FL6BLkS/P-Untitled-design.png" alt="Logo">
       <div>
-        <div style="font-weight:900;">Employee Dashboard</div>
-        <div style="color:#aaa;font-size:.85em;" id="meLine"></div>
+        <div class="title">Employee</div>
+        <div class="sub" id="employeeInfo">Loading...</div>
       </div>
     </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <button class="btn ghost" id="chatBtn">Chat</button>
-      <button class="btn danger" id="logoutBtn">Logout</button>
+    <div class="topbar-actions">
+      <button class="btn" onclick="openChat()">Chat</button>
+      <button class="btn btn-danger" onclick="logout()">Logout</button>
     </div>
-  </header>
+  </div>
 
-  <main>
-    <div class="grid">
+  <div class="container">
+    <div class="cards">
       <div class="card">
-        <h3 style="margin:0;color:#0ea5e9;">My Tasks</h3>
-        <div id="tasksWrap"></div>
-        <div class="hint">Only your assigned tasks show here.</div>
+        <div class="num" id="countPending">0</div>
+        <div class="lbl">Pending works</div>
       </div>
-
       <div class="card">
-        <h3 style="margin:0;color:#0ea5e9;">My Profile</h3>
-        <label>Display name</label>
-        <input id="profileName" placeholder="Your name">
-        <label>Profile photo</label>
-        <input id="profilePhoto" type="file" accept="image/*">
-        <div class="hint">Photo upload needs backend endpoint. Preview works now.</div>
-        <button class="btn" id="saveProfileBtn" style="margin-top:12px;">Save Profile</button>
-        <div id="profileMsg" class="hint"></div>
-        <img id="photoPreview" alt="" style="display:none;width:120px;height:120px;border-radius:50%;border:2px solid #fff;object-fit:cover;margin-top:12px;">
+        <div class="num" id="countAll">0</div>
+        <div class="lbl">Total assigned</div>
       </div>
-    </div>
-  </main>
-
-  <!-- CHAT DRAWER -->
-  <aside class="drawer" id="drawer">
-    <div class="drawer-head">
-      <div style="font-weight:900;">Chat</div>
-      <div style="display:flex;gap:8px;">
-        <button class="btn ghost" id="closeChatBtn">Close</button>
+      <div class="card">
+        <div class="num" id="countDueToday">0</div>
+        <div class="lbl">Due today</div>
+      </div>
+      <div class="card">
+        <div class="num" id="countDone">0</div>
+        <div class="lbl">Completed</div>
       </div>
     </div>
 
-    <div class="drawer-body">
-      <div class="rooms" id="rooms">
-        <div class="room active" data-kind="common"># Common (Admin)</div>
-        <div style="color:#777;margin:10px 0 6px;font-weight:900;text-transform:uppercase;font-size:.75em;">Direct</div>
-        <div class="room" id="dmAdminRoom" data-kind="dm-admin">DM with Admin</div>
-        <div style="color:#777;margin:10px 0 6px;font-weight:900;text-transform:uppercase;font-size:.75em;">Employees</div>
-        <div id="employeeDmList" class="mini">Loading...</div>
-      </div>
-
-      <div style="display:flex;flex-direction:column;overflow:hidden;">
-        <div class="msgs" id="msgs"></div>
-
-        <div class="callbar">
-          <button class="btn ghost" id="voiceBtn">Voice Call</button>
-          <button class="btn ghost" id="videoBtn">Video Call</button>
-          <button class="btn ghost" id="screenBtn">Share Screen</button>
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">My Works</div>
+          <div class="sub" style="margin-top:6px;">You will see pending works first (assigned by Admin).</div>
         </div>
-        <div class="mini">Calls need signaling backend (not included in current functions).</div>
-        <video id="localVideo" autoplay muted playsinline style="display:none;"></video>
-        <video id="remoteVideo" autoplay playsinline style="display:none;"></video>
 
-        <div class="composer">
-          <input id="msgText" placeholder="Type message...">
-          <button class="btn" id="sendBtn">Send</button>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <div class="tabs">
+            <button class="tab active" id="tabPending" onclick="setTaskView('pending')">Pending</button>
+            <button class="tab" id="tabAll" onclick="setTaskView('all')">All</button>
+          </div>
+          <input class="search" id="taskSearch" placeholder="Search works..." oninput="renderTasks()" />
         </div>
       </div>
+
+      <div id="tasksTable"></div>
+      <div class="sub" style="margin-top:10px; color:#888;">
+        Tip: “Mark done” updates your task status in this browser’s local storage.
+      </div>
     </div>
-  </aside>
+  </div>
 
-  <script type="module">
-    const API_BASE = "/api";
-    const drawer = document.getElementById("drawer");
+  <!-- Chat overlay -->
+  <div class="overlay" id="chatOverlay" aria-hidden="true">
+    <div class="chat-shell">
+      <!-- Sidebar -->
+      <div class="sidebar" id="sidebar">
+        <div class="sb-head">
+          <div class="sb-me">
+            <div class="name" id="sbName">Employee</div>
+            <div class="role" id="sbRole">employee</div>
+          </div>
+          <button class="sb-btn" onclick="closeChat()">Close</button>
+        </div>
 
-    function esc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#039;"}[c])); }
-    function pill(cls, text){ return `<span class="pill ${esc(cls)}">${esc(text)}</span>`; }
+        <div class="sb-section">Channels</div>
+        <div class="sb-list" id="channelList">
+          <div class="sb-item active" id="sbCommon" onclick="selectRoomCommon()">
+            <div># common</div>
+            <small>chat</small>
+          </div>
+        </div>
 
-    async function api(path, { method="GET", body=null } = {}) {
-      const token = localStorage.getItem("token");
-      const headers = { "Content-Type": "application/json" };
-      if (token) headers.Authorization = `Bearer ${token}`;
-      const res = await fetch(`${API_BASE}${path}`, { method, headers, body: body ? JSON.stringify(body) : null });
-      const data = await res.json().catch(()=>({}));
-      if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
-      return data;
+        <div class="sb-section">Direct messages</div>
+        <div class="sb-list" id="dmList">
+          <div class="empty">No users yet.</div>
+        </div>
+      </div>
+
+      <!-- Main chat -->
+      <div class="main">
+        <div class="chat-top">
+          <div class="chat-room" id="roomTitle"># common</div>
+          <div class="mobile-controls">
+            <button class="sb-btn" onclick="toggleSidebar()">Menu</button>
+          </div>
+          <button class="chat-close" onclick="closeChat()">Close</button>
+        </div>
+
+        <div class="messages" id="chatMessages"></div>
+
+        <div class="composer" id="composerDropZone">
+          <div class="composer-top">
+            <label class="file-pill">
+              Attach
+              <input id="chatFile" type="file" style="display:none"
+                     accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.txt"/>
+              <span class="file-name" id="fileName">No file</span>
+            </label>
+            <div class="note" id="chatNote"></div>
+          </div>
+          <div class="composer-bottom">
+            <textarea id="chatText" placeholder="Type message..."></textarea>
+            <button class="send" onclick="sendMessage()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ===== AUTH =====
+  const TASKS_KEY = "tasks_v1";                 // Admin assigns tasks into this key
+  const COMMON_KEY = "commonChatMessages_v1";   // Shared chat channel storage
+  const DM_KEY = "directMessages_v1";           // Object of DM conversations
+
+  const MAX_FILE_MB = 3;
+  const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024;
+
+  let me = null;
+  let taskView = "pending"; // pending | all
+
+  // Chat state
+  let chatOpen = false;
+  let activeRoom = { type: "common" }; // {type:"common"} or {type:"dm", peerEmail:"..."}
+  let pendingFile = null;
+
+  function ensureEmployeeAuth() {
+    const loggedIn = sessionStorage.getItem("isLoggedIn") === "true";
+    const isAdmin = sessionStorage.getItem("isAdmin") === "true";
+    const currentUser = JSON.parse(sessionStorage.getItem("currentUser") || "null");
+
+    if (!loggedIn || isAdmin || !currentUser || currentUser.role !== "employee") {
+      alert("Please login as employee.");
+      window.location.href = "login.html";
+      return false;
     }
 
-    let me = null;
-    let active = { kind: "common", room_type: "common", dm_room_id: null };
+    me = { name: currentUser.name, email: currentUser.email, role: currentUser.role };
+    document.getElementById("employeeInfo").textContent = `${me.name} (${me.email})`;
+    document.getElementById("sbName").textContent = me.name;
+    document.getElementById("sbRole").textContent = me.role;
 
-    async function guard(){
-      const out = await api("/auth-me");
-      me = out.profile;
-      document.getElementById("meLine").textContent = `${me.name} (${me.role})`;
-      if (me.role === "admin") window.location.href = "admin.html";
+    document.getElementById("chatNote").textContent =
+      `Drag & drop supported. Max file size ${MAX_FILE_MB} MB.`;
+
+    return true;
+  }
+
+  // ===== Storage helpers =====
+  function readJson(key, fallback) {
+    try { return JSON.parse(localStorage.getItem(key) || "null") ?? fallback; }
+    catch { return fallback; }
+  }
+  function writeJson(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (e) {
+      alert("Storage full. Please delete old messages/tasks or use smaller files.");
+      return false;
+    }
+  }
+  function escapeHtml(text) {
+    return String(text ?? "")
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;")
+      .replace(/'/g,"&#039;");
+  }
+  function prettyTime(iso) {
+    try { return new Date(iso).toLocaleString(); } catch { return iso; }
+  }
+
+  // ===== Tasks =====
+  function getAllTasks() {
+    const tasks = readJson(TASKS_KEY, []);
+    return tasks.filter(t => String(t.assignedToEmail || "").toLowerCase() === String(me.email).toLowerCase());
+  }
+
+  function refreshTaskStats() {
+    const all = getAllTasks();
+    const pending = all.filter(t => t.status === "pending").length;
+    const done = all.filter(t => t.status === "done").length;
+
+    const today = new Date();
+    const todayStr = today.toISOString().slice(0,10);
+    const dueToday = all.filter(t => (t.dueDate || "") === todayStr && t.status === "pending").length;
+
+    document.getElementById("countAll").textContent = all.length;
+    document.getElementById("countPending").textContent = pending;
+    document.getElementById("countDone").textContent = done;
+    document.getElementById("countDueToday").textContent = dueToday;
+  }
+
+  function setTaskView(view) {
+    taskView = view;
+    document.getElementById("tabPending").classList.toggle("active", view === "pending");
+    document.getElementById("tabAll").classList.toggle("active", view === "all");
+    renderTasks();
+  }
+
+  function updateTaskStatus(taskId, status) {
+    const allTasksGlobal = readJson(TASKS_KEY, []);
+    const t = allTasksGlobal.find(x => x.id === taskId);
+    if (!t) return;
+    t.status = status;
+    writeJson(TASKS_KEY, allTasksGlobal);
+    renderTasks();
+    refreshTaskStats();
+  }
+
+  function renderTasks() {
+    const q = (document.getElementById("taskSearch").value || "").toLowerCase();
+    let tasks = getAllTasks();
+
+    if (taskView === "pending") tasks = tasks.filter(t => t.status === "pending");
+
+    tasks = tasks.filter(t =>
+      (t.title || "").toLowerCase().includes(q) ||
+      (t.description || "").toLowerCase().includes(q) ||
+      (t.dueDate || "").toLowerCase().includes(q)
+    );
+
+    tasks.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    const box = document.getElementById("tasksTable");
+    if (!tasks.length) {
+      box.innerHTML = `<div class="empty">No works found.</div>`;
+      return;
     }
 
-    async function loadTasks(){
-      const out = await api("/tasks");
-      const tasks = out.tasks || [];
-      const wrap = document.getElementById("tasksWrap");
+    box.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Work</th>
+            <th>Due</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tasks.map(t => `
+            <tr>
+              <td><span class="pill ${escapeHtml(t.status)}">${escapeHtml(t.status)}</span></td>
+              <td>
+                <div style="font-weight:900;">${escapeHtml(t.title || "")}</div>
+                <div class="muted">${escapeHtml(t.description || "")}</div>
+                <div class="muted">Assigned: ${prettyTime(t.createdAt || "")}</div>
+              </td>
+              <td>${t.dueDate ? escapeHtml(t.dueDate) : "-"}</td>
+              <td>
+                <div class="row-actions">
+                  ${
+                    t.status === "pending"
+                      ? `<button class="mini" onclick="updateTaskStatus('${escapeHtml(t.id)}','done')">Mark done</button>`
+                      : `<button class="mini" onclick="updateTaskStatus('${escapeHtml(t.id)}','pending')">Mark pending</button>`
+                  }
+                </div>
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
+  }
 
-      if (!tasks.length) {
-        wrap.innerHTML = `<div class="hint">No tasks assigned.</div>`;
-        return;
-      }
+  // ===== Chat: people list =====
+  function getAllPeopleForDM() {
+    // "users" list contains users + employees (created by admin), excludes admin by design
+    const users = readJson("users", []);
+    const meEmail = String(me.email).toLowerCase();
 
-      wrap.innerHTML = `
-        <table>
-          <thead><tr><th>Priority</th><th>Status</th><th>Title</th><th>Action</th></tr></thead>
-          <tbody>
-            ${tasks.map(t => `
-              <tr>
-                <td>${pill(t.priority, t.priority)}</td>
-                <td>${pill(t.status, t.status)}</td>
-                <td>
-                  <div style="font-weight:900;">${esc(t.title)}</div>
-                  <div style="color:#888;margin-top:6px;white-space:pre-wrap;">${esc(t.description || "")}</div>
-                </td>
-                <td><button class="btn ghost" data-toggle="${esc(t.id)}">${t.status==="pending"?"Mark done":"Mark pending"}</button></td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
+    const seen = new Set();
+    const out = [];
+    for (const u of users) {
+      if (!u || !u.email) continue;
+      const email = String(u.email).toLowerCase();
+      if (email === meEmail) continue;
+      if (email === "admin@shravsteleradiology.com") continue; // keep admin out of DMs
+      if (seen.has(email)) continue;
+      seen.add(email);
+      out.push({ name: u.name || u.email, email: u.email, role: u.role || "user" });
+    }
+    out.sort((a,b) => (a.name || "").localeCompare(b.name || ""));
+    return out;
+  }
+
+  function convId(a, b) {
+    const x = String(a).toLowerCase();
+    const y = String(b).toLowerCase();
+    return x < y ? `dm:${x}|${y}` : `dm:${y}|${x}`;
+  }
+
+  function selectRoomCommon() {
+    activeRoom = { type: "common" };
+    document.getElementById("roomTitle").textContent = "# common";
+    setSidebarActive();
+    renderChatMessages();
+  }
+
+  function selectRoomDM(peerEmail) {
+    activeRoom = { type: "dm", peerEmail };
+    const people = getAllPeopleForDM();
+    const p = people.find(x => String(x.email).toLowerCase() === String(peerEmail).toLowerCase());
+    document.getElementById("roomTitle").textContent = p ? `DM: ${p.name}` : "DM";
+    setSidebarActive();
+    renderChatMessages();
+  }
+
+  function setSidebarActive() {
+    const sbCommon = document.getElementById("sbCommon");
+    sbCommon.classList.toggle("active", activeRoom.type === "common");
+
+    document.querySelectorAll(".dm-item").forEach(el => {
+      const email = el.getAttribute("data-email") || "";
+      el.classList.toggle("active",
+        activeRoom.type === "dm" &&
+        String(email).toLowerCase() === String(activeRoom.peerEmail || "").toLowerCase()
+      );
+    });
+  }
+
+  function renderDMList() {
+    const box = document.getElementById("dmList");
+    const people = getAllPeopleForDM();
+
+    if (!people.length) {
+      box.innerHTML = `<div class="empty">No users yet.</div>`;
+      return;
+    }
+
+    box.innerHTML = people.map(p => `
+      <div class="sb-item dm-item" data-email="${escapeHtml(p.email)}"
+           onclick="selectRoomDM('${escapeHtml(p.email)}')">
+        <div style="min-width:0;">
+          <div style="font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            ${escapeHtml(p.name)}
+          </div>
+          <small>${escapeHtml(p.role)}</small>
+        </div>
+        <small>DM</small>
+      </div>
+    `).join("");
+
+    setSidebarActive();
+  }
+
+  // ===== Chat: messages =====
+  function getRoomMessages() {
+    if (activeRoom.type === "common") {
+      return readJson(COMMON_KEY, []);
+    }
+
+    const store = readJson(DM_KEY, {});
+    const id = convId(me.email, activeRoom.peerEmail);
+    return store[id] || [];
+  }
+
+  function saveRoomMessages(list) {
+    if (activeRoom.type === "common") {
+      return writeJson(COMMON_KEY, list);
+    }
+
+    const store = readJson(DM_KEY, {});
+    const id = convId(me.email, activeRoom.peerEmail);
+    store[id] = list;
+    return writeJson(DM_KEY, store);
+  }
+
+  function renderChatMessages() {
+    const box = document.getElementById("chatMessages");
+    const list = getRoomMessages();
+
+    if (!list.length) {
+      box.innerHTML = `<div class="empty">No messages yet.</div>`;
+      return;
+    }
+
+    list.sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+    let html = "";
+    for (const msg of list) {
+      html += `
+        <div class="msg">
+          <div class="msg-head">
+            <div class="msg-author">${escapeHtml(msg.authorName || "User")}</div>
+            <div class="msg-time">${prettyTime(msg.timestamp || "")}</div>
+          </div>
+          <div class="msg-text">${escapeHtml(msg.text || "")}</div>
       `;
 
-      document.querySelectorAll("[data-toggle]").forEach(btn => {
-        btn.addEventListener("click", async () => {
-          const id = btn.getAttribute("data-toggle");
-          const row = tasks.find(x => x.id === id);
-          const next = row.status === "pending" ? "done" : "pending";
-          await api("/tasks", { method:"PATCH", body:{ id, status: next } });
-          await loadTasks();
-        });
-      });
-    }
-
-    async function loadEmployeesForDM(){
-      const holder = document.getElementById("employeeDmList");
-      holder.textContent = "Loading...";
-
-      try{
-        const out = await api("/team?role=employee");
-        const items = (out.items || []).filter(p => p.id !== me.id);
-
-        if (!items.length) {
-          holder.innerHTML = `<div class="mini">No other employees.</div>`;
-          return;
-        }
-
-        holder.innerHTML = items.map(p => `
-          <div class="room" data-kind="dm-employee" data-peer-id="${esc(p.id)}">${esc(p.name || p.email || p.id)}</div>
-        `).join("");
-      } catch {
-        holder.innerHTML = `<div class="mini">DM employee list API not enabled.</div>`;
-      }
-    }
-
-    async function ensureDmRoom(peer_id){
-      const out = await api("/dm-room", { method:"POST", body:{ peer_id } });
-      return out.room; // {id,...}
-    }
-
-    async function loadMessages(){
-      const qs = new URLSearchParams({ room_type: active.room_type, limit: "80" });
-      if (active.room_type === "dm" && active.dm_room_id) qs.set("dm_room_id", active.dm_room_id);
-
-      const out = await api(`/messages?${qs.toString()}`);
-      const msgs = out.messages || [];
-
-      const box = document.getElementById("msgs");
-      if (!msgs.length) {
-        box.innerHTML = `<div class="hint">No messages.</div>`;
-        return;
-      }
-
-      box.innerHTML = msgs.map(m => `
-        <div class="m">
-          <div class="meta">
-            <div><span class="author">${esc(m.author_id)}</span></div>
-            <div>${new Date(m.created_at).toLocaleString()}</div>
+      if (msg.attachment && msg.attachment.dataUrl && msg.attachment.name) {
+        html += `
+          <div class="attach">
+            <a href="${msg.attachment.dataUrl}" download="${escapeHtml(msg.attachment.name)}" target="_blank">
+              ${escapeHtml(msg.attachment.name)}
+            </a>
           </div>
-          <div style="white-space:pre-wrap;">${esc(m.text || "")}</div>
-        </div>
-      `).join("");
-      box.scrollTop = box.scrollHeight;
+        `;
+      }
+
+      html += `</div>`;
     }
 
-    async function sendMessage(){
-      const textEl = document.getElementById("msgText");
-      const text = textEl.value.trim();
-      if (!text) return;
+    box.innerHTML = html;
+    box.scrollTop = box.scrollHeight;
+  }
 
-      await api("/messages", { method:"POST", body:{
-        room_type: active.room_type,
-        dm_room_id: active.room_type === "dm" ? active.dm_room_id : null,
-        text
-      }});
+  function clearPendingFile() {
+    pendingFile = null;
+    document.getElementById("chatFile").value = "";
+    document.getElementById("fileName").textContent = "No file";
+  }
 
-      textEl.value = "";
-      await loadMessages();
+  function handleSelectedFile(file) {
+    if (!file) return clearPendingFile();
+
+    if (file.size > MAX_FILE_BYTES) {
+      alert(`File too large. Max ${MAX_FILE_MB} MB.`);
+      return clearPendingFile();
     }
 
-    // Profile UI (preview now; saving requires /api/profile + /api/profile-photo)
-    document.getElementById("profilePhoto").addEventListener("change", (e) => {
-      const f = e.target.files?.[0];
-      if (!f) return;
-      const url = URL.createObjectURL(f);
-      const img = document.getElementById("photoPreview");
-      img.src = url;
-      img.style.display = "block";
-    });
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      pendingFile = {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        dataUrl: e.target.result
+      };
+    };
+    reader.readAsDataURL(file);
+    document.getElementById("fileName").textContent = file.name;
+  }
 
-    document.getElementById("saveProfileBtn").addEventListener("click", async () => {
-      const msg = document.getElementById("profileMsg");
-      msg.textContent = "Saving...";
-      try{
-        await api("/profile", { method:"PATCH", body:{ name: document.getElementById("profileName").value.trim() } });
-        msg.textContent = "Saved name. Photo upload needs /api/profile-photo.";
-      } catch(e){
-        msg.textContent = e.message;
-      }
-    });
+  function sendMessage() {
+    const textEl = document.getElementById("chatText");
+    const text = (textEl.value || "").trim();
 
-    // Drawer open/close
-    document.getElementById("chatBtn").addEventListener("click", async () => {
-      drawer.classList.add("open");
-      await loadMessages();
-    });
-    document.getElementById("closeChatBtn").addEventListener("click", () => drawer.classList.remove("open"));
-
-    // Rooms click
-    document.getElementById("rooms").addEventListener("click", async (e) => {
-      const el = e.target.closest(".room");
-      if (!el) return;
-
-      document.querySelectorAll(".room").forEach(x => x.classList.remove("active"));
-      el.classList.add("active");
-
-      const kind = el.dataset.kind;
-
-      if (kind === "common") {
-        active = { kind, room_type:"common", dm_room_id:null };
-      }
-
-      if (kind === "dm-admin") {
-        // Needs ADMIN id from backend: /api/admin-id
-        const out = await api("/admin-id");
-        const room = await ensureDmRoom(out.admin_id);
-        active = { kind, room_type:"dm", dm_room_id: room.id };
-      }
-
-      if (kind === "dm-employee") {
-        const peer_id = el.dataset.peerId;
-        const room = await ensureDmRoom(peer_id);
-        active = { kind, room_type:"dm", dm_room_id: room.id };
-      }
-
-      await loadMessages();
-    });
-
-    document.getElementById("sendBtn").addEventListener("click", sendMessage);
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      localStorage.removeItem("token");
-      window.location.href = "login.html";
-    });
-
-    // Calls UI (requires signaling; included as buttons only)
-    function notEnabled(){
-      alert("Calls require signaling backend + STUN/TURN config. UI is ready, backend not enabled yet.");
+    if (!text && !pendingFile) return;
+    if (activeRoom.type === "dm" && !activeRoom.peerEmail) {
+      alert("Select a person to send a DM.");
+      return;
     }
-    document.getElementById("voiceBtn").addEventListener("click", notEnabled);
-    document.getElementById("videoBtn").addEventListener("click", notEnabled);
-    document.getElementById("screenBtn").addEventListener("click", notEnabled);
 
-    // init
-    (async () => {
-      try{
-        await guard();
-        document.getElementById("profileName").value = me.name || "";
-        await loadTasks();
-        await loadEmployeesForDM();
+    const list = getRoomMessages();
+    list.push({
+      authorEmail: me.email,
+      authorName: me.name,
+      authorRole: me.role,
+      toEmail: (activeRoom.type === "dm") ? activeRoom.peerEmail : "",
+      text,
+      timestamp: new Date().toISOString(),
+      attachment: pendingFile
+    });
 
-        // Poll tasks + active chat
-        setInterval(async () => {
-          try{
-            await loadTasks();
-            if (drawer.classList.contains("open")) await loadMessages();
-          } catch {}
-        }, 5000);
-      } catch {
-        window.location.href = "login.html";
+    const ok = saveRoomMessages(list);
+    if (!ok) return;
+
+    textEl.value = "";
+    clearPendingFile();
+    renderChatMessages();
+  }
+
+  function setupDropZone() {
+    const zone = document.getElementById("composerDropZone");
+
+    const prevent = (e) => { e.preventDefault(); e.stopPropagation(); };
+
+    ["dragenter","dragover","dragleave","drop"].forEach(evt => zone.addEventListener(evt, prevent, false));
+    ["dragenter","dragover"].forEach(evt => zone.addEventListener(evt, () => zone.classList.add("drag-over"), false));
+    ["dragleave","drop"].forEach(evt => zone.addEventListener(evt, () => zone.classList.remove("drag-over"), false));
+
+    zone.addEventListener("drop", (e) => {
+      const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) handleSelectedFile(f);
+    }, false);
+  }
+
+  // ===== Chat overlay control =====
+  function openChat() {
+    chatOpen = true;
+    const ov = document.getElementById("chatOverlay");
+    ov.classList.add("show");
+    ov.setAttribute("aria-hidden", "false");
+    renderDMList();
+    renderChatMessages();
+  }
+  function closeChat() {
+    chatOpen = false;
+    const ov = document.getElementById("chatOverlay");
+    ov.classList.remove("show");
+    ov.setAttribute("aria-hidden", "true");
+  }
+  function toggleSidebar() {
+    const sb = document.getElementById("sidebar");
+    sb.classList.toggle("show");
+  }
+
+  // ===== Logout =====
+  function logout() {
+    if (!confirm("Logout?")) return;
+    sessionStorage.clear();
+    window.location.href = "login.html";
+  }
+
+  // ===== Init =====
+  window.addEventListener("load", () => {
+    if (!ensureEmployeeAuth()) return;
+
+    // Tasks
+    refreshTaskStats();
+    renderTasks();
+
+    // Chat
+    selectRoomCommon();
+    setupDropZone();
+    document.getElementById("chatFile").addEventListener("change", function () {
+      handleSelectedFile(this.files[0]);
+    });
+
+    // Click outside chat to close
+    document.getElementById("chatOverlay").addEventListener("click", (e) => {
+      if (e.target.id === "chatOverlay") closeChat();
+    });
+
+    // Auto refresh tasks + chat
+    setInterval(() => {
+      refreshTaskStats();
+      renderTasks();
+      if (chatOpen) {
+        renderDMList();
+        renderChatMessages();
       }
-    })();
-  </script>
+    }, 5000);
+  });
+</script>
 </body>
 </html>
