@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login - Shravs Teleradiology</title>
   <style>
     body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;background:#000;color:#fff;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:20px}
@@ -19,11 +19,13 @@
     .muted{color:#aaa;font-size:.9em;margin-top:10px;line-height:1.4}
     .logo{width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid #fff;display:block;margin:0 auto 10px}
     h1{text-align:center;margin:0 0 8px}
+    .links{display:flex;justify-content:space-between;margin-top:14px;font-size:.9em}
+    .links a{color:#0ea5e9;text-decoration:none}
   </style>
 </head>
 <body>
   <div class="card">
-    <img class="logo" src="https://i.ibb.co/FL6BLkS/P-Untitled-design.png" alt="Shravs Teleradiology Logo">
+    <img class="logo" src="logo.jpg" alt="Shravs Teleradiology Logo" />
     <h1>Secure Login</h1>
 
     <div id="msg" class="msg"></div>
@@ -31,47 +33,51 @@
     <form id="loginForm">
       <div class="row">
         <label>Email</label>
-        <input id="email" type="email" required placeholder="admin@... or employee@...">
+        <input id="email" type="email" required placeholder="admin@... or employee@... or doctor@..." />
       </div>
       <div class="row">
         <label>Password</label>
-        <input id="password" type="password" required placeholder="Enter password">
+        <input id="password" type="password" required placeholder="Enter password" />
       </div>
       <button class="btn" type="submit">Login</button>
     </form>
 
+    <div class="links">
+      <a href="doctor-signup.html">Doctor signup</a>
+      <a href="index.html">Back to home</a>
+    </div>
+
     <div class="muted">
-      Note: Employees are created by Admin in the Admin dashboard.<br>
-      This login uses the backend token (not localStorage users).
+      Note: Employees are created by Admin in the Admin dashboard. Doctors can signup and wait for admin approval.
     </div>
   </div>
 
   <script type="module">
-    import { authLogin, authMe } from "./js/api.js";
+    import { login, getMe } from "./js/api.js";
 
     const msg = document.getElementById("msg");
-
-    function show(text, type) {
+    function show(text, type){
       msg.textContent = text;
       msg.className = "msg " + type;
+      msg.style.display = "block";
     }
 
     document.getElementById("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      show("", ""); msg.style.display = "none";
+      msg.style.display = "none";
 
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
 
-      try {
-        await authLogin(email, password);
-        const profile = await authMe();
+      try{
+        await login(email, password);
+        const profile = await getMe();
 
         if (profile.role === "admin") window.location.href = "admin.html";
         else if (profile.role === "employee") window.location.href = "employee.html";
+        else if (profile.role === "doctor") window.location.href = "doctor.html";
         else window.location.href = "index.html";
-      } catch (err) {
-        msg.style.display = "block";
+      } catch(err){
         show(err.message || "Login failed", "err");
       }
     });
