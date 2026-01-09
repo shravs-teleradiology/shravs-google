@@ -80,3 +80,12 @@ export function logout() {
   localStorage.removeItem("token");
   window.location.href = "login.html";
 }
+
+// Update profile with all fields
+export async function updateProfile(data) {
+  return await request("/profile", { 
+    method: "PATCH", 
+    body: data 
+  });
+}
+
