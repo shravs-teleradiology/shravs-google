@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Shravs</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; }
@@ -148,7 +149,7 @@
 <body>
     <div class="header">
         <div class="header-left">
-            <a href="index.html"><img src="logo.jpg" alt="Shravs Logo" class="logo"></a>
+            <a href="index.html"><img src="https://i.ibb.co/FL6BLkSP-Untitled-design.png" alt="Shravs Logo" class="logo"></a>
             <div class="header-title">Admin Dashboard</div>
         </div>
         <button onclick="logout()">Logout</button>
@@ -167,11 +168,11 @@
                 <label>Email *</label>
                 <input type="email" id="empEmail" required placeholder="employee@example.com">
                 
-                <label>Temporary Password *</label>
-                <input type="password" id="empPassword" required placeholder="Create temporary password">
+                <label>Phone</label>
+                <input type="tel" id="empPhone" placeholder="Phone number">
                 
                 <div class="note">
-                    ℹ️ Employee will be asked to change password on first login
+                    ℹ️ Employee will receive login credentials via email
                 </div>
                 
                 <button type="submit" class="btn-full">➕ Create Employee</button>
@@ -204,8 +205,11 @@
                         </select>
                     </div>
                     <div>
-                        <label>Due Date</label>
-                        <input type="date" id="taskDueDate">
+                        <label>Status</label>
+                        <select id="taskStatus">
+                            <option value="pending" selected>Pending</option>
+                            <option value="done">Done</option>
+                        </select>
                     </div>
                 </div>
                 
@@ -233,48 +237,54 @@
 
         <!-- ALL EMPLOYEES -->
         <div class="card">
-            <h2>👥 All Employees</h2>
+            <h2>👥 All Employees (<span id="empCount">0</span>)</h2>
             <div id="employeesList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+
+        <!-- ALL TASKS -->
+        <div class="card">
+            <h2>📋 All Tasks (<span id="taskCount">0</span>)</h2>
+            <div id="allTasks">
                 <div class="empty-state">Loading...</div>
             </div>
         </div>
 
         <!-- ALL QUERIES -->
         <div class="card full-width">
-            <h2>📧 All User Queries</h2>
+            <h2>📧 All User Queries (<span id="queryCount">0</span>)</h2>
             <div id="allQueries">
                 <div class="empty-state">Loading...</div>
             </div>
         </div>
     </div>
 
-    <script type="module">
-        import { adminPendingDoctors, adminApproveDoctor, logout as apiLogout } from './api.js';
+    <script>
+        // Supabase Config - UPDATE THESE!
+        const SUPABASE_URL = 'https://xksqdjwbiojwyfllwtvh.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_zZe-aVVerbOt7joJQMt6QQ_bq3Ej7Ze';
+        const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // CREATE EMPLOYEE (SIMPLIFIED - only name, email, password)
+        // CREATE EMPLOYEE
         document.getElementById('createEmployeeForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const employeeData = {
                 name: document.getElementById('empName').value.trim(),
                 email: document.getElementById('empEmail').value.trim(),
-                password: document.getElementById('empPassword').value
+                phone: document.getElementById('empPhone').value.trim(),
+                role: 'employee',
+                status: 'active'
             };
             
             try {
-                const res = await fetch('/api/admin-create-employee', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: JSON.stringify(employeeData)
-                });
+                const { data, error } = await supabase
+                    .from('employees')
+                    .insert([employeeData])
+                    .select();
                 
-                if (!res.ok) {
-                    const error = await res.json();
-                    throw new Error(error.error || 'Failed to create employee');
-                }
+                if (error) throw error;
                 
                 document.getElementById('createEmployeeSuccess').classList.add('show');
                 document.getElementById('createEmployeeForm').reset();
@@ -292,11 +302,12 @@
         // LOAD EMPLOYEES
         async function loadEmployees() {
             try {
-                const res = await fetch('/api/team?role=employee', {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
-                const data = await res.json();
-                const employees = data.items || data || [];
+                const { data: employees, error } = await supabase
+                    .from('employees')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
                 
                 const taskSelect = document.getElementById('taskEmployee');
                 const promoteSelect = document.getElementById('promoteEmployee');
@@ -307,18 +318,22 @@
                 taskSelect.innerHTML = '<option value="">-- Select Employee --</option>' + options;
                 promoteSelect.innerHTML = '<option value="">-- Select Employee --</option>' + options;
                 
+                document.getElementById('empCount').textContent = employees.length;
+                
                 const listContainer = document.getElementById('employeesList');
                 if (!employees.length) {
                     listContainer.innerHTML = '<div class="empty-state">No employees found.</div>';
                     return;
                 }
                 
-                let html = '<table><tr><th>Name</th><th>Email</th><th>Joined</th></tr>';
+                let html = '<table><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Status</th></tr>';
                 employees.forEach(e => {
                     html += `<tr>
-                        <td>${e.name}</td>
+                        <td style="font-weight:600;">${e.name}</td>
                         <td>${e.email}</td>
-                        <td>${new Date(e.created_at || Date.now()).toLocaleDateString()}</td>
+                        <td>${e.phone || '-'}</td>
+                        <td style="text-transform:capitalize;">${e.role || 'employee'}</td>
+                        <td><span style="color:${e.status === 'active' ? '#4ade80' : '#ff6b6b'};">●</span> ${e.status || 'active'}</td>
                     </tr>`;
                 });
                 html += '</table>';
@@ -332,48 +347,88 @@
         document.getElementById('assignTaskForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const employeeId = document.getElementById('taskEmployee').value;
-            const title = document.getElementById('taskTitle').value.trim();
-            const description = document.getElementById('taskDescription').value.trim();
-            const priority = document.getElementById('taskPriority').value;
-            const dueDate = document.getElementById('taskDueDate').value;
+            const taskData = {
+                assigned_to: document.getElementById('taskEmployee').value,
+                title: document.getElementById('taskTitle').value.trim(),
+                description: document.getElementById('taskDescription').value.trim(),
+                priority: document.getElementById('taskPriority').value,
+                status: document.getElementById('taskStatus').value
+            };
             
-            if (!employeeId) return alert('Select an employee');
+            if (!taskData.assigned_to) return alert('Select an employee');
             
             try {
-                const res = await fetch('/api/tasks', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: JSON.stringify({
-                        assigned_to: employeeId,
-                        title,
-                        description,
-                        priority,
-                        due_date: dueDate || null,
-                        status: 'pending'
-                    })
-                });
+                const { error } = await supabase
+                    .from('tasks')
+                    .insert([taskData]);
                 
-                if (!res.ok) throw new Error('Failed to assign task');
+                if (error) throw error;
                 
                 document.getElementById('assignTaskSuccess').classList.add('show');
                 document.getElementById('assignTaskForm').reset();
+                document.getElementById('taskEmployee').value = '';
                 
                 setTimeout(() => {
                     document.getElementById('assignTaskSuccess').classList.remove('show');
                 }, 3000);
+                
+                loadTasks();
             } catch (e) {
                 alert('Failed to assign task: ' + e.message);
             }
         });
 
+        // LOAD TASKS
+        async function loadTasks() {
+            try {
+                const { data: tasks, error } = await supabase
+                    .from('tasks')
+                    .select('*, employees(name, email)')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                document.getElementById('taskCount').textContent = tasks.length;
+                
+                const container = document.getElementById('allTasks');
+                if (!tasks.length) {
+                    container.innerHTML = '<div class="empty-state">No tasks assigned yet.</div>';
+                    return;
+                }
+
+                let html = '<table><tr><th>Title</th><th>Assigned To</th><th>Priority</th><th>Status</th></tr>';
+                tasks.forEach(t => {
+                    const priorityColor = { high: '#ff6b6b', medium: '#f59e0b', low: '#4ade80' }[t.priority];
+                    const statusColor = t.status === 'done' ? '#4ade80' : '#f59e0b';
+                    html += `<tr>
+                        <td>
+                            <div style="font-weight:600;">${t.title}</div>
+                            <div style="color:#888;font-size:0.85em;margin-top:4px;">${t.description || ''}</div>
+                        </td>
+                        <td>${t.employees?.name || 'Unassigned'}</td>
+                        <td><span style="color:${priorityColor};">●</span> ${t.priority}</td>
+                        <td><span style="color:${statusColor};">●</span> ${t.status}</td>
+                    </tr>`;
+                });
+                html += '</table>';
+                container.innerHTML = html;
+            } catch (e) {
+                console.error('Failed to load tasks:', e);
+            }
+        }
+
         // LOAD PENDING DOCTORS
         async function loadPendingDoctors() {
             try {
-                const doctors = await adminPendingDoctors();
+                const { data: doctors, error } = await supabase
+                    .from('employees')
+                    .select('*')
+                    .eq('role', 'doctor')
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
                 const container = document.getElementById('pendingDoctors');
                 
                 if (!doctors.length) {
@@ -386,7 +441,7 @@
                     html += `<tr>
                         <td>${d.name}</td>
                         <td>${d.email}</td>
-                        <td>${d.speciality || d.organization || 'N/A'}</td>
+                        <td>${d.specialization || 'N/A'}</td>
                         <td><button onclick="approveDoctor('${d.id}')">✓ Approve</button></td>
                     </tr>`;
                 });
@@ -401,9 +456,16 @@
         window.approveDoctor = async (id) => {
             if (!confirm('Approve this doctor?')) return;
             try {
-                await adminApproveDoctor(id);
+                const { error } = await supabase
+                    .from('employees')
+                    .update({ status: 'active' })
+                    .eq('id', id);
+                
+                if (error) throw error;
+                
                 alert('Doctor approved successfully!');
                 loadPendingDoctors();
+                loadEmployees();
             } catch (e) {
                 alert('Approval failed: ' + e.message);
             }
@@ -416,19 +478,12 @@
             if (!confirm('Promote this employee to admin? They will have full admin access.')) return;
             
             try {
-                const res = await fetch('/api/admin-set-role', {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: JSON.stringify({ user_id: userId, role: 'admin' })
-                });
+                const { error } = await supabase
+                    .from('employees')
+                    .update({ role: 'admin' })
+                    .eq('id', userId);
                 
-                if (!res.ok) {
-                    const error = await res.json();
-                    throw new Error(error.error || 'Failed to promote');
-                }
+                if (error) throw error;
                 
                 alert('Employee promoted to admin successfully!');
                 loadEmployees();
@@ -438,39 +493,57 @@
         };
 
         // LOAD QUERIES
-        function loadQueries() {
-            const queries = JSON.parse(localStorage.getItem('queries') || '[]');
-            const container = document.getElementById('allQueries');
-            
-            if (!queries.length) {
-                container.innerHTML = '<div class="empty-state">No queries yet.</div>';
-                return;
+        async function loadQueries() {
+            try {
+                const { data: queries, error } = await supabase
+                    .from('queries')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                document.getElementById('queryCount').textContent = queries.length;
+                
+                const container = document.getElementById('allQueries');
+                
+                if (!queries.length) {
+                    container.innerHTML = '<div class="empty-state">No queries yet.</div>';
+                    return;
+                }
+                
+                let html = '<table><tr><th>Type</th><th>Name</th><th>Email</th><th>Message</th><th>Date</th></tr>';
+                queries.forEach(q => {
+                    html += `<tr>
+                        <td style="text-transform:capitalize">${q.type || 'general'}</td>
+                        <td>${q.name}</td>
+                        <td>${q.email}</td>
+                        <td>${(q.message || '').substring(0, 60)}${q.message?.length > 60 ? '...' : ''}</td>
+                        <td>${new Date(q.created_at).toLocaleDateString()}</td>
+                    </tr>`;
+                });
+                html += '</table>';
+                container.innerHTML = html;
+            } catch (e) {
+                console.error('Failed to load queries:', e);
             }
-            
-            let html = '<table><tr><th>Type</th><th>Name</th><th>Email</th><th>Message</th><th>Date</th></tr>';
-            queries.forEach(q => {
-                html += `<tr>
-                    <td style="text-transform:capitalize">${q.type}</td>
-                    <td>${q.name}</td>
-                    <td>${q.email}</td>
-                    <td>${q.message.substring(0, 60)}${q.message.length > 60 ? '...' : ''}</td>
-                    <td>${new Date(q.timestamp).toLocaleDateString()}</td>
-                </tr>`;
-            });
-            html += '</table>';
-            container.innerHTML = html;
         }
 
         window.logout = () => {
-            apiLogout();
+            if (confirm('Logout?')) {
+                window.location.href = 'login.html';
+            }
         };
 
+        // Initialize
         loadEmployees();
+        loadTasks();
         loadPendingDoctors();
         loadQueries();
         
+        // Auto-refresh every 30s
         setInterval(() => {
             loadPendingDoctors();
+            loadTasks();
             loadQueries();
         }, 30000);
     </script>
