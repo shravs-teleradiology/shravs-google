@@ -1,192 +1,417 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Employee - Shravs</title>
-  <style>
-    body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;background:#000;color:#fff;margin:0}
-    header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:2px solid #0ea5e9;background:#0a0a0a;position:sticky;top:0}
-    .logo{width:54px;height:54px;border-radius:50%;object-fit:cover;border:2px solid #fff}
-    .left{display:flex;align-items:center;gap:12px}
-    .btn{padding:10px 14px;border-radius:999px;border:1px solid #0ea5e9;background:#0ea5e9;color:#000;font-weight:900;text-transform:uppercase;cursor:pointer}
-    .btn.ghost{background:transparent;color:#0ea5e9}
-    .btn.danger{border-color:#ef4444;background:#ef4444;color:#fff}
-    main{max-width:1100px;margin:0 auto;padding:18px 16px}
-    .card{border:1px solid #333;border-radius:14px;background:#0a0a0a;padding:16px;margin-bottom:14px}
-    table{width:100%;border-collapse:collapse;margin-top:10px}
-    th,td{padding:10px;border-bottom:1px solid #222;text-align:left}
-    th{color:#0ea5e9;text-transform:uppercase;font-size:.82em;letter-spacing:.6px}
-    .pill{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid #333;color:#bbb;font-weight:900;font-size:.75em;text-transform:uppercase}
-    .pill.pending{border-color:#f59e0b;color:#f59e0b}
-    .pill.done{border-color:#22c55e;color:#22c55e}
-    input{width:100%;padding:10px;border-radius:10px;border:1px solid #333;background:#000;color:#fff}
-    input:focus{outline:none;border-color:#0ea5e9}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .row1{display:grid;grid-template-columns:1fr;gap:10px}
-    .help{color:#888;font-size:.9em;margin-top:6px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Dashboard - Shravs</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; }
+        
+        /* Header */
+        .header { 
+            background: linear-gradient(135deg, #0a0a0a, #1a1a1a); 
+            border-bottom: 2px solid #0ea5e9; 
+            padding: 15px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .logo { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #fff; object-fit: cover; }
+        .header-title { font-size: 1.3em; font-weight: bold; }
+        .header-actions { display: flex; gap: 10px; }
+        
+        /* Buttons */
+        .btn { 
+            background: linear-gradient(135deg, #0ea5e9, #06b6d4); 
+            color: white; 
+            border: none; 
+            padding: 10px 24px; 
+            border-radius: 25px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover { 
+            background: linear-gradient(135deg, #06b6d4, #0ea5e9); 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(14, 165, 233, 0.4);
+        }
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid #0ea5e9;
+            color: #0ea5e9;
+        }
+        .btn-secondary:hover {
+            background: #0ea5e9;
+            color: #fff;
+        }
+        .btn-logout {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            border: none;
+        }
+        .btn-logout:hover {
+            background: linear-gradient(135deg, #ee5a52, #ff6b6b);
+        }
+        
+        /* Container */
+        .container { 
+            max-width: 1200px; 
+            margin: 30px auto; 
+            padding: 0 20px; 
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 25px;
+        }
+        
+        @media (max-width: 968px) {
+            .container { grid-template-columns: 1fr; }
+        }
+        
+        /* Profile Card */
+        .profile-card { 
+            background: linear-gradient(135deg, #0a0a0a, #1a1a1a); 
+            border: 2px solid #0ea5e9; 
+            border-radius: 20px; 
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(14, 165, 233, 0.2);
+            position: sticky;
+            top: 90px;
+            max-height: calc(100vh - 110px);
+            overflow-y: auto;
+        }
+        .profile-avatar { 
+            width: 120px; 
+            height: 120px; 
+            border-radius: 50%; 
+            border: 4px solid #0ea5e9; 
+            margin: 0 auto 20px;
+            object-fit: cover;
+            box-shadow: 0 5px 20px rgba(14, 165, 233, 0.3);
+        }
+        .profile-name { 
+            font-size: 1.5em; 
+            font-weight: bold; 
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        .profile-email { 
+            color: #0ea5e9; 
+            font-size: 0.95em; 
+            margin-bottom: 20px;
+        }
+        .profile-info { 
+            text-align: left; 
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+        .info-row { 
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        .info-label { 
+            color: #999; 
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .info-value { 
+            color: #fff; 
+            font-weight: 600;
+            text-align: right;
+            max-width: 180px;
+        }
+        .profile-actions {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        /* Tasks Section */
+        .tasks-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .section-header {
+            background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+            border: 2px solid #0ea5e9;
+            border-radius: 15px;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .section-title {
+            font-size: 1.8em;
+            color: #0ea5e9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .task-card { 
+            background: linear-gradient(135deg, #0a0a0a, #1a1a1a); 
+            border: 2px solid #333; 
+            border-radius: 15px; 
+            padding: 25px;
+            transition: all 0.3s ease;
+            border-left: 5px solid #0ea5e9;
+        }
+        .task-card:hover {
+            transform: translateY(-5px);
+            border-color: #0ea5e9;
+            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.2);
+        }
+        .task-card.priority-high { border-left-color: #ff6b6b; }
+        .task-card.priority-medium { border-left-color: #ffa500; }
+        .task-card.priority-low { border-left-color: #4ade80; }
+        
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .task-title { 
+            font-size: 1.3em; 
+            font-weight: bold;
+            color: #fff;
+        }
+        .priority-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .priority-badge.high { background: #ff6b6b; color: #fff; }
+        .priority-badge.medium { background: #ffa500; color: #000; }
+        .priority-badge.low { background: #4ade80; color: #000; }
+        
+        .task-description { 
+            color: #999; 
+            line-height: 1.6; 
+            margin-bottom: 15px;
+        }
+        .task-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .task-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-sm {
+            padding: 8px 18px;
+            font-size: 0.8em;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <div class="left">
-      <a href="index.html"><img class="logo" src="logo.jpg" alt="Logo"></a>
-      <div>
-        <div style="font-weight:900;">Employee Dashboard</div>
-        <div style="color:#aaa;font-size:.85em;" id="meLine"></div>
-      </div>
-    </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <a class="btn ghost" href="chat.html">Open Chat</a>
-      <button class="btn ghost" id="refreshBtn">Refresh</button>
-      <button class="btn danger" id="logoutBtn">Logout</button>
-    </div>
-  </header>
-
-  <main>
-    <div class="card">
-      <h3 style="margin:0;color:#0ea5e9;">My Profile</h3>
-      <p class="help">Edit name/phone and upload profile photo.</p>
-      <div class="row" style="margin-top:10px;">
-        <div>
-          <label style="display:block;color:#aaa;margin-bottom:6px;">Name</label>
-          <input id="pName" placeholder="Name">
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-left">
+            <a href="index.html"><img src="logo.jpg" alt="Shravs Logo" class="logo"></a>
+            <div class="header-title">Employee Dashboard</div>
         </div>
-        <div>
-          <label style="display:block;color:#aaa;margin-bottom:6px;">Phone</label>
-          <input id="pPhone" placeholder="Phone">
+        <div class="header-actions">
+            <button class="btn btn-logout" onclick="logout()">Logout</button>
         </div>
-      </div>
-      <div class="row1" style="margin-top:10px;">
-        <div>
-          <label style="display:block;color:#aaa;margin-bottom:6px;">Profile photo</label>
-          <input id="pPhoto" type="file" accept="image/*">
-          <div class="help" id="photoHint"></div>
-        </div>
-      </div>
-      <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
-        <button class="btn" id="saveProfileBtn">Save Profile</button>
-      </div>
     </div>
 
-    <div class="card">
-      <h3 style="margin:0;color:#0ea5e9;">My Tasks</h3>
-      <div id="tasksWrap"></div>
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        <!-- PROFILE SIDEBAR -->
+        <div class="profile-card">
+            <img id="profileAvatar" src="logo.jpg" alt="Profile" class="profile-avatar">
+            <div class="profile-name" id="profileName">Loading...</div>
+            <div class="profile-email" id="profileEmail">Loading...</div>
+            
+            <div class="profile-info" id="profileInfo">
+                <div class="info-row">
+                    <span class="info-label">Role</span>
+                    <span class="info-value" id="profileRole">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Phone</span>
+                    <span class="info-value" id="profilePhone">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Education</span>
+                    <span class="info-value" id="profileEducation">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Address</span>
+                    <span class="info-value" id="profileAddress">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Department</span>
+                    <span class="info-value" id="profileDepartment">-</span>
+                </div>
+            </div>
+            
+            <div class="profile-actions">
+                <a href="employee-profile.html" class="btn">✏️ Edit Profile</a>
+                <a href="employees-chat.html" class="btn btn-secondary">💬 Open Chat</a>
+            </div>
+        </div>
+
+        <!-- TASKS SECTION -->
+        <div class="tasks-section">
+            <div class="section-header">
+                <h2 class="section-title">📋 My Pending Tasks</h2>
+            </div>
+            
+            <div id="tasksContainer">
+                <div class="empty-state">
+                    <div class="empty-state-icon">⏳</div>
+                    <p>Loading tasks...</p>
+                </div>
+            </div>
+        </div>
     </div>
-  </main>
 
-  <script type="module">
-    import { getMe, logout, getTasks, setTaskStatus, getProfile, updateProfile, uploadProfilePhoto } from "./js/api.js";
+    <script type="module">
+        import { getMe, logout as apiLogout } from './api.js';
 
-    const meLine = document.getElementById("meLine");
-    const tasksWrap = document.getElementById("tasksWrap");
+        let currentProfile = null;
 
-    const pName = document.getElementById("pName");
-    const pPhone = document.getElementById("pPhone");
-    const pPhoto = document.getElementById("pPhoto");
-    const photoHint = document.getElementById("photoHint");
-
-    let me = null;
-
-    function esc(s){ return String(s ?? "").replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',\"'\":'&#039;'}[c])); }
-    function pill(cls, text){ return `<span class="pill ${esc(cls)}">${esc(text)}</span>`; }
-
-    async function guard() {
-      me = await getMe();
-      meLine.textContent = `${me.name} (${me.role})`;
-      if (me.role === "admin") window.location.href = "admin.html";
-      if (me.role !== "employee") window.location.href = "index.html";
-    }
-
-    async function loadProfile() {
-      try{
-        const p = await getProfile();
-        pName.value = p.name || "";
-        pPhone.value = p.phone || "";
-      }catch(e){
-        // ignore if backend doesn't expose getProfile
-      }
-    }
-
-    async function saveProfile() {
-      try{
-        let photo_url = undefined;
-        if (pPhoto.files && pPhoto.files[0]) {
-          photoHint.textContent = "Uploading photo...";
-          photo_url = await uploadProfilePhoto(pPhoto.files[0]);
+        // Load profile
+        async function loadProfile() {
+            try {
+                currentProfile = await getMe();
+                
+                document.getElementById('profileName').textContent = currentProfile.name || 'Employee';
+                document.getElementById('profileEmail').textContent = currentProfile.email || '';
+                document.getElementById('profileRole').textContent = currentProfile.role || 'Employee';
+                document.getElementById('profilePhone').textContent = currentProfile.phone || 'Not set';
+                document.getElementById('profileEducation').textContent = currentProfile.education || 'Not set';
+                document.getElementById('profileAddress').textContent = currentProfile.address || 'Not set';
+                document.getElementById('profileDepartment').textContent = currentProfile.department || 'General';
+                
+                if (currentProfile.photo_url) {
+                    document.getElementById('profileAvatar').src = currentProfile.photo_url;
+                }
+            } catch (e) {
+                alert('Failed to load profile: ' + e.message);
+                window.location.href = 'login.html';
+            }
         }
-        await updateProfile({
-          name: pName.value.trim(),
-          phone: pPhone.value.trim(),
-          photo_url
-        });
-        photoHint.textContent = "Saved!";
-        alert("Profile updated");
-      } catch(e){
-        photoHint.textContent = "";
-        alert(e.message || "Failed to update profile");
-      }
-    }
 
-    async function renderTasks() {
-      const tasks = await getTasks();
-      if (!tasks.length) {
-        tasksWrap.innerHTML = `<div style="color:#777;margin-top:10px;">No tasks assigned.</div>`;
-        return;
-      }
+        // Load tasks (pending only, priority order)
+        async function loadTasks() {
+            try {
+                const res = await fetch('/api/tasks');
+                const data = await res.json();
+                let tasks = data.tasks || data || [];
+                
+                // Filter only pending tasks
+                tasks = tasks.filter(t => t.status === 'pending');
+                
+                // Sort by priority: high > medium > low
+                const priorityOrder = { high: 1, medium: 2, low: 3 };
+                tasks.sort((a, b) => {
+                    return (priorityOrder[a.priority] || 999) - (priorityOrder[b.priority] || 999);
+                });
+                
+                const container = document.getElementById('tasksContainer');
+                
+                if (!tasks.length) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">✅</div>
+                            <p>No pending tasks. Great job!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = tasks.map(task => `
+                    <div class="task-card priority-${task.priority || 'low'}">
+                        <div class="task-header">
+                            <div class="task-title">${task.title || 'Task'}</div>
+                            <div class="priority-badge ${task.priority || 'low'}">${task.priority || 'low'}</div>
+                        </div>
+                        <div class="task-description">${task.description || 'No description'}</div>
+                        <div class="task-meta">
+                            <span>📅 Assigned: ${new Date(task.created_at).toLocaleDateString()}</span>
+                            ${task.due_date ? `<span>⏰ Due: ${new Date(task.due_date).toLocaleDateString()}</span>` : ''}
+                        </div>
+                        <div class="task-actions">
+                            <button class="btn btn-sm" onclick="markComplete('${task.id}')">✓ Mark Complete</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                document.getElementById('tasksContainer').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <p>Failed to load tasks</p>
+                    </div>
+                `;
+            }
+        }
 
-      tasksWrap.innerHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th>Task</th>
-              <th>Status</th>
-              <th>Priority</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${tasks.map(t => `
-              <tr>
-                <td>${esc(t.title || t.name || "Task")}</td>
-                <td>${t.status === "done" ? pill("done","done") : pill("pending","pending")}</td>
-                <td>${pill((t.priority||"").toLowerCase() || "pending", (t.priority||"NA"))}</td>
-                <td>
-                  ${t.status === "done"
-                    ? `<button class="btn ghost" disabled>Done</button>`
-                    : `<button class="btn" data-done="${esc(t.id)}">Mark done</button>`}
-                </td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
-      `;
+        window.markComplete = async (taskId) => {
+            if (!confirm('Mark this task as complete?')) return;
+            try {
+                const res = await fetch('/api/tasks', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ id: taskId, status: 'completed' })
+                });
+                if (!res.ok) throw new Error('Failed to update');
+                alert('Task marked as complete!');
+                loadTasks();
+            } catch (e) {
+                alert('Failed to update task: ' + e.message);
+            }
+        };
 
-      tasksWrap.querySelectorAll("[data-done]").forEach(btn => {
-        btn.addEventListener("click", async () => {
-          const id = btn.getAttribute("data-done");
-          await setTaskStatus(id, "done");
-          await renderTasks();
-        });
-      });
-    }
+        window.logout = () => {
+            apiLogout();
+        };
 
-    document.getElementById("logoutBtn").addEventListener("click", logout);
-    document.getElementById("refreshBtn").addEventListener("click", async () => {
-      await renderTasks();
-    });
-    document.getElementById("saveProfileBtn").addEventListener("click", saveProfile);
-
-    (async () => {
-      try{
-        await guard();
-        await loadProfile();
-        await renderTasks();
-      } catch(e){
-        alert(e.message || "Please login");
-        logout();
-      }
-    })();
-  </script>
+        loadProfile();
+        loadTasks();
+        
+        // Refresh tasks every 30 seconds
+        setInterval(loadTasks, 30000);
+    </script>
 </body>
 </html>
