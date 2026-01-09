@@ -5,320 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-Care Services - Shravs Teleradiology</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #000000;
-            color: #ffffff;
-            line-height: 1.6;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
-            border-bottom: 2px solid #06b6d4;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 5px 20px rgba(6, 182, 212, 0.2);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-         .logo {
-            width: 80px; 
-            height: 80px;
-            border: 2px solid #ffffff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #0ea5e9, #06b6d4);
-        }
-
-        .logo-container {
-            margin-bottom: 30px;
-            animation: fadeIn 1.5s ease-out;
-        }
-
-
-        .header h1 {
-            font-size: 1.5em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .back-btn {
-            padding: 10px 25px;
-            background: transparent;
-            color: #06b6d4;
-            border: 2px solid #06b6d4;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            text-transform: uppercase;
-        }
-
-        .back-btn:hover {
-            background: #06b6d4;
-            color: #ffffff;
-        }
-
-        .hero-section {
-            padding: 80px 20px;
-            text-align: center;
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
-        }
-
-        .hero-section h2 {
-            font-size: 3em;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            background: linear-gradient(90deg, #06b6d4, #0ea5e9);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero-section p {
-            font-size: 1.3em;
-            color: #999;
-            max-width: 800px;
-            margin: 0 auto 40px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 60px 20px;
-        }
-
-        .section {
-            margin-bottom: 80px;
-        }
-
-        .section-title {
-            font-size: 2.5em;
-            margin-bottom: 30px;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #06b6d4;
-        }
-
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-
-        .service-card {
-            background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
-            border: 2px solid #06b6d4;
-            border-radius: 15px;
-            padding: 40px;
-            transition: all 0.3s ease;
-        }
-
-        .service-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 50px rgba(6, 182, 212, 0.3);
-        }
-
-        .service-icon {
-            font-size: 3.5em;
-            margin-bottom: 20px;
-        }
-
-        .service-card h3 {
-            font-size: 1.6em;
-            margin-bottom: 15px;
-            color: #ffffff;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .service-card p {
-            color: #999;
-            line-height: 1.8;
-            margin-bottom: 20px;
-        }
-
-        .service-card ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .service-card li {
-            color: #ccc;
-            padding: 10px 0;
-            padding-left: 30px;
-            position: relative;
-            line-height: 1.6;
-        }
-
-        .service-card li:before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: #06b6d4;
-            font-weight: bold;
-            font-size: 1.2em;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin-top: 40px;
-        }
-
-        .feature-box {
-            background: #0a0a0a;
-            border: 2px solid #333;
-            border-left: 4px solid #06b6d4;
-            border-radius: 10px;
-            padding: 30px;
-            transition: all 0.3s ease;
-        }
-
-        .feature-box:hover {
-            border-left-color: #0ea5e9;
-            transform: translateX(10px);
-            box-shadow: 0 5px 20px rgba(6, 182, 212, 0.2);
-        }
-
-        .feature-box h4 {
-            color: #06b6d4;
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        .feature-box p {
-            color: #999;
-            font-size: 0.95em;
-        }
-
-        .tech-stack {
-            background: linear-gradient(135deg, #0a0a0a, #000000);
-            border: 2px solid #06b6d4;
-            border-radius: 15px;
-            padding: 40px;
-            margin: 40px 0;
-        }
-
-        .tech-stack h3 {
-            color: #06b6d4;
-            font-size: 2em;
-            margin-bottom: 30px;
-            text-align: center;
-            text-transform: uppercase;
-        }
-
-        .tech-items {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-        }
-
-        .tech-badge {
-            background: rgba(6, 182, 212, 0.1);
-            border: 2px solid rgba(6, 182, 212, 0.3);
-            padding: 12px 24px;
-            border-radius: 25px;
-            color: #06b6d4;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .tech-badge:hover {
-            background: rgba(6, 182, 212, 0.2);
-            border-color: #06b6d4;
-            transform: scale(1.05);
-        }
-
-        .cta-section {
-            background: linear-gradient(135deg, #06b6d4, #0ea5e9);
-            padding: 60px 40px;
-            border-radius: 20px;
-            text-align: center;
-            margin: 60px 0;
-        }
-
-        .cta-section h3 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            color: #ffffff;
-        }
-
-        .cta-section p {
-            font-size: 1.2em;
-            margin-bottom: 30px;
-            color: #ffffff;
-        }
-
-        .cta-btn {
-            padding: 18px 50px;
-            background: #ffffff;
-            color: #06b6d4;
-            border: 2px solid #ffffff;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .cta-btn:hover {
-            background: transparent;
-            color: #ffffff;
-            transform: scale(1.05);
-        }
-
-        @media (max-width: 768px) {
-            .services-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .hero-section h2 {
-                font-size: 2em;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #000000; color: #ffffff; line-height: 1.6; }
+        .header { background: linear-gradient(135deg, #0a0a0a, #1a1a1a); border-bottom: 2px solid #06b6d4; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .logo { width: 70px; height: 70px; border-radius: 50%; border: 2px solid #ffffff; object-fit: cover; }
+        .back-btn { padding: 10px 25px; background: transparent; color: #06b6d4; border: 2px solid #06b6d4; border-radius: 25px; font-weight: bold; cursor: pointer; text-decoration: none; text-transform: uppercase; }
+        .back-btn:hover { background: #06b6d4; color: #ffffff; }
+        .hero-section { padding: 80px 20px; text-align: center; background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%); }
+        .hero-section h2 { font-size: 3em; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 3px; background: linear-gradient(90deg, #06b6d4, #0ea5e9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hero-section p { font-size: 1.3em; color: #999; max-width: 800px; margin: 0 auto 40px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
+        .section { margin-bottom: 80px; }
+        .section-title { font-size: 2.5em; margin-bottom: 30px; text-align: center; text-transform: uppercase; letter-spacing: 2px; color: #06b6d4; }
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; margin-top: 40px; }
+        .service-card { background: linear-gradient(135deg, #0a0a0a, #1a1a1a); border: 2px solid #06b6d4; border-radius: 15px; padding: 40px; transition: all 0.3s ease; }
+        .service-card:hover { transform: translateY(-10px); box-shadow: 0 15px 50px rgba(6, 182, 212, 0.3); }
+        .service-icon { font-size: 3.5em; margin-bottom: 20px; }
+        .service-card h3 { font-size: 1.6em; margin-bottom: 15px; color: #ffffff; text-transform: uppercase; letter-spacing: 1px; }
+        .service-card p { color: #999; line-height: 1.8; margin-bottom: 20px; }
+        .service-card ul { list-style: none; padding-left: 0; }
+        .service-card li { color: #ccc; padding: 10px 0; padding-left: 30px; position: relative; line-height: 1.6; }
+        .service-card li:before { content: '✓'; position: absolute; left: 0; color: #06b6d4; font-weight: bold; font-size: 1.2em; }
+        .cta-section { background: linear-gradient(135deg, #06b6d4, #0ea5e9); padding: 60px 40px; border-radius: 20px; text-align: center; margin: 60px 0; }
+        .cta-section h3 { font-size: 2.5em; margin-bottom: 20px; color: #ffffff; }
+        .cta-section p { font-size: 1.2em; margin-bottom: 30px; color: #ffffff; }
+        .cta-btn { padding: 18px 50px; background: #ffffff; color: #06b6d4; border: 2px solid #ffffff; border-radius: 50px; font-weight: bold; font-size: 1.1em; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; text-decoration: none; display: inline-block; }
+        .cta-btn:hover { background: transparent; color: #ffffff; transform: scale(1.05); }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="header-left">
-            <div class="logo-container">
-                <img src="https://i.ibb.co/FL6BLkSP/Untitled-design.png" alt="Shravs Teleradiology Logo" class="logo" href="index.html">
-            </div>
-
-            <h1>E-Care Services</h1>
-        </div>
-        <a href="index.html" class="back-btn">← Back to Home</a>
+        <a href="index.html"><img src="logo.jpg" alt="Shravs Logo" class="logo"></a>
+        <h1>E-Care Services</h1>
+        <a href="index.html" class="back-btn">Back to Home</a>
     </div>
 
     <div class="hero-section">
@@ -327,7 +46,6 @@
     </div>
 
     <div class="container">
-        <!-- Core E-Care Services -->
         <div class="section">
             <h2 class="section-title">Our E-Care Services</h2>
             <div class="services-grid">
@@ -396,7 +114,7 @@
                 </div>
 
                 <div class="service-card">
-                    <div class="service-icon">🏥</div>
+                    <div class="service-icon">⚕️</div>
                     <h3>Practice Management System</h3>
                     <p>Streamline your healthcare facility operations with our comprehensive management solution.</p>
                     <ul>
@@ -412,7 +130,7 @@
                 </div>
 
                 <div class="service-card">
-                    <div class="service-icon">🔬</div>
+                    <div class="service-icon">📡</div>
                     <h3>Remote Patient Monitoring</h3>
                     <p>Continuous health monitoring for chronic disease management and post-discharge care.</p>
                     <ul>
@@ -421,7 +139,7 @@
                         <li>Blood pressure monitoring</li>
                         <li>Oxygen saturation tracking</li>
                         <li>ECG monitoring</li>
-                        <li>Alert notifications</li>
+                        <li>Alert & notifications</li>
                         <li>Trend analysis</li>
                         <li>Automated reporting</li>
                     </ul>
@@ -429,108 +147,6 @@
             </div>
         </div>
 
-        <!-- Key Features -->
-        <div class="section">
-            <h2 class="section-title">Platform Features & Benefits</h2>
-            <div class="features-grid">
-                <div class="feature-box">
-                    <h4>🔒 HIPAA Compliant</h4>
-                    <p>Full compliance with healthcare data protection regulations and security standards</p>
-                </div>
-
-                <div class="feature-box">
-                    <h4>☁️ Cloud-Based</h4>
-                    <p>Access from anywhere with automatic backups and scalable infrastructure</p>
-                </div>
-
-                <div class="feature-box">
-                    <h4>🔄 System Integration</h4>
-                    <p>Seamless integration with existing healthcare IT systems and workflows</p>
-                </div>
-
-                <div class="feature-box">
-                    <h4>📞 24/7 Support</h4>
-                    <p>Round-the-clock technical support and customer service</p>
-                </div>
-
-                <div class="feature-box">
-                    <h4>🎓 Training Included</h4>
-                    <p>Comprehensive staff training and onboarding assistance</p>
-                </div>
-
-                <div class="feature-box">
-                    <h4>💰 Cost Effective</h4>
-                    <p>Reduce operational costs while improving quality of care</p>
-                </div>
-
-                <div class="feature-box">
-                    <h4>📈 Scalable</h4>
-                    <p>Grows with your practice from single clinics to multi-site networks</p>
-                </div>
-
-                <div class="feature-box">
-                    <h4>🔐 Data Security</h4>
-                    <p>End-to-end encryption and advanced security protocols</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Technology Stack -->
-        <div class="tech-stack">
-            <h3>🛠️ Technologies We Use</h3>
-            <div class="tech-items">
-                <span class="tech-badge">HL7/FHIR Integration</span>
-                <span class="tech-badge">Cloud Computing</span>
-                <span class="tech-badge">AI/ML Analytics</span>
-                <span class="tech-badge">API Integration</span>
-                <span class="tech-badge">Blockchain Security</span>
-                <span class="tech-badge">IoT Devices</span>
-                <span class="tech-badge">Mobile First Design</span>
-                <span class="tech-badge">Real-time Data Sync</span>
-                <span class="tech-badge">Advanced Encryption</span>
-                <span class="tech-badge">Predictive Analytics</span>
-                <span class="tech-badge">Natural Language Processing</span>
-                <span class="tech-badge">Microservices Architecture</span>
-            </div>
-        </div>
-
-        <!-- Integration Partners -->
-        <div class="section">
-            <h2 class="section-title">Integration Capabilities</h2>
-            <div class="features-grid">
-                <div class="feature-box">
-                    <h4>🏥 Hospital Information Systems (HIS)</h4>
-                    <p>Seamless integration with major HIS platforms</p>
-                </div>
-
-                <div class="feature-box">
-                    <h4>🔬 Laboratory Information Systems (LIS)</h4>
-                    <p>Direct lab result integration and ordering</p>
-                </div>
-
-                <div class="feature-box">
-                    <h4>🏪 Pharmacy Management</h4>
-                    <p>E-prescription and pharmacy network connectivity</p>
-                </div>
-
-                <div class="feature-box">
-                    <h4>📊 Insurance Portals</h4>
-                    <p>Real-time insurance verification and claims processing</p>
-                </div>
-
-                <div class="feature-box">
-                    <h4>📱 Wearable Devices</h4>
-                    <p>Integration with popular health tracking devices</p>
-                </div>
-
-                <div class="feature-box">
-                    <h4>🔍 Medical Imaging (PACS)</h4>
-                    <p>Direct access to imaging studies and reports</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- CTA Section -->
         <div class="cta-section">
             <h3>Ready to Transform Your Healthcare Delivery?</h3>
             <p>Schedule a demo to see how our e-care platform can benefit your organization</p>
