@@ -1,298 +1,478 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin - Shravs</title>
-  <style>
-    body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;background:#000;color:#fff;margin:0}
-    header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:2px solid #0ea5e9;background:#0a0a0a;position:sticky;top:0}
-    .logo{width:54px;height:54px;border-radius:50%;object-fit:cover;border:2px solid #fff}
-    .left{display:flex;align-items:center;gap:12px}
-    .btn{padding:10px 14px;border-radius:999px;border:1px solid #0ea5e9;background:#0ea5e9;color:#000;font-weight:900;text-transform:uppercase;cursor:pointer}
-    .btn.ghost{background:transparent;color:#0ea5e9}
-    .btn.danger{border-color:#ef4444;background:#ef4444;color:#fff}
-    main{max-width:1200px;margin:0 auto;padding:18px 16px}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    @media(max-width:900px){.grid{grid-template-columns:1fr}}
-    .card{border:1px solid #333;border-radius:14px;background:#0a0a0a;padding:16px}
-    label{display:block;margin:10px 0 6px;color:#cfcfcf;font-weight:800;font-size:.85em;text-transform:uppercase}
-    input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid #333;background:#000;color:#fff}
-    textarea{min-height:88px;resize:vertical}
-    table{width:100%;border-collapse:collapse;margin-top:10px}
-    th,td{padding:10px;border-bottom:1px solid #222;text-align:left}
-    th{color:#0ea5e9;text-transform:uppercase;font-size:.82em;letter-spacing:.6px}
-    .pill{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid #333;color:#bbb;font-weight:900;font-size:.75em;text-transform:uppercase}
-    .pill.high{border-color:#ef4444;color:#ef4444}
-    .pill.medium{border-color:#f59e0b;color:#f59e0b}
-    .pill.low{border-color:#22c55e;color:#22c55e}
-    .pill.pending{border-color:#f59e0b;color:#f59e0b}
-    .pill.done{border-color:#22c55e;color:#22c55e}
-    .msg{margin-top:10px;padding:10px;border-radius:10px;display:none}
-    .msg.ok{display:block;background:#0f2f1c;border:1px solid #22c55e;color:#22c55e}
-    .msg.err{display:block;background:#2f0f0f;border:1px solid #ef4444;color:#ef4444}
-
-    /* Simple chat */
-    .chat{display:grid;grid-template-columns:260px 1fr;gap:10px}
-    @media(max-width:900px){.chat{grid-template-columns:1fr}}
-    .list{border:1px solid #222;border-radius:12px;background:#050505;padding:10px;max-height:340px;overflow:auto}
-    .item{padding:10px;border-radius:10px;cursor:pointer;border:1px solid transparent}
-    .item:hover{background:#0f0f0f}
-    .item.active{border-color:#0ea5e9;background:#071018}
-    .msgs{border:1px solid #222;border-radius:12px;background:#050505;padding:10px;max-height:340px;overflow:auto}
-    .m{border:1px solid #1f1f1f;background:#101010;border-radius:12px;padding:10px;margin-bottom:10px}
-    .m .meta{display:flex;justify-content:space-between;color:#777;font-size:.8em;margin-bottom:6px}
-    .m .author{color:#0ea5e9;font-weight:900}
-    .composer{display:flex;gap:10px;margin-top:10px}
-    .composer input{flex:1}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Shravs</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; }
+        
+        .header { 
+            background: linear-gradient(135deg, #0a0a0a, #1a1a1a); 
+            border-bottom: 2px solid #ff6b6b; 
+            padding: 15px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .logo { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #fff; object-fit: cover; }
+        .header-title { font-size: 1.3em; font-weight: bold; }
+        
+        .container { 
+            max-width: 1400px; 
+            margin: 30px auto; 
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+        }
+        
+        @media (max-width: 968px) {
+            .container { grid-template-columns: 1fr; }
+        }
+        
+        .card { 
+            background: linear-gradient(135deg, #0a0a0a, #1a1a1a); 
+            border: 2px solid #333; 
+            border-radius: 15px; 
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            border-color: #ff6b6b;
+            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.2);
+        }
+        
+        .card.full-width { grid-column: 1 / -1; }
+        
+        h2 { 
+            color: #ff6b6b; 
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        button { 
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52); 
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 25px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            margin: 5px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+        }
+        button:hover { 
+            background: linear-gradient(135deg, #ee5a52, #ff6b6b);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        button.btn-full { width: 100%; margin-top: 15px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #333; }
+        th { color: #ff6b6b; font-weight: bold; text-transform: uppercase; font-size: 0.85em; }
+        td { color: #ccc; }
+        
+        input, select, textarea { 
+            width: 100%; 
+            padding: 12px 15px; 
+            border-radius: 10px; 
+            border: 2px solid #333; 
+            background: #000; 
+            color: #fff; 
+            margin: 8px 0;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.2);
+        }
+        
+        label {
+            display: block;
+            color: #ff6b6b;
+            font-weight: bold;
+            margin-top: 12px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
+        
+        .empty-state { text-align: center; padding: 40px 20px; color: #666; }
+        
+        .success-msg {
+            background: #1a4d2e;
+            color: #4ade80;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        .success-msg.show { display: block; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        textarea { resize: vertical; min-height: 80px; font-family: 'Segoe UI', sans-serif; }
+        
+        .note {
+            background: rgba(14, 165, 233, 0.1);
+            border-left: 3px solid #0ea5e9;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            color: #999;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <div class="left">
-      <img class="logo" src="https://i.ibb.co/FL6BLkS/P-Untitled-design.png" alt="Logo">
-      <div>
-        <div style="font-weight:900;">Admin Dashboard</div>
-        <div style="color:#aaa;font-size:.85em;" id="meLine"></div>
-      </div>
-    </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <button class="btn ghost" id="refreshBtn">Refresh</button>
-      <button class="btn danger" id="logoutBtn">Logout</button>
-    </div>
-  </header>
-
-  <main>
-    <div id="msg" class="msg"></div>
-
-    <div class="grid">
-      <div class="card">
-        <h3 style="margin:0;color:#0ea5e9;">Create Employee</h3>
-        <label>Name</label><input id="empName" placeholder="Employee name">
-        <label>Email</label><input id="empEmail" type="email" placeholder="employee@example.com">
-        <label>Password</label><input id="empPass" placeholder="Set password">
-        <label>Organization</label><input id="empOrg" placeholder="Department">
-        <button class="btn" id="createEmpBtn" style="margin-top:12px;">Create</button>
-      </div>
-
-      <div class="card">
-        <h3 style="margin:0;color:#0ea5e9;">Assign Task</h3>
-        <label>Assign to (user id UUID)</label>
-        <input id="assignedTo" placeholder="Paste employee profile id (uuid)">
-        <label>Title</label><input id="taskTitle" placeholder="Task title">
-        <label>Description</label><textarea id="taskDesc" placeholder="Details..."></textarea>
-        <label>Priority</label>
-        <select id="taskPriority">
-          <option value="high">High</option>
-          <option value="medium" selected>Medium</option>
-          <option value="low">Low</option>
-        </select>
-        <label>Due date</label><input id="taskDue" type="date">
-        <button class="btn" id="assignBtn" style="margin-top:12px;">Assign</button>
-      </div>
+    <div class="header">
+        <div class="header-left">
+            <a href="index.html"><img src="logo.jpg" alt="Shravs Logo" class="logo"></a>
+            <div class="header-title">Admin Dashboard</div>
+        </div>
+        <button onclick="logout()">Logout</button>
     </div>
 
-    <div class="card" style="margin-top:14px;">
-      <h3 style="margin:0;color:#0ea5e9;">Tasks (visible to admin)</h3>
-      <div id="tasksWrap"></div>
-    </div>
-
-    <div class="card" style="margin-top:14px;">
-      <h3 style="margin:0;color:#0ea5e9;">Chat (Common + DM)</h3>
-
-      <div class="chat" style="margin-top:10px;">
-        <div class="list" id="roomList">
-          <div class="item active" data-room="common"># common</div>
-          <div style="margin:10px 0 6px;color:#888;font-weight:900;text-transform:uppercase;font-size:.75em;">DM</div>
-          <div style="color:#777;font-size:.9em;">DM list UI depends on your staff list implementation.</div>
+    <div class="container">
+        
+        <!-- CREATE NEW EMPLOYEE (SIMPLIFIED) -->
+        <div class="card">
+            <h2>👤 Create New Employee</h2>
+            <div class="success-msg" id="createEmployeeSuccess">Employee created successfully!</div>
+            <form id="createEmployeeForm">
+                <label>Full Name *</label>
+                <input type="text" id="empName" required placeholder="Employee name">
+                
+                <label>Email *</label>
+                <input type="email" id="empEmail" required placeholder="employee@example.com">
+                
+                <label>Temporary Password *</label>
+                <input type="password" id="empPassword" required placeholder="Create temporary password">
+                
+                <div class="note">
+                    ℹ️ Employee will be asked to change password on first login
+                </div>
+                
+                <button type="submit" class="btn-full">➕ Create Employee</button>
+            </form>
         </div>
 
-        <div>
-          <div class="msgs" id="msgs"></div>
-          <div class="composer">
-            <input id="msgText" placeholder="Type message...">
-            <button class="btn" id="sendBtn">Send</button>
-          </div>
-          <div style="color:#777;font-size:.85em;margin-top:8px;">
-            For DM: set activeRoom = {type:'dm', dm_room_id:'...'} in code (after creating a room).
-          </div>
+        <!-- ASSIGN TASK -->
+        <div class="card">
+            <h2>📝 Assign Task to Employee</h2>
+            <div class="success-msg" id="assignTaskSuccess">Task assigned successfully!</div>
+            <form id="assignTaskForm">
+                <label>Select Employee *</label>
+                <select id="taskEmployee" required>
+                    <option value="">Loading employees...</option>
+                </select>
+                
+                <label>Task Title *</label>
+                <input type="text" id="taskTitle" required placeholder="Task title">
+                
+                <label>Description</label>
+                <textarea id="taskDescription" rows="3" placeholder="Task details"></textarea>
+                
+                <div class="form-grid">
+                    <div>
+                        <label>Priority *</label>
+                        <select id="taskPriority" required>
+                            <option value="high">High</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Due Date</label>
+                        <input type="date" id="taskDueDate">
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-full">Assign Task</button>
+            </form>
         </div>
-      </div>
+
+        <!-- PENDING DOCTORS -->
+        <div class="card">
+            <h2>🩺 Pending Doctor Approvals</h2>
+            <div id="pendingDoctors">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+
+        <!-- PROMOTE EMPLOYEE -->
+        <div class="card">
+            <h2>⬆️ Promote Employee to Admin</h2>
+            <label>Select Employee</label>
+            <select id="promoteEmployee">
+                <option value="">Loading employees...</option>
+            </select>
+            <button onclick="promoteToAdmin()" class="btn-full">Promote to Admin</button>
+        </div>
+
+        <!-- ALL EMPLOYEES -->
+        <div class="card">
+            <h2>👥 All Employees</h2>
+            <div id="employeesList">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
+
+        <!-- ALL QUERIES -->
+        <div class="card full-width">
+            <h2>📧 All User Queries</h2>
+            <div id="allQueries">
+                <div class="empty-state">Loading...</div>
+            </div>
+        </div>
     </div>
-  </main>
 
-  <script type="module">
-    import {
-      authMe, logout,
-      adminCreateEmployee,
-      tasksList, tasksAssign, tasksSetStatus,
-      messagesList, messagesSend
-    } from "./js/api.js";
+    <script type="module">
+        import { adminPendingDoctors, adminApproveDoctor, logout as apiLogout } from './api.js';
 
-    const msgBox = document.getElementById("msg");
-    const meLine = document.getElementById("meLine");
-
-    function show(text, type) {
-      msgBox.textContent = text;
-      msgBox.className = "msg " + type;
-      msgBox.style.display = "block";
-      setTimeout(() => (msgBox.style.display = "none"), 3500);
-    }
-
-    let me = null;
-    let activeRoom = { type: "common", dm_room_id: null };
-
-    function esc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])); }
-
-    async function guard() {
-      me = await authMe();
-      meLine.textContent = `${me.name} (${me.role})`;
-      if (me.role !== "admin") window.location.href = "employee.html";
-    }
-
-    function prPill(p){
-      return `<span class="pill ${esc(p)}">${esc(p)}</span>`;
-    }
-
-    async function renderTasks() {
-      const tasks = await tasksList();
-      if (!tasks.length) {
-        document.getElementById("tasksWrap").innerHTML = `<div style="color:#777;margin-top:10px;">No tasks.</div>`;
-        return;
-      }
-      document.getElementById("tasksWrap").innerHTML = `
-        <table>
-          <thead>
-            <tr><th>Priority</th><th>Status</th><th>Title</th><th>Assigned</th><th>Action</th></tr>
-          </thead>
-          <tbody>
-            ${tasks.map(t => `
-              <tr>
-                <td>${prPill(t.priority)}</td>
-                <td>${prPill(t.status)}</td>
-                <td><div style="font-weight:900;">${esc(t.title)}</div><div style="color:#888;margin-top:6px;white-space:pre-wrap;">${esc(t.description||"")}</div></td>
-                <td style="color:#aaa;">${esc(t.assigned_to)}</td>
-                <td>
-                  <button class="btn ghost" data-toggle="${esc(t.id)}">${t.status === "pending" ? "Mark done" : "Mark pending"}</button>
-                </td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
-      `;
-
-      document.querySelectorAll("[data-toggle]").forEach(btn => {
-        btn.addEventListener("click", async () => {
-          const id = btn.getAttribute("data-toggle");
-          const row = tasks.find(x => x.id === id);
-          const next = row.status === "pending" ? "done" : "pending";
-          await tasksSetStatus({ id, status: next });
-          await renderTasks();
+        // CREATE EMPLOYEE (SIMPLIFIED - only name, email, password)
+        document.getElementById('createEmployeeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const employeeData = {
+                name: document.getElementById('empName').value.trim(),
+                email: document.getElementById('empEmail').value.trim(),
+                password: document.getElementById('empPassword').value
+            };
+            
+            try {
+                const res = await fetch('/api/admin-create-employee', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(employeeData)
+                });
+                
+                if (!res.ok) {
+                    const error = await res.json();
+                    throw new Error(error.error || 'Failed to create employee');
+                }
+                
+                document.getElementById('createEmployeeSuccess').classList.add('show');
+                document.getElementById('createEmployeeForm').reset();
+                
+                setTimeout(() => {
+                    document.getElementById('createEmployeeSuccess').classList.remove('show');
+                }, 3000);
+                
+                loadEmployees();
+            } catch (e) {
+                alert('Failed to create employee: ' + e.message);
+            }
         });
-      });
-    }
 
-    async function renderMessages() {
-      const msgs = await messagesList({
-        room_type: activeRoom.type,
-        dm_room_id: activeRoom.dm_room_id,
-        limit: 80
-      });
+        // LOAD EMPLOYEES
+        async function loadEmployees() {
+            try {
+                const res = await fetch('/api/team?role=employee', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const data = await res.json();
+                const employees = data.items || data || [];
+                
+                const taskSelect = document.getElementById('taskEmployee');
+                const promoteSelect = document.getElementById('promoteEmployee');
+                const options = employees.map(e => 
+                    `<option value="${e.id}">${e.name} (${e.email})</option>`
+                ).join('');
+                
+                taskSelect.innerHTML = '<option value="">-- Select Employee --</option>' + options;
+                promoteSelect.innerHTML = '<option value="">-- Select Employee --</option>' + options;
+                
+                const listContainer = document.getElementById('employeesList');
+                if (!employees.length) {
+                    listContainer.innerHTML = '<div class="empty-state">No employees found.</div>';
+                    return;
+                }
+                
+                let html = '<table><tr><th>Name</th><th>Email</th><th>Joined</th></tr>';
+                employees.forEach(e => {
+                    html += `<tr>
+                        <td>${e.name}</td>
+                        <td>${e.email}</td>
+                        <td>${new Date(e.created_at || Date.now()).toLocaleDateString()}</td>
+                    </tr>`;
+                });
+                html += '</table>';
+                listContainer.innerHTML = html;
+            } catch (e) {
+                console.error('Failed to load employees:', e);
+            }
+        }
 
-      const box = document.getElementById("msgs");
-      if (!msgs.length) { box.innerHTML = `<div style="color:#777;">No messages.</div>`; return; }
-
-      box.innerHTML = msgs.map(m => `
-        <div class="m">
-          <div class="meta">
-            <div><span class="author">${esc(m.author_id)}</span></div>
-            <div>${new Date(m.created_at).toLocaleString()}</div>
-          </div>
-          <div style="white-space:pre-wrap;">${esc(m.text||"")}</div>
-        </div>
-      `).join("");
-      box.scrollTop = box.scrollHeight;
-    }
-
-    document.getElementById("sendBtn").addEventListener("click", async () => {
-      const textEl = document.getElementById("msgText");
-      const text = textEl.value.trim();
-      if (!text) return;
-
-      await messagesSend({
-        room_type: activeRoom.type,
-        dm_room_id: activeRoom.dm_room_id,
-        text
-      });
-
-      textEl.value = "";
-      await renderMessages();
-    });
-
-    document.getElementById("createEmpBtn").addEventListener("click", async () => {
-      try {
-        await adminCreateEmployee({
-          name: document.getElementById("empName").value.trim(),
-          email: document.getElementById("empEmail").value.trim(),
-          password: document.getElementById("empPass").value.trim(),
-          organization: document.getElementById("empOrg").value.trim(),
+        // ASSIGN TASK
+        document.getElementById('assignTaskForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const employeeId = document.getElementById('taskEmployee').value;
+            const title = document.getElementById('taskTitle').value.trim();
+            const description = document.getElementById('taskDescription').value.trim();
+            const priority = document.getElementById('taskPriority').value;
+            const dueDate = document.getElementById('taskDueDate').value;
+            
+            if (!employeeId) return alert('Select an employee');
+            
+            try {
+                const res = await fetch('/api/tasks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        assigned_to: employeeId,
+                        title,
+                        description,
+                        priority,
+                        due_date: dueDate || null,
+                        status: 'pending'
+                    })
+                });
+                
+                if (!res.ok) throw new Error('Failed to assign task');
+                
+                document.getElementById('assignTaskSuccess').classList.add('show');
+                document.getElementById('assignTaskForm').reset();
+                
+                setTimeout(() => {
+                    document.getElementById('assignTaskSuccess').classList.remove('show');
+                }, 3000);
+            } catch (e) {
+                alert('Failed to assign task: ' + e.message);
+            }
         });
-        show("Employee created.", "ok");
-      } catch (e) {
-        show(e.message, "err");
-      }
-    });
 
-    document.getElementById("assignBtn").addEventListener("click", async () => {
-      try {
-        await tasksAssign({
-          assigned_to: document.getElementById("assignedTo").value.trim(), // profile UUID
-          title: document.getElementById("taskTitle").value.trim(),
-          description: document.getElementById("taskDesc").value.trim(),
-          priority: document.getElementById("taskPriority").value,
-          due_date: document.getElementById("taskDue").value || null
-        });
-        show("Task assigned.", "ok");
-        await renderTasks();
-      } catch (e) {
-        show(e.message, "err");
-      }
-    });
+        // LOAD PENDING DOCTORS
+        async function loadPendingDoctors() {
+            try {
+                const doctors = await adminPendingDoctors();
+                const container = document.getElementById('pendingDoctors');
+                
+                if (!doctors.length) {
+                    container.innerHTML = '<div class="empty-state">No pending doctors.</div>';
+                    return;
+                }
 
-    document.getElementById("logoutBtn").addEventListener("click", logout);
-    document.getElementById("refreshBtn").addEventListener("click", async () => {
-      await renderTasks();
-      await renderMessages();
-    });
+                let html = '<table><tr><th>Name</th><th>Email</th><th>Speciality</th><th>Action</th></tr>';
+                doctors.forEach(d => {
+                    html += `<tr>
+                        <td>${d.name}</td>
+                        <td>${d.email}</td>
+                        <td>${d.speciality || d.organization || 'N/A'}</td>
+                        <td><button onclick="approveDoctor('${d.id}')">✓ Approve</button></td>
+                    </tr>`;
+                });
+                html += '</table>';
+                container.innerHTML = html;
+            } catch (e) {
+                document.getElementById('pendingDoctors').innerHTML = 
+                    '<div class="empty-state">Error: ' + e.message + '</div>';
+            }
+        }
 
-    document.getElementById("roomList").addEventListener("click", async (e) => {
-      const item = e.target.closest(".item");
-      if (!item) return;
+        window.approveDoctor = async (id) => {
+            if (!confirm('Approve this doctor?')) return;
+            try {
+                await adminApproveDoctor(id);
+                alert('Doctor approved successfully!');
+                loadPendingDoctors();
+            } catch (e) {
+                alert('Approval failed: ' + e.message);
+            }
+        };
 
-      document.querySelectorAll(".item").forEach(x => x.classList.remove("active"));
-      item.classList.add("active");
+        // PROMOTE TO ADMIN
+        window.promoteToAdmin = async () => {
+            const userId = document.getElementById('promoteEmployee').value;
+            if (!userId) return alert('Select an employee');
+            if (!confirm('Promote this employee to admin? They will have full admin access.')) return;
+            
+            try {
+                const res = await fetch('/api/admin-set-role', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ user_id: userId, role: 'admin' })
+                });
+                
+                if (!res.ok) {
+                    const error = await res.json();
+                    throw new Error(error.error || 'Failed to promote');
+                }
+                
+                alert('Employee promoted to admin successfully!');
+                loadEmployees();
+            } catch (e) {
+                alert('Promotion failed: ' + e.message);
+            }
+        };
 
-      const room = item.getAttribute("data-room");
-      if (room === "common") activeRoom = { type: "common", dm_room_id: null };
+        // LOAD QUERIES
+        function loadQueries() {
+            const queries = JSON.parse(localStorage.getItem('queries') || '[]');
+            const container = document.getElementById('allQueries');
+            
+            if (!queries.length) {
+                container.innerHTML = '<div class="empty-state">No queries yet.</div>';
+                return;
+            }
+            
+            let html = '<table><tr><th>Type</th><th>Name</th><th>Email</th><th>Message</th><th>Date</th></tr>';
+            queries.forEach(q => {
+                html += `<tr>
+                    <td style="text-transform:capitalize">${q.type}</td>
+                    <td>${q.name}</td>
+                    <td>${q.email}</td>
+                    <td>${q.message.substring(0, 60)}${q.message.length > 60 ? '...' : ''}</td>
+                    <td>${new Date(q.timestamp).toLocaleDateString()}</td>
+                </tr>`;
+            });
+            html += '</table>';
+            container.innerHTML = html;
+        }
 
-      await renderMessages();
-    });
+        window.logout = () => {
+            apiLogout();
+        };
 
-    // init
-    (async () => {
-      try {
-        await guard();
-        await renderTasks();
-        await renderMessages();
-        setInterval(async () => {
-          await renderTasks();
-          await renderMessages();
-        }, 5000);
-      } catch (e) {
-        show(e.message || "Session expired", "err");
-        setTimeout(() => window.location.href = "login.html", 800);
-      }
-    })();
-  </script>
+        loadEmployees();
+        loadPendingDoctors();
+        loadQueries();
+        
+        setInterval(() => {
+            loadPendingDoctors();
+            loadQueries();
+        }, 30000);
+    </script>
 </body>
 </html>
