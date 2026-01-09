@@ -1,13 +1,23 @@
-[api]
-  enabled = true
-  port = 54321
-  schemas = [ "public" ]
-  extra_search_path = [ "extensions" ]
+[functions]
+entrypoint = "index.ts"
 
-[db]
-  port = 54322
+[functions.auth.admin-create-employee]
+entrypoint = "functions/auth/admin-create-employee/index.ts"
 
-[studio]
-  enabled = true
-  port = 54323
-  jwt_secret = "super-secret-jwt-token-with-at-least-32-characters-long-1234567890"
+[functions.auth.password-reset]
+entrypoint = "functions/auth/password-reset/index.ts"
+
+[functions.auth.change-password]
+entrypoint = "functions/auth/change-password/index.ts"
+
+[functions.auth.admin-set-role]
+entrypoint = "functions/auth/admin-set-role/index.ts"
+
+[functions.api.tasks]
+entrypoint = "functions/api/tasks/index.ts"
+
+[functions.api.team]
+entrypoint = "functions/api/team/index.ts"
+
+[functions.api.profile]
+entrypoint = "functions/api/profile/index.ts"
