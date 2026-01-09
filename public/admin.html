@@ -18,12 +18,21 @@
     .logo{ width:58px; height:58px; border-radius:50%; border:2px solid #fff; object-fit:cover; }
     .header h1{ font-size:1.2em; text-transform:uppercase; letter-spacing:1.5px; }
 
+    .header-actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .chat-btn{
+      padding:10px 14px; border-radius:18px;
+      background:linear-gradient(135deg,#0ea5e9,#06b6d4);
+      color:#fff; border:none;
+      font-weight:900; text-transform:uppercase; letter-spacing:0.6px;
+      cursor:pointer;
+    }
+    .chat-btn:hover{ filter:brightness(1.08); }
     .logout-btn{
       padding:10px 18px; border-radius:20px;
       background:transparent; border:2px solid #ff6b6b; color:#ff6b6b;
       cursor:pointer; font-weight:900; text-transform:uppercase; letter-spacing:0.8px;
     }
-    .logout-btn:hover{ background:#ff6b6b; color:#fff; }
+    .logout-btn:hover{ background:#ff6b6b; color:#000; }
 
     .container{ max-width:1400px; margin:0 auto; padding:22px 16px 40px; }
 
@@ -47,6 +56,7 @@
     .section-header{
       display:flex; justify-content:space-between; align-items:center; gap:10px;
       border-bottom:2px solid #222; padding-bottom:10px; margin-bottom:12px;
+      flex-wrap:wrap;
     }
     .section-title{
       color:#0ea5e9; font-size:1.1em; font-weight:900;
@@ -96,27 +106,132 @@
       vertical-align:top; font-size:0.92em;
     }
     tr:hover{ background:rgba(14,165,233,0.05); }
+
     .pill{
       display:inline-block; padding:4px 10px; border-radius:15px;
-      font-size:0.8em; font-weight:900; text-transform:uppercase;
+      font-size:0.78em; font-weight:900; text-transform:uppercase;
     }
     .pill.priority-high{ background:rgba(239,68,68,0.2); color:#ef4444; border:1px solid #ef4444; }
     .pill.priority-medium{ background:rgba(245,158,11,0.2); color:#f59e0b; border:1px solid #f59e0b; }
     .pill.priority-low{ background:rgba(34,197,94,0.2); color:#22c55e; border:1px solid #22c55e; }
     .pill.pending{ background:rgba(251,191,36,0.2); color:#fbba24; border:1px solid #fbba24; }
     .pill.done{ background:rgba(74,222,128,0.2); color:#4ade80; border:1px solid #4ade80; }
+
     .muted{ color:#888; font-size:0.9em; }
     .actions{ display:flex; gap:8px; flex-wrap:wrap; }
 
-    /* Chat button */
-    .chat-btn{
-      padding:10px 14px; border-radius:18px;
-      background:linear-gradient(135deg,#0ea5e9,#06b6d4);
-      color:#fff; border:none;
-      font-weight:900; text-transform:uppercase; letter-spacing:0.6px;
-      cursor:pointer;
+    /* ===== Chat overlay (admin common chat only) ===== */
+    .overlay{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,0.75);
+      display:none;
+      z-index:50;
     }
-    .chat-btn:hover{ filter:brightness(1.08); }
+    .overlay.show{ display:block; }
+
+    .chat-shell{
+      position:absolute;
+      right:14px; top:14px; bottom:14px;
+      width:min(980px, calc(100vw - 28px));
+      background:#050505;
+      border:2px solid #0ea5e9;
+      border-radius:14px;
+      overflow:hidden;
+      display:flex; flex-direction:column;
+      box-shadow:0 18px 70px rgba(14,165,233,0.25);
+    }
+    .chat-top{
+      padding:12px;
+      border-bottom:1px solid #1c1c1c;
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+    }
+    .chat-room{
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:0.8px;
+      font-size:0.92em;
+      color:#0ea5e9;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .chat-close{
+      padding:8px 12px; border-radius:999px;
+      border:1px solid #ff6b6b; background:transparent; color:#ff6b6b;
+      cursor:pointer; font-weight:900; text-transform:uppercase; letter-spacing:0.6px; font-size:0.75em;
+    }
+    .chat-close:hover{ background:#ff6b6b; color:#000; }
+
+    .messages{
+      flex:1;
+      padding:12px;
+      overflow:auto;
+    }
+    .msg{
+      border:1px solid #1f1f1f;
+      background:#101010;
+      border-radius:12px;
+      padding:10px 12px;
+      margin-bottom:10px;
+    }
+    .msg-head{
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      margin-bottom:6px;
+    }
+    .msg-author{ color:#0ea5e9; font-weight:900; font-size:0.9em; }
+    .msg-time{ color:#777; font-size:0.75em; }
+    .msg-text{ color:#ddd; white-space:pre-wrap; font-size:0.95em; }
+    .attach{ margin-top:6px; font-size:0.85em; }
+    .attach a{ color:#22c55e; text-decoration:none; }
+    .attach a:hover{ text-decoration:underline; }
+
+    .composer{
+      border-top:1px solid #1c1c1c;
+      background:#0a0a0a;
+      padding:10px 12px;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .composer.drag-over{ background:#04151f; border-top-color:#0ea5e9; }
+    .composer-top{
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+      margin-bottom:8px;
+    }
+    .file-pill{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px dashed #444;
+      color:#aaa;
+      cursor:pointer;
+      user-select:none;
+      font-size:0.8em;
+      font-weight:800;
+    }
+    .file-name{ color:#ccc; font-size:0.8em; }
+    .note{ width:100%; color:#777; font-size:0.75em; }
+    .composer-bottom{ display:flex; gap:10px; }
+    .composer textarea{
+      flex:1;
+      min-height:44px; max-height:110px;
+      resize:none;
+      padding:10px 10px;
+      border-radius:10px;
+      border:1px solid #333;
+      background:#000;
+      color:#fff;
+      font-size:0.95em;
+    }
+    .composer textarea:focus{ outline:none; border-color:#0ea5e9; }
+    .send{
+      padding:10px 16px;
+      border-radius:999px;
+      border:1px solid #0ea5e9;
+      background:linear-gradient(135deg,#0ea5e9,#06b6d4);
+      color:#fff;
+      cursor:pointer;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:0.7px;
+      font-size:0.82em;
+    }
+    .send:hover{ filter:brightness(1.08); }
   </style>
 </head>
 <body>
@@ -125,30 +240,18 @@
       <img class="logo" src="https://i.ibb.co/FL6BLkS/P-Untitled-design.png" alt="Logo"/>
       <h1>Admin Dashboard</h1>
     </div>
-    <div style="display:flex; gap:12px;">
-      <button class="chat-btn" onclick="openChat()">💬 Chat</button>
+    <div class="header-actions">
+      <button class="chat-btn" onclick="openChat()">Chat</button>
       <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
   </div>
 
   <div class="container">
     <div class="stats">
-      <div class="stat">
-        <div class="num" id="statUsers">0</div>
-        <div class="lbl">Total Users</div>
-      </div>
-      <div class="stat">
-        <div class="num" id="statEmployees">0</div>
-        <div class="lbl">Employees</div>
-      </div>
-      <div class="stat">
-        <div class="num" id="statTasks">0</div>
-        <div class="lbl">Total Tasks</div>
-      </div>
-      <div class="stat">
-        <div class="num" id="statPending">0</div>
-        <div class="lbl">Pending Tasks</div>
-      </div>
+      <div class="stat"><div class="num" id="statUsers">0</div><div class="lbl">Total Users</div></div>
+      <div class="stat"><div class="num" id="statEmployees">0</div><div class="lbl">Employees</div></div>
+      <div class="stat"><div class="num" id="statTasks">0</div><div class="lbl">Total Tasks</div></div>
+      <div class="stat"><div class="num" id="statPending">0</div><div class="lbl">Pending Tasks</div></div>
     </div>
 
     <div class="grid2">
@@ -191,7 +294,7 @@
 
         <div class="form-row">
           <div>
-            <label for="taskAssignee">Assign to</label>
+            <label for="taskAssignee">Assign to (Employee/Admin)</label>
             <select id="taskAssignee"></select>
           </div>
           <div>
@@ -218,18 +321,18 @@
 
         <div style="margin-top:12px;">
           <button class="btn" onclick="assignTask()">Assign Task</button>
-          <div class="muted" style="margin-top:8px;">Employee sees tasks immediately after login.</div>
+          <div class="muted" style="margin-top:8px;">Assigned staff see tasks immediately after login.</div>
         </div>
       </div>
     </div>
 
-    <!-- Employee List -->
+    <!-- Staff List -->
     <div class="section">
       <div class="section-header">
-        <div class="section-title">Employees</div>
-        <input class="search" id="empSearch" placeholder="Search employee..." oninput="renderEmployees()"/>
+        <div class="section-title">Employees / Admins</div>
+        <input class="search" id="empSearch" placeholder="Search..." oninput="renderStaff()"/>
       </div>
-      <div id="employeesTable"></div>
+      <div id="staffTable"></div>
     </div>
 
     <!-- Tasks -->
@@ -242,20 +345,80 @@
     </div>
   </div>
 
+  <!-- Chat overlay: common chat only -->
+  <div class="overlay" id="chatOverlay" aria-hidden="true">
+    <div class="chat-shell">
+      <div class="chat-top">
+        <div class="chat-room" id="roomTitle"># common</div>
+        <button class="chat-close" onclick="closeChat()">Close</button>
+      </div>
+
+      <div class="messages" id="chatMessages"></div>
+
+      <div class="composer" id="composerDropZone">
+        <div class="composer-top">
+          <label class="file-pill">
+            Attach
+            <input id="chatFile" type="file" style="display:none"
+                   accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.txt"/>
+            <span class="file-name" id="fileName">No file</span>
+          </label>
+          <div class="note" id="chatNote"></div>
+        </div>
+        <div class="composer-bottom">
+          <textarea id="chatText" placeholder="Type message..."></textarea>
+          <button class="send" onclick="sendCommon()">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script>
-  if (sessionStorage.getItem("isAdmin") !== "true") {
+  // ===== AUTH: allow master admin (isAdmin=true) or promoted staff admin (currentUser.role=admin) =====
+  const isAdminSession = sessionStorage.getItem("isAdmin") === "true";
+  const currentUser = JSON.parse(sessionStorage.getItem("currentUser") || "null");
+  const isPromotedAdmin = currentUser && currentUser.role === "admin";
+
+  if (!isAdminSession && !isPromotedAdmin) {
     alert("Unauthorized access. Please login as admin.");
     window.location.href = "login.html";
   }
 
+  // Who is chatting / acting as admin
+  const me = currentUser || { name:"Admin", email:"admin@shravsteleradiology.com", role:"admin" };
+
   const TASKS_KEY = "tasks_v1";
+  const COMMON_KEY = "commonChatMessages_v1";
+
+  const MAX_FILE_MB = 3;
+  const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024;
+
+  let chatOpen = false;
+  let pendingFile = null;
 
   function readJson(key, fallback){
     try { return JSON.parse(localStorage.getItem(key) || "null") ?? fallback; }
     catch { return fallback; }
   }
   function writeJson(key, value){
-    localStorage.setItem(key, JSON.stringify(value));
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (e) {
+      alert("Storage full. Please delete old messages/tasks or use smaller files.");
+      return false;
+    }
+  }
+  function escapeHtml(text){
+    return String(text ?? "")
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;")
+      .replace(/'/g,"&#039;");
+  }
+  function prettyTime(iso){
+    try { return new Date(iso).toLocaleString(); } catch { return iso; }
   }
 
   function logout(){
@@ -266,6 +429,11 @@
 
   function getUsers(){ return readJson("users", []); }
   function saveUsers(users){ writeJson("users", users); }
+
+  function getStaff(){
+    // staff = employees + promoted admins (stored in users[])
+    return getUsers().filter(u => u.role === "employee" || u.role === "admin");
+  }
 
   function getEmployees(){
     return getUsers().filter(u => u.role === "employee");
@@ -314,19 +482,38 @@
 
     alert("Employee created successfully.");
     populateAssigneeDropdown();
-    renderEmployees();
+    renderStaff();
     refreshStats();
+  }
+
+  function promoteDemote(email){
+    const users = getUsers();
+    const u = users.find(x => x.email === email);
+    if (!u) return;
+
+    if (u.role === "employee") {
+      if (!confirm(`Promote ${u.name} to Admin?`)) return;
+      u.role = "admin";
+    } else if (u.role === "admin") {
+      if (!confirm(`Demote ${u.name} to Employee?`)) return;
+      u.role = "employee";
+    }
+    saveUsers(users);
+    populateAssigneeDropdown();
+    renderStaff();
+    refreshStats();
+    alert("Updated successfully.");
   }
 
   function populateAssigneeDropdown(){
     const sel = document.getElementById("taskAssignee");
-    const employees = getEmployees();
-    if (!employees.length) {
-      sel.innerHTML = `<option value="">No employees found</option>`;
+    const staff = getStaff();
+    if (!staff.length) {
+      sel.innerHTML = `<option value="">No staff found</option>`;
       return;
     }
-    sel.innerHTML = `<option value="">-- Select employee --</option>` +
-      employees.map(e => `<option value="${escapeHtml(e.email)}">${escapeHtml(e.name)} (${escapeHtml(e.email)})</option>`).join("");
+    sel.innerHTML = `<option value="">-- Select staff --</option>` +
+      staff.map(s => `<option value="${escapeHtml(s.email)}">${escapeHtml(s.name)} (${escapeHtml(s.role)})</option>`).join("");
   }
 
   function assignTask(){
@@ -338,22 +525,22 @@
 
     if (!assigneeEmail || !title) { alert("Assignee and title are required."); return; }
 
-    const employees = getEmployees();
-    const emp = employees.find(e => e.email === assigneeEmail);
-    if (!emp) { alert("Selected assignee is not an employee."); return; }
+    const staff = getStaff();
+    const person = staff.find(e => e.email === assigneeEmail);
+    if (!person) { alert("Selected assignee is not staff."); return; }
 
     const tasks = getTasks();
     tasks.push({
       id: makeId(),
       title,
       description: desc,
-      priority, // "high" | "medium" | "low"
-      assignedToEmail: emp.email,
-      assignedToName: emp.name,
+      priority, // high | medium | low
+      assignedToEmail: person.email,
+      assignedToName: person.name,
       dueDate: due || "",
       status: "pending",
       createdAt: new Date().toISOString(),
-      createdBy: "admin"
+      createdBy: me.email
     });
     saveTasks(tasks);
 
@@ -384,17 +571,18 @@
     refreshStats();
   }
 
-  function renderEmployees(){
+  function renderStaff(){
     const q = (document.getElementById("empSearch").value || "").toLowerCase();
-    const employees = getEmployees().filter(e =>
-      (e.name || "").toLowerCase().includes(q) ||
-      (e.email || "").toLowerCase().includes(q) ||
-      (e.organization || "").toLowerCase().includes(q)
+    const staff = getStaff().filter(s =>
+      (s.name || "").toLowerCase().includes(q) ||
+      (s.email || "").toLowerCase().includes(q) ||
+      (s.organization || "").toLowerCase().includes(q) ||
+      (s.role || "").toLowerCase().includes(q)
     );
 
-    const box = document.getElementById("employeesTable");
-    if (!employees.length) {
-      box.innerHTML = `<div class="muted">No employees.</div>`;
+    const box = document.getElementById("staffTable");
+    if (!staff.length) {
+      box.innerHTML = `<div class="muted">No staff found.</div>`;
       return;
     }
 
@@ -402,16 +590,23 @@
       <table>
         <thead>
           <tr>
-            <th>Name</th><th>Email</th><th>Department</th><th>Created</th>
+            <th>Name</th><th>Email</th><th>Role</th><th>Department</th><th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          ${employees.map(e => `
+          ${staff.map(s => `
             <tr>
-              <td>${escapeHtml(e.name)}</td>
-              <td>${escapeHtml(e.email)}</td>
-              <td>${escapeHtml(e.organization || "-")}</td>
-              <td>${new Date(e.createdAt).toLocaleDateString()}</td>
+              <td>${escapeHtml(s.name)}</td>
+              <td>${escapeHtml(s.email)}</td>
+              <td><span class="pill">${escapeHtml(s.role)}</span></td>
+              <td>${escapeHtml(s.organization || "-")}</td>
+              <td>
+                <div class="actions">
+                  <button class="btn btn-ghost" onclick="promoteDemote('${escapeHtml(s.email)}')">
+                    ${s.role === "admin" ? "Demote" : "Promote to admin"}
+                  </button>
+                </div>
+              </td>
             </tr>
           `).join("")}
         </tbody>
@@ -428,11 +623,11 @@
       (t.description || "").toLowerCase().includes(q) ||
       (t.assignedToName || "").toLowerCase().includes(q) ||
       (t.assignedToEmail || "").toLowerCase().includes(q) ||
-      (t.priority || "").toLowerCase().includes(q)
+      (t.priority || "").toLowerCase().includes(q) ||
+      (t.status || "").toLowerCase().includes(q)
     );
 
     tasks.sort((a,b) => {
-      // Priority: high > medium > low
       const prio = {high:3, medium:2, low:1};
       const aPrio = prio[a.priority || "low"] || 1;
       const bPrio = prio[b.priority || "low"] || 1;
@@ -461,6 +656,7 @@
               <td>
                 <div style="font-weight:900;">${escapeHtml(t.title)}</div>
                 <div class="muted" style="margin-top:4px; white-space:pre-wrap;">${escapeHtml(t.description || "")}</div>
+                <div class="muted" style="margin-top:4px;">Created: ${prettyTime(t.createdAt || "")}</div>
               </td>
               <td>${escapeHtml(t.assignedToName)}<div class="muted">${escapeHtml(t.assignedToEmail)}</div></td>
               <td>${t.dueDate ? escapeHtml(t.dueDate) : "-"}</td>
@@ -479,32 +675,153 @@
     `;
   }
 
-  function escapeHtml(text){
-    return String(text ?? "")
-      .replace(/&/g,"&amp;")
-      .replace(/</g,"&lt;")
-      .replace(/>/g,"&gt;")
-      .replace(/"/g,"&quot;")
-      .replace(/'/g,"&#039;");
+  // ===== Admin Chat (common only) =====
+  function openChat(){
+    chatOpen = true;
+    const ov = document.getElementById("chatOverlay");
+    ov.classList.add("show");
+    ov.setAttribute("aria-hidden", "false");
+    renderCommon();
   }
 
-  // ===== CHAT FOR ADMIN (like employee) =====
-  const COMMON_KEY = "commonChatMessages_v1";
-
-  function openChat() {
-    const admin = { name: "Admin", email: "admin@shravsteleradiology.com", role: "admin" };
-    sessionStorage.setItem("currentUser", JSON.stringify(admin));
-    sessionStorage.setItem("isLoggedIn", "true"); // fake employee session for chat
-    window.open("employee.html", "_blank");
+  function closeChat(){
+    chatOpen = false;
+    const ov = document.getElementById("chatOverlay");
+    ov.classList.remove("show");
+    ov.setAttribute("aria-hidden", "true");
   }
 
-  // ===== Init =====
+  function getCommonMessages(){
+    return readJson(COMMON_KEY, []);
+  }
+
+  function saveCommonMessages(list){
+    return writeJson(COMMON_KEY, list);
+  }
+
+  function renderCommon(){
+    const box = document.getElementById("chatMessages");
+    const list = getCommonMessages();
+
+    if (!list.length) {
+      box.innerHTML = `<div class="muted" style="padding:14px; text-align:center;">No messages yet.</div>`;
+      return;
+    }
+
+    list.sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+    let html = "";
+    for (const msg of list) {
+      html += `
+        <div class="msg">
+          <div class="msg-head">
+            <div class="msg-author">${escapeHtml(msg.authorName || "User")} <span style="color:#777;">(${escapeHtml(msg.authorRole || "")})</span></div>
+            <div class="msg-time">${prettyTime(msg.timestamp || "")}</div>
+          </div>
+          <div class="msg-text">${escapeHtml(msg.text || "")}</div>
+      `;
+
+      if (msg.attachment && msg.attachment.dataUrl && msg.attachment.name) {
+        html += `
+          <div class="attach">
+            <a href="${msg.attachment.dataUrl}" download="${escapeHtml(msg.attachment.name)}" target="_blank">
+              ${escapeHtml(msg.attachment.name)}
+            </a>
+          </div>
+        `;
+      }
+
+      html += `</div>`;
+    }
+
+    box.innerHTML = html;
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function clearPendingFile(){
+    pendingFile = null;
+    document.getElementById("chatFile").value = "";
+    document.getElementById("fileName").textContent = "No file";
+  }
+
+  function handleSelectedFile(file){
+    if (!file) return clearPendingFile();
+    if (file.size > MAX_FILE_BYTES) {
+      alert(`File too large. Max ${MAX_FILE_MB} MB.`);
+      return clearPendingFile();
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      pendingFile = {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        dataUrl: e.target.result
+      };
+    };
+    reader.readAsDataURL(file);
+    document.getElementById("fileName").textContent = file.name;
+  }
+
+  function sendCommon(){
+    const textEl = document.getElementById("chatText");
+    const text = (textEl.value || "").trim();
+    if (!text && !pendingFile) return;
+
+    const list = getCommonMessages();
+    list.push({
+      authorEmail: me.email,
+      authorName: me.name,
+      authorRole: me.role,
+      text,
+      timestamp: new Date().toISOString(),
+      attachment: pendingFile
+    });
+
+    const ok = saveCommonMessages(list);
+    if (!ok) return;
+
+    textEl.value = "";
+    clearPendingFile();
+    renderCommon();
+  }
+
+  function setupDropZone(){
+    const zone = document.getElementById("composerDropZone");
+    const prevent = (e) => { e.preventDefault(); e.stopPropagation(); };
+
+    ["dragenter","dragover","dragleave","drop"].forEach(evt => zone.addEventListener(evt, prevent, false));
+    ["dragenter","dragover"].forEach(evt => zone.addEventListener(evt, () => zone.classList.add("drag-over"), false));
+    ["dragleave","drop"].forEach(evt => zone.addEventListener(evt, () => zone.classList.remove("drag-over"), false));
+
+    zone.addEventListener("drop", (e) => {
+      const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) handleSelectedFile(f);
+    }, false);
+  }
+
   window.addEventListener("load", () => {
+    document.getElementById("chatNote").textContent = `Common chat only. Max file ${MAX_FILE_MB} MB.`;
+
     populateAssigneeDropdown();
-    renderEmployees();
+    renderStaff();
     renderTasks();
     refreshStats();
-    setInterval(() => { renderTasks(); refreshStats(); }, 15000);
+
+    setupDropZone();
+    document.getElementById("chatFile").addEventListener("change", function () {
+      handleSelectedFile(this.files[0]);
+    });
+
+    document.getElementById("chatOverlay").addEventListener("click", (e) => {
+      if (e.target.id === "chatOverlay") closeChat();
+    });
+
+    setInterval(() => {
+      renderTasks();
+      refreshStats();
+      if (chatOpen) renderCommon();
+    }, 5000);
   });
 </script>
 </body>
