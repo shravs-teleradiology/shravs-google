@@ -1,621 +1,452 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Shravs Teleradiology</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #000000; color: #ffffff; }
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - Shravs Teleradiology</title>
+  <style>
+    *{ margin:0; padding:0; box-sizing:border-box; }
+    body{ font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif; background:#000; color:#fff; }
 
-        .header {
-            background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
-            border-bottom: 2px solid #0ea5e9;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 5px 20px rgba(14, 165, 233, 0.2);
-        }
+    .header{
+      background:linear-gradient(135deg,#0a0a0a,#1a1a1a);
+      border-bottom:2px solid #0ea5e9;
+      padding:18px 22px;
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+    }
+    .header-left{ display:flex; align-items:center; gap:14px; }
+    .logo{ width:58px; height:58px; border-radius:50%; border:2px solid #fff; object-fit:cover; }
+    .header h1{ font-size:1.2em; text-transform:uppercase; letter-spacing:1.5px; }
 
-        .header-left { display: flex; align-items: center; gap: 20px; }
-        
-        .logo {
-            width: 80px; 
-            height: 80px;
-            border: 2px solid #ffffff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #0ea5e9, #06b6d4);
-        }
+    .logout-btn{
+      padding:10px 18px; border-radius:20px;
+      background:transparent; border:2px solid #ff6b6b; color:#ff6b6b;
+      cursor:pointer; font-weight:900; text-transform:uppercase; letter-spacing:0.8px;
+    }
+    .logout-btn:hover{ background:#ff6b6b; color:#fff; }
 
-        .logo-container {
-            margin-bottom: 30px;
-            animation: fadeIn 1.5s ease-out;
-        }
+    .container{ max-width:1400px; margin:0 auto; padding:22px 16px 40px; }
 
-        .header h1 { font-size: 1.5em; text-transform: uppercase; letter-spacing: 2px; }
+    .stats{
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:14px; margin-bottom:18px;
+    }
+    .stat{
+      background:linear-gradient(135deg,#0a0a0a,#1a1a1a);
+      border:2px solid #0ea5e9; border-radius:14px;
+      padding:18px; text-align:center;
+    }
+    .stat .num{ font-size:2.4em; font-weight:900; color:#0ea5e9; }
+    .stat .lbl{ color:#999; text-transform:uppercase; letter-spacing:1px; font-size:0.85em; }
 
-        .logout-btn {
-            padding: 10px 25px;
-            background: transparent;
-            color: #ff6b6b;
-            border: 2px solid #ff6b6b;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+    .section{
+      background:#0a0a0a;
+      border:2px solid #333; border-radius:14px;
+      padding:18px; margin-bottom:14px;
+    }
+    .section-header{
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      border-bottom:2px solid #222; padding-bottom:10px; margin-bottom:12px;
+    }
+    .section-title{
+      color:#0ea5e9; font-size:1.1em; font-weight:900;
+      text-transform:uppercase; letter-spacing:1px;
+    }
+    .search{
+      width:320px; max-width:100%;
+      padding:10px 12px; border-radius:18px;
+      border:1px solid #333; background:#000; color:#fff;
+    }
+    .search:focus{ outline:none; border-color:#0ea5e9; }
 
-        .logout-btn:hover { background: #ff6b6b; color: #ffffff; transform: translateY(-2px); }
+    .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    @media (max-width: 920px){ .grid2{ grid-template-columns:1fr; } }
 
-        .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+    .form-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    @media (max-width: 700px){ .form-row{ grid-template-columns:1fr; } }
+    label{
+      display:block; margin-bottom:6px; font-size:0.8em; color:#ddd;
+      text-transform:uppercase; letter-spacing:0.6px; font-weight:800;
+    }
+    input, select, textarea{
+      width:100%; padding:10px 12px; border-radius:10px;
+      background:#000; color:#fff; border:1px solid #333;
+    }
+    textarea{ min-height:90px; resize:vertical; }
+    input:focus, select:focus, textarea:focus{ outline:none; border-color:#0ea5e9; }
 
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
+    .btn{
+      padding:10px 14px; border-radius:18px; cursor:pointer;
+      font-weight:900; text-transform:uppercase; letter-spacing:0.6px;
+      border:1px solid #0ea5e9; background:#0ea5e9; color:#000;
+    }
+    .btn:hover{ filter:brightness(1.06); }
+    .btn-danger{ border-color:#ef4444; background:#ef4444; color:#fff; }
+    .btn-ghost{ background:transparent; color:#0ea5e9; }
+    .btn-ghost:hover{ background:#0ea5e9; color:#000; }
 
-        .stat-card {
-            background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
-            border: 2px solid #0ea5e9;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3); }
-
-        .stat-number { font-size: 3em; font-weight: bold; color: #0ea5e9; margin-bottom: 10px; }
-        .stat-label { font-size: 1em; color: #999; text-transform: uppercase; letter-spacing: 1px; }
-
-        .section {
-            background: #0a0a0a;
-            border: 2px solid #333;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #333;
-        }
-
-        .section-title { font-size: 1.5em; text-transform: uppercase; letter-spacing: 1px; color: #0ea5e9; }
-
-        .search-box {
-            padding: 10px 20px;
-            background: #000000;
-            border: 1px solid #333;
-            border-radius: 25px;
-            color: #ffffff;
-            width: 300px;
-        }
-
-        .search-box:focus { outline: none; border-color: #0ea5e9; }
-
-        .table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-
-        .table th {
-            background: #000000;
-            color: #0ea5e9;
-            padding: 15px;
-            text-align: left;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.9em;
-            border-bottom: 2px solid #0ea5e9;
-        }
-
-        .table td { padding: 15px; border-bottom: 1px solid #333; color: #ccc; }
-        .table tr:hover { background: rgba(14, 165, 233, 0.05); }
-
-        .badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.85em;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .badge-pending {
-            background: rgba(251, 191, 36, 0.2);
-            color: #fbbf24;
-            border: 1px solid #fbbf24;
-        }
-
-        .badge-read {
-            background: rgba(74, 222, 128, 0.2);
-            color: #4ade80;
-            border: 1px solid #4ade80;
-        }
-
-        .badge-unread {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            border: 1px solid #ef4444;
-        }
-
-        .action-btn {
-            padding: 8px 15px;
-            margin: 0 5px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            font-size: 0.8em;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-view {
-            background: rgba(14, 165, 233, 0.2);
-            color: #0ea5e9;
-            border: 1px solid #0ea5e9;
-        }
-
-        .btn-view:hover { background: #0ea5e9; color: #ffffff; }
-
-        .btn-delete {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            border: 1px solid #ef4444;
-        }
-
-        .btn-delete:hover { background: #ef4444; color: #ffffff; }
-
-        .empty-state { text-align: center; padding: 60px 20px; color: #666; }
-        .empty-state-icon { font-size: 4em; margin-bottom: 20px; }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.8);
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-content {
-            background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
-            border: 2px solid #0ea5e9;
-            margin: 5% auto;
-            padding: 0;
-            width: 90%;
-            max-width: 700px;
-            border-radius: 15px;
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .modal-header {
-            background: #000000;
-            padding: 20px 30px;
-            border-bottom: 2px solid #0ea5e9;
-            border-radius: 13px 13px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h2 { color: #0ea5e9; font-size: 1.5em; text-transform: uppercase; }
-
-        .close {
-            color: #999;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .close:hover { color: #ff6b6b; transform: rotate(90deg); }
-
-        .modal-body {
-            padding: 30px;
-            max-height: 60vh;
-            overflow-y: auto;
-        }
-
-        .detail-row {
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #333;
-        }
-
-        .detail-row:last-child { border-bottom: none; }
-
-        .detail-label {
-            font-weight: bold;
-            color: #0ea5e9;
-            text-transform: uppercase;
-            font-size: 0.9em;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .detail-value { color: #ccc; line-height: 1.6; }
-
-        @media (max-width: 768px) {
-            .header { flex-direction: column; gap: 20px; padding: 20px; }
-            .stats { grid-template-columns: 1fr; }
-            .search-box { width: 100%; }
-            .table { font-size: 0.9em; }
-            .section { padding: 20px; }
-        }
-    </style>
+    table{ width:100%; border-collapse:collapse; }
+    th{
+      text-align:left; color:#0ea5e9;
+      padding:12px 10px; border-bottom:2px solid #0ea5e9;
+      font-size:0.85em; text-transform:uppercase; letter-spacing:0.8px;
+    }
+    td{
+      padding:12px 10px; border-bottom:1px solid #222; color:#ddd;
+      vertical-align:top; font-size:0.92em;
+    }
+    tr:hover{ background:rgba(14,165,233,0.05); }
+    .pill{
+      display:inline-block; padding:4px 10px; border-radius:999px;
+      border:1px solid #333; color:#bbb; font-size:0.8em; font-weight:800;
+      text-transform:uppercase;
+    }
+    .pill.pending{ border-color:#f59e0b; color:#f59e0b; background:rgba(245,158,11,0.1); }
+    .pill.done{ border-color:#22c55e; color:#22c55e; background:rgba(34,197,94,0.1); }
+    .muted{ color:#888; font-size:0.9em; }
+    .actions{ display:flex; gap:8px; flex-wrap:wrap; }
+  </style>
 </head>
 <body>
-    <div class="header">
-        <div class="header-left">
-            <div class="logo-container">
-                <img src="https://i.ibb.co/FL6BLkSP/Untitled-design.png" alt="Shravs Teleradiology Logo" class="logo" href="index.html">
-            </div>
+  <div class="header">
+    <div class="header-left">
+      <img class="logo" src="https://i.ibb.co/FL6BLkS/P-Untitled-design.png" alt="Logo"/>
+      <h1>Admin Dashboard</h1>
+    </div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
 
-            <h1>Admin Dashboard</h1>
-        </div>
-        <button class="logout-btn" onclick="logout()">Logout</button>
+  <div class="container">
+    <div class="stats">
+      <div class="stat"><div class="num" id="statUsers">0</div><div class="lbl">Total Users</div></div>
+      <div class="stat"><div class="num" id="statEmployees">0</div><div class="lbl">Employees</div></div>
+      <div class="stat"><div class="num" id="statTasks">0</div><div class="lbl">Total Tasks</div></div>
+      <div class="stat"><div class="num" id="statPending">0</div><div class="lbl">Pending Tasks</div></div>
     </div>
 
-    <div class="container">
-        <!-- Statistics -->
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-number" id="totalUsers">0</div>
-                <div class="stat-label">Total Users</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="todaySignups">0</div>
-                <div class="stat-label">Today's Signups</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="totalQueries">0</div>
-                <div class="stat-label">Total Queries</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="unreadQueries">0</div>
-                <div class="stat-label">Unread Queries</div>
-            </div>
+    <div class="grid2">
+      <!-- Employee Management -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Create Employee</div>
         </div>
 
-        <!-- User Queries Section -->
-        <div class="section">
-            <div class="section-header">
-                <h2 class="section-title">📬 User Queries</h2>
-                <input type="text" class="search-box" id="querySearch" placeholder="Search queries..." onkeyup="filterQueries()">
-            </div>
-            <div id="queriesTableContainer"></div>
+        <div class="form-row">
+          <div>
+            <label for="empName">Name</label>
+            <input id="empName" placeholder="Employee name"/>
+          </div>
+          <div>
+            <label for="empEmail">Email</label>
+            <input id="empEmail" type="email" placeholder="employee@example.com"/>
+          </div>
+          <div>
+            <label for="empOrg">Department/Location</label>
+            <input id="empOrg" placeholder="Department or location"/>
+          </div>
+          <div>
+            <label for="empPassword">Password</label>
+            <input id="empPassword" placeholder="Set password"/>
+          </div>
         </div>
 
-        <!-- Registered Users Section -->
-        <div class="section">
-            <div class="section-header">
-                <h2 class="section-title">📋 Registered Users</h2>
-                <input type="text" class="search-box" id="userSearch" placeholder="Search users..." onkeyup="filterUsers()">
-            </div>
-            <div id="usersTableContainer"></div>
+        <div style="margin-top:12px;">
+          <button class="btn" onclick="createEmployee()">Create Employee</button>
+          <div class="muted" style="margin-top:8px;">Employees cannot sign up from login page.</div>
         </div>
+      </div>
+
+      <!-- Assign Work -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Assign Work</div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label for="taskAssignee">Assign to</label>
+            <select id="taskAssignee"></select>
+          </div>
+          <div>
+            <label for="taskDue">Due date</label>
+            <input id="taskDue" type="date"/>
+          </div>
+          <div style="grid-column:1/-1;">
+            <label for="taskTitle">Title</label>
+            <input id="taskTitle" placeholder="Work title"/>
+          </div>
+          <div style="grid-column:1/-1;">
+            <label for="taskDesc">Description</label>
+            <textarea id="taskDesc" placeholder="Work details..."></textarea>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <button class="btn" onclick="assignTask()">Assign</button>
+          <div class="muted" style="margin-top:8px;">Employee sees tasks immediately after login on Employee page.</div>
+        </div>
+      </div>
     </div>
 
-    <!-- Query Details Modal -->
-    <div id="queryModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Query Details</h2>
-                <span class="close" onclick="closeQueryModal()">&times;</span>
-            </div>
-            <div class="modal-body" id="queryDetails"></div>
-        </div>
+    <!-- Employee List -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">Employees</div>
+        <input class="search" id="empSearch" placeholder="Search employee..." oninput="renderEmployees()"/>
+      </div>
+      <div id="employeesTable"></div>
     </div>
 
-    <script>
-        // Check admin authentication
-        if (sessionStorage.getItem('isAdmin') !== 'true') {
-            alert('Unauthorized access! Redirecting to login...');
-            window.location.href = 'login.html';
-        }
+    <!-- Tasks -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">Assigned Works</div>
+        <input class="search" id="taskSearch" placeholder="Search tasks..." oninput="renderTasks()"/>
+      </div>
+      <div id="tasksTable"></div>
+    </div>
+  </div>
 
-        // Load dashboard data
-        function loadDashboard() {
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            const queries = JSON.parse(localStorage.getItem('queries') || '[]');
-            
-            // Update statistics
-            document.getElementById('totalUsers').textContent = users.length;
-            
-            const today = new Date().toDateString();
-            const todaySignups = users.filter(u => new Date(u.createdAt).toDateString() === today).length;
-            document.getElementById('todaySignups').textContent = todaySignups;
-            
-            document.getElementById('totalQueries').textContent = queries.length;
-            
-            const unreadQueries = queries.filter(q => !q.read).length;
-            document.getElementById('unreadQueries').textContent = unreadQueries;
-            
-            // Display tables
-            displayQueries(queries);
-            displayUsers(users);
-        }
+<script>
+  if (sessionStorage.getItem("isAdmin") !== "true") {
+    alert("Unauthorized access. Please login as admin.");
+    window.location.href = "login.html";
+  }
 
-        // Display queries in table
-        function displayQueries(queries) {
-            const container = document.getElementById('queriesTableContainer');
-            
-            if (queries.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📬</div>
-                        <h3>No Queries Yet</h3>
-                        <p>User queries will appear here</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Sort by most recent first
-            queries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-            
-            let tableHTML = `
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Type</th>
-                            <th>From</th>
-                            <th>Email</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            queries.forEach((query, index) => {
-                const date = new Date(query.timestamp).toLocaleString();
-                const statusBadge = query.read ? 'badge-read' : 'badge-unread';
-                const statusText = query.read ? 'Read' : 'Unread';
-                
-                tableHTML += `
-                    <tr style="${!query.read ? 'background: rgba(239, 68, 68, 0.05);' : ''}">
-                        <td><strong>${query.type.toUpperCase()}</strong></td>
-                        <td>${query.name}</td>
-                        <td>${query.email}</td>
-                        <td>${date}</td>
-                        <td><span class="badge ${statusBadge}">${statusText}</span></td>
-                        <td>
-                            <button class="action-btn btn-view" onclick="viewQuery(${index})">View</button>
-                            <button class="action-btn btn-delete" onclick="deleteQuery(${index})">Delete</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            tableHTML += `</tbody></table>`;
-            container.innerHTML = tableHTML;
-        }
+  const TASKS_KEY = "tasks_v1";
 
-        // Display users in table
-        function displayUsers(users) {
-            const container = document.getElementById('usersTableContainer');
-            
-            if (users.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">👥</div>
-                        <h3>No Users Registered Yet</h3>
-                        <p>User registrations will appear here</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let tableHTML = `
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Organization</th>
-                            <th>Role</th>
-                            <th>Registered</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            users.forEach((user, index) => {
-                const registeredDate = new Date(user.createdAt).toLocaleDateString();
-                tableHTML += `
-                    <tr>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
-                        <td>${user.organization}</td>
-                        <td>${user.role}</td>
-                        <td>${registeredDate}</td>
-                        <td>
-                            <button class="action-btn btn-view" onclick="viewUser(${index})">View</button>
-                            <button class="action-btn btn-delete" onclick="deleteUser(${index})">Delete</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            tableHTML += `</tbody></table>`;
-            container.innerHTML = tableHTML;
-        }
+  function readJson(key, fallback){
+    try { return JSON.parse(localStorage.getItem(key) || "null") ?? fallback; }
+    catch { return fallback; }
+  }
+  function writeJson(key, value){
+    localStorage.setItem(key, JSON.stringify(value));
+  }
 
-        // View query details
-        function viewQuery(index) {
-            const queries = JSON.parse(localStorage.getItem('queries') || '[]');
-            const query = queries[index];
-            
-            // Mark as read
-            query.read = true;
-            localStorage.setItem('queries', JSON.stringify(queries));
-            
-            const detailsHTML = `
-                <div class="detail-row">
-                    <div class="detail-label">Query Type</div>
-                    <div class="detail-value">${query.type.toUpperCase()}</div>
+  function logout(){
+    if (!confirm("Logout?")) return;
+    sessionStorage.clear();
+    window.location.href = "login.html";
+  }
+
+  function getUsers(){ return readJson("users", []); }
+  function saveUsers(users){ writeJson("users", users); }
+
+  function getEmployees(){
+    return getUsers().filter(u => u.role === "employee");
+  }
+
+  function makeId(){
+    return "t_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8);
+  }
+
+  function getTasks(){ return readJson(TASKS_KEY, []); }
+  function saveTasks(tasks){ writeJson(TASKS_KEY, tasks); }
+
+  function refreshStats(){
+    const users = getUsers();
+    const employees = users.filter(u => u.role === "employee");
+    const tasks = getTasks();
+    const pending = tasks.filter(t => t.status === "pending").length;
+
+    document.getElementById("statUsers").textContent = users.length;
+    document.getElementById("statEmployees").textContent = employees.length;
+    document.getElementById("statTasks").textContent = tasks.length;
+    document.getElementById("statPending").textContent = pending;
+  }
+
+  function createEmployee(){
+    const name = document.getElementById("empName").value.trim();
+    const email = document.getElementById("empEmail").value.trim();
+    const org = document.getElementById("empOrg").value.trim();
+    const pw = document.getElementById("empPassword").value.trim();
+
+    if (!name || !email || !pw) { alert("Name, email, password required."); return; }
+
+    const users = getUsers();
+    if (users.some(u => u.email === email)) { alert("Email already exists."); return; }
+
+    users.push({
+      name, email, phone:"", organization:org, role:"employee",
+      password:pw, createdAt:new Date().toISOString()
+    });
+    saveUsers(users);
+
+    document.getElementById("empName").value = "";
+    document.getElementById("empEmail").value = "";
+    document.getElementById("empOrg").value = "";
+    document.getElementById("empPassword").value = "";
+
+    alert("Employee created.");
+    populateAssigneeDropdown();
+    renderEmployees();
+    refreshStats();
+  }
+
+  function populateAssigneeDropdown(){
+    const sel = document.getElementById("taskAssignee");
+    const employees = getEmployees();
+    if (!employees.length) {
+      sel.innerHTML = `<option value="">No employees found</option>`;
+      return;
+    }
+    sel.innerHTML = `<option value="">-- Select employee --</option>` +
+      employees.map(e => `<option value="${escapeHtml(e.email)}">${escapeHtml(e.name)} (${escapeHtml(e.email)})</option>`).join("");
+  }
+
+  function assignTask(){
+    const assigneeEmail = document.getElementById("taskAssignee").value;
+    const due = document.getElementById("taskDue").value;
+    const title = document.getElementById("taskTitle").value.trim();
+    const desc = document.getElementById("taskDesc").value.trim();
+
+    if (!assigneeEmail || !title) { alert("Assignee and title are required."); return; }
+
+    const employees = getEmployees();
+    const emp = employees.find(e => e.email === assigneeEmail);
+    if (!emp) { alert("Selected assignee is not an employee."); return; }
+
+    const tasks = getTasks();
+    tasks.push({
+      id: makeId(),
+      title,
+      description: desc,
+      assignedToEmail: emp.email,
+      assignedToName: emp.name,
+      dueDate: due || "",
+      status: "pending",
+      createdAt: new Date().toISOString(),
+      createdBy: "admin"
+    });
+    saveTasks(tasks);
+
+    document.getElementById("taskTitle").value = "";
+    document.getElementById("taskDesc").value = "";
+    document.getElementById("taskDue").value = "";
+
+    alert("Task assigned.");
+    renderTasks();
+    refreshStats();
+  }
+
+  function toggleTaskStatus(taskId){
+    const tasks = getTasks();
+    const t = tasks.find(x => x.id === taskId);
+    if (!t) return;
+    t.status = (t.status === "pending") ? "done" : "pending";
+    saveTasks(tasks);
+    renderTasks();
+    refreshStats();
+  }
+
+  function deleteTask(taskId){
+    if (!confirm("Delete this task?")) return;
+    const tasks = getTasks().filter(t => t.id !== taskId);
+    saveTasks(tasks);
+    renderTasks();
+    refreshStats();
+  }
+
+  function renderEmployees(){
+    const q = (document.getElementById("empSearch").value || "").toLowerCase();
+    const employees = getEmployees().filter(e =>
+      (e.name || "").toLowerCase().includes(q) ||
+      (e.email || "").toLowerCase().includes(q) ||
+      (e.organization || "").toLowerCase().includes(q)
+    );
+
+    const box = document.getElementById("employeesTable");
+    if (!employees.length) {
+      box.innerHTML = `<div class="muted">No employees.</div>`;
+      return;
+    }
+
+    box.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th><th>Email</th><th>Department</th><th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${employees.map(e => `
+            <tr>
+              <td>${escapeHtml(e.name)}</td>
+              <td>${escapeHtml(e.email)}</td>
+              <td>${escapeHtml(e.organization || "-")}</td>
+              <td>${new Date(e.createdAt).toLocaleDateString()}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
+  }
+
+  function renderTasks(){
+    const q = (document.getElementById("taskSearch").value || "").toLowerCase();
+    let tasks = getTasks();
+
+    tasks = tasks.filter(t =>
+      (t.title || "").toLowerCase().includes(q) ||
+      (t.description || "").toLowerCase().includes(q) ||
+      (t.assignedToName || "").toLowerCase().includes(q) ||
+      (t.assignedToEmail || "").toLowerCase().includes(q)
+    );
+
+    tasks.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    const box = document.getElementById("tasksTable");
+    if (!tasks.length) {
+      box.innerHTML = `<div class="muted">No tasks assigned.</div>`;
+      return;
+    }
+
+    box.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>Status</th><th>Title</th><th>Assigned To</th><th>Due</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tasks.map(t => `
+            <tr>
+              <td><span class="pill ${t.status}">${t.status}</span></td>
+              <td>
+                <div style="font-weight:900;">${escapeHtml(t.title)}</div>
+                <div class="muted" style="margin-top:4px; white-space:pre-wrap;">${escapeHtml(t.description || "")}</div>
+              </td>
+              <td>${escapeHtml(t.assignedToName)}<div class="muted">${escapeHtml(t.assignedToEmail)}</div></td>
+              <td>${t.dueDate ? escapeHtml(t.dueDate) : "-"}</td>
+              <td>
+                <div class="actions">
+                  <button class="btn btn-ghost" onclick="toggleTaskStatus('${t.id}')">${t.status === "pending" ? "Mark done" : "Mark pending"}</button>
+                  <button class="btn btn-danger" onclick="deleteTask('${t.id}')">Delete</button>
                 </div>
-                <div class="detail-row">
-                    <div class="detail-label">Name</div>
-                    <div class="detail-value">${query.name}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Designation/Organization</div>
-                    <div class="detail-value">${query.designation}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Email</div>
-                    <div class="detail-value">${query.email}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Phone</div>
-                    <div class="detail-value">${query.phone}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Submitted By</div>
-                    <div class="detail-value">${query.submittedBy} (${query.submittedByEmail})</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Submitted On</div>
-                    <div class="detail-value">${new Date(query.timestamp).toLocaleString()}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Message</div>
-                    <div class="detail-value" style="white-space: pre-wrap;">${query.message}</div>
-                </div>
-            `;
-            
-            document.getElementById('queryDetails').innerHTML = detailsHTML;
-            document.getElementById('queryModal').style.display = 'block';
-            
-            // Reload dashboard to update unread count
-            loadDashboard();
-        }
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
+  }
 
-        // Close query modal
-        function closeQueryModal() {
-            document.getElementById('queryModal').style.display = 'none';
-        }
+  function escapeHtml(text){
+    return String(text ?? "")
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;")
+      .replace(/'/g,"&#039;");
+  }
 
-        // Delete query
-        function deleteQuery(index) {
-            if (!confirm('Are you sure you want to delete this query?')) return;
-            
-            const queries = JSON.parse(localStorage.getItem('queries') || '[]');
-            queries.splice(index, 1);
-            localStorage.setItem('queries', JSON.stringify(queries));
-            
-            alert('Query deleted successfully!');
-            loadDashboard();
-        }
-
-        // Filter queries
-        function filterQueries() {
-            const searchTerm = document.getElementById('querySearch').value.toLowerCase();
-            const queries = JSON.parse(localStorage.getItem('queries') || '[]');
-            
-            const filtered = queries.filter(q => 
-                q.name.toLowerCase().includes(searchTerm) ||
-                q.email.toLowerCase().includes(searchTerm) ||
-                q.type.toLowerCase().includes(searchTerm) ||
-                q.message.toLowerCase().includes(searchTerm)
-            );
-            
-            displayQueries(filtered);
-        }
-
-        // Filter users
-        function filterUsers() {
-            const searchTerm = document.getElementById('userSearch').value.toLowerCase();
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            
-            const filtered = users.filter(u => 
-                u.name.toLowerCase().includes(searchTerm) ||
-                u.email.toLowerCase().includes(searchTerm) ||
-                u.organization.toLowerCase().includes(searchTerm)
-            );
-            
-            displayUsers(filtered);
-        }
-
-        // View user details
-        function viewUser(index) {
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            const user = users[index];
-            
-            alert(`User Details:
-━━━━━━━━━━━━━━━━━━━━
-Name: ${user.name}
-Email: ${user.email}
-Phone: ${user.phone}
-Organization: ${user.organization}
-Role: ${user.role}
-Registered: ${new Date(user.createdAt).toLocaleString()}`);
-        }
-
-        // Delete user
-        function deleteUser(index) {
-            if (!confirm('Are you sure you want to delete this user?')) return;
-            
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            users.splice(index, 1);
-            localStorage.setItem('users', JSON.stringify(users));
-            
-            alert('User deleted successfully!');
-            loadDashboard();
-        }
-
-        // Logout
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                sessionStorage.clear();
-                window.location.href = 'login.html';
-            }
-        }
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('queryModal');
-            if (event.target == modal) {
-                closeQueryModal();
-            }
-        }
-
-        // Load dashboard on page load
-        window.onload = loadDashboard;
-
-        // Refresh data every 30 seconds
-        setInterval(loadDashboard, 30000);
-    </script>
+  window.addEventListener("load", () => {
+    populateAssigneeDropdown();
+    renderEmployees();
+    renderTasks();
+    refreshStats();
+    setInterval(() => { renderTasks(); refreshStats(); }, 15000);
+  });
+</script>
 </body>
 </html>
