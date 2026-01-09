@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login / Signup - Shravs</title>
+  <title>Login - Shravs Teleradiology</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Segoe UI',Tahoma,sans-serif;background:#000;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -35,19 +35,17 @@
 <body>
   <div class="wrap">
     <div class="logo-header">
-      <img class="logo" src="logo.jpg" alt="Shravs Logo">
-      <div class="brand-name">SHRAVS Teleradiology</div>
-      <div class="brand-tagline"> & E-Care Services</div>
+      <img class="logo" src="logo.jpg" alt="Shravs Logo" onerror="this.style.display='none'">
+      <div class="brand-name">SHRAVS</div>
+      <div class="brand-tagline">Teleradiology & E-Care Services</div>
     </div>
 
     <div class="card">
-      <!-- TABS -->
       <div class="tabs" id="tabsContainer">
         <button class="tab active" id="tabLogin">Login</button>
         <button class="tab" id="tabSignup">Signup</button>
       </div>
 
-      <!-- MESSAGE -->
       <div id="msg" class="msg"></div>
 
       <!-- LOGIN FORM -->
@@ -75,7 +73,6 @@
         </div>
         <button class="btn" type="submit">Send Reset Link</button>
         <div class="muted">
-          We'll send you an email with a link to reset your password.<br>
           <span class="link" id="backToLoginLink">← Back to Login</span>
         </div>
       </form>
@@ -88,7 +85,6 @@
             <option value="">-- Select Role --</option>
             <option value="doctor">Doctor</option>
             <option value="patient">Patient</option>
-            <option value="diagnostic">Diagnostic Center</option>
           </select>
         </div>
 
@@ -107,28 +103,20 @@
           <input id="signupPassword" type="password" required placeholder="Create a password" minlength="6">
         </div>
 
-        <!-- Doctor extra fields -->
-        <div id="doctorFields" class="hide">
-          <div class="row">
-            <label>Speciality</label>
-            <input id="doctorSpeciality" placeholder="e.g., Radiology, Cardiology">
-          </div>
-
-          <div class="row">
-            <label>Organization / Hospital</label>
-            <input id="doctorOrg" placeholder="Your hospital/clinic name">
-          </div>
-        </div>
-
         <button class="btn" type="submit">Submit Signup Request</button>
       </form>
     </div>
   </div>
 
   <script type="module">
-    import { login, getMe, requestDoctorSignup } from './api.js';
+    const SUPABASE_URL = 'https://xksqdjwbiojwyfllwtvh.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_zZe-aVVerbOt7joJQMt6QQ_bq3Ej7Ze';
 
-    // Get all elements
+    // Import Supabase
+    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Get elements
     const tabLogin = document.getElementById('tabLogin');
     const tabSignup = document.getElementById('tabSignup');
     const tabsContainer = document.getElementById('tabsContainer');
@@ -138,17 +126,13 @@
     const forgotPasswordLink = document.getElementById('forgotPasswordLink');
     const backToLoginLink = document.getElementById('backToLoginLink');
     const msg = document.getElementById('msg');
-    const signupRole = document.getElementById('signupRole');
-    const doctorFields = document.getElementById('doctorFields');
 
-    // Show/hide message
     function showMessage(text, type) {
       msg.textContent = text;
       msg.className = 'msg ' + type;
       setTimeout(() => { msg.className = 'msg'; }, 5000);
     }
 
-    // Switch to Login tab
     function showLogin() {
       tabLogin.classList.add('active');
       tabSignup.classList.remove('active');
@@ -159,7 +143,6 @@
       msg.className = 'msg';
     }
 
-    // Switch to Signup tab
     function showSignup() {
       tabLogin.classList.remove('active');
       tabSignup.classList.add('active');
@@ -170,7 +153,6 @@
       msg.className = 'msg';
     }
 
-    // Show Forgot Password form
     function showForgotPassword() {
       tabLogin.classList.remove('active');
       tabSignup.classList.remove('active');
@@ -181,87 +163,87 @@
       msg.className = 'msg';
     }
 
-    // Tab click events
     tabLogin.addEventListener('click', showLogin);
     tabSignup.addEventListener('click', showSignup);
     forgotPasswordLink.addEventListener('click', showForgotPassword);
     backToLoginLink.addEventListener('click', showLogin);
 
-    // Signup role change - show/hide doctor fields
-    signupRole.addEventListener('change', () => {
-      const role = signupRole.value;
-      if (role === 'doctor') {
-        doctorFields.classList.remove('hide');
-      } else {
-        doctorFields.classList.add('hide');
-      }
-    });
-
-    // LOGIN FORM SUBMIT
+    // LOGIN
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      
       const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value;
       
       try {
         showMessage('Logging in...', 'ok');
-        await login(email, password);
-        const me = await getMe();
+        
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
 
-        // Check if first login
-        if (me?.first_login === true) {
-          showMessage('First login. Redirecting to change password...', 'ok');
+        if (error) throw error;
+        
+        localStorage.setItem('token', data.session.access_token);
+        
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', data.user.id)
+          .single();
+
+        if (profile?.first_login === true) {
+          showMessage('First login. Redirecting...', 'ok');
           setTimeout(() => {
             window.location.href = 'change-password.html';
           }, 1000);
           return;
         }
 
-        // Redirect by role
-        showMessage('Login successful! Redirecting...', 'ok');
+        showMessage('Login successful!', 'ok');
         setTimeout(() => {
-          if (me?.role === 'admin') window.location.href = 'admin.html';
-          else if (me?.role === 'employee') window.location.href = 'employee.html';
-          else if (me?.role === 'doctor') window.location.href = 'doctor.html';
-          else window.location.href = 'index.html';
+          if (profile?.role === 'admin') {
+            window.location.href = 'admin.html';
+          } else if (profile?.role === 'employee') {
+            window.location.href = 'employee.html';
+          } else if (profile?.role === 'doctor') {
+            window.location.href = 'doctor.html';
+          } else {
+            window.location.href = 'index.html';
+          }
         }, 500);
       } catch (err) {
-        showMessage(err.message || 'Login failed. Check your credentials.', 'err');
+        showMessage(err.message || 'Login failed. Check credentials.', 'err');
       }
     });
 
-    // FORGOT PASSWORD FORM SUBMIT
+    // FORGOT PASSWORD
     forgotPasswordForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      
       const email = document.getElementById('forgotEmail').value.trim();
       
       try {
-        showMessage('Sending password reset link...', 'ok');
+        showMessage('Sending reset link...', 'ok');
         
-        const res = await fetch('/api/password-reset', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
+        await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + '/reset-password.html'
         });
         
-        if (!res.ok) {
-          // Still show success message for security (don't reveal if email exists)
-          showMessage('If this email exists, a reset link has been sent. Check your inbox.', 'ok');
-        } else {
-          showMessage('Password reset link sent to your email! Check your inbox (and spam folder).', 'ok');
-        }
-        
+        showMessage('Reset link sent! Check your email.', 'ok');
         document.getElementById('forgotEmail').value = '';
         setTimeout(() => showLogin(), 3000);
       } catch (err) {
-        showMessage('Reset link sent if email exists. Check your inbox.', 'ok');
+        showMessage('Reset link sent (if email exists).', 'ok');
       }
     });
 
-    // SIGNUP FORM SUBMIT
+    // SIGNUP
     signupForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const role = signupRole.value;
+      
+      const role = document.getElementById('signupRole').value;
       const name = document.getElementById('signupName').value.trim();
       const email = document.getElementById('signupEmail').value.trim();
       const password = document.getElementById('signupPassword').value;
@@ -272,35 +254,29 @@
       }
 
       try {
-        showMessage('Submitting signup request...', 'ok');
+        showMessage('Creating account...', 'ok');
 
-        if (role === 'doctor') {
-          const speciality = document.getElementById('doctorSpeciality').value.trim();
-          const organization = document.getElementById('doctorOrg').value.trim();
-          
-          await requestDoctorSignup({
-            name,
-            email,
-            password,
-            organization: organization || 'Doctor',
-            speciality: speciality || 'General'
-          });
-          
-          showMessage('Doctor signup request submitted! Admin will review and approve. Then you can login.', 'ok');
-        } else if (role === 'patient') {
-          showMessage('Patient signup submitted. Admin will review and send you credentials via email.', 'ok');
-        } else if (role === 'diagnostic') {
-          showMessage('Diagnostic center signup submitted. Admin will review and contact you.', 'ok');
-        }
-        
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              name,
+              role: role === 'doctor' ? 'doctor_pending' : 'patient'
+            }
+          }
+        });
+
+        if (error) throw error;
+
+        showMessage('Account created! Check email to verify, then login.', 'ok');
         signupForm.reset();
         setTimeout(() => showLogin(), 3000);
       } catch (err) {
-        showMessage(err.message || 'Signup failed. Please try again.', 'err');
+        showMessage(err.message || 'Signup failed.', 'err');
       }
     });
 
-    // Start on login tab
     showLogin();
   </script>
 </body>
