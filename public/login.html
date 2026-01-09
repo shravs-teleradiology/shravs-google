@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login & Sign Up - Shravs Teleradiology</title>
+  <title>Login / Signup - Shravs Teleradiology</title>
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
+    *{ margin:0; padding:0; box-sizing:border-box; }
     body{
-      font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;
+      font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;
       background:linear-gradient(135deg,#000 0%,#1a1a1a 50%,#000 100%);
       min-height:100vh; display:flex; align-items:center; justify-content:center;
       padding:20px; position:relative;
@@ -20,7 +20,7 @@
       pointer-events:none;
     }
     .container{
-      width:100%; max-width:560px;
+      max-width:520px; width:100%;
       background:#0a0a0a; border:2px solid #0ea5e9; border-radius:20px;
       padding:36px; box-shadow:0 10px 50px rgba(14,165,233,0.3);
       position:relative; z-index:1;
@@ -31,14 +31,14 @@
       filter:drop-shadow(0 0 20px rgba(255,255,255,0.3));
     }
     h1{
-      text-align:center; color:#fff; margin-bottom:8px;
+      text-align:center; color:#fff; margin-bottom:6px;
       font-size:2em; text-transform:uppercase; letter-spacing:2px;
     }
-    .subtitle{ text-align:center; color:#999; margin-bottom:22px; font-size:0.95em; }
+    .subtitle{ text-align:center; color:#999; margin-bottom:20px; font-size:0.95em; }
 
     .message{
       padding:12px; border-radius:10px; margin-bottom:16px;
-      text-align:center; font-weight:700; display:none;
+      text-align:center; font-weight:800; display:none;
     }
     .message.success{ display:block; background:#1a4d2e; color:#4ade80; border:1px solid #4ade80; }
     .message.error{ display:block; background:#4d1a1a; color:#ff6b6b; border:1px solid #ff6b6b; }
@@ -48,9 +48,9 @@
       border-bottom:2px solid #333; padding-bottom:10px; margin-bottom:18px;
     }
     .tab{
-      flex:1 1 160px;
+      flex:1 1 150px;
       padding:10px; background:transparent; border:none; cursor:pointer;
-      color:#999; font-weight:800; font-size:0.85em;
+      color:#999; font-weight:900; font-size:0.85em;
       text-transform:uppercase; letter-spacing:1px;
       border-bottom:3px solid transparent;
       transition:0.2s ease;
@@ -64,7 +64,7 @@
     .form-group{ margin-bottom:16px; }
     label{
       display:block; color:#fff; margin-bottom:6px;
-      font-weight:700; font-size:0.85em;
+      font-weight:800; font-size:0.85em;
       text-transform:uppercase; letter-spacing:0.5px;
     }
     input, select{
@@ -77,12 +77,14 @@
       outline:none; border-color:#0ea5e9;
       box-shadow:0 0 10px rgba(14,165,233,0.2);
     }
+
     .password-container{ position:relative; }
     .toggle-password{
       position:absolute; right:12px; top:50%;
       transform:translateY(-50%);
       background:none; border:none; color:#999;
-      cursor:pointer; font-size:1.1em;
+      cursor:pointer; font-size:0.95em; font-weight:900;
+      text-transform:uppercase;
     }
     .toggle-password:hover{ color:#0ea5e9; }
 
@@ -95,7 +97,7 @@
     }
     .btn:hover{ transform:translateY(-1px); box-shadow:0 5px 20px rgba(14,165,233,0.35); }
 
-    .admin-note{
+    .note{
       background:rgba(14,165,233,0.1);
       border:1px solid rgba(14,165,233,0.3);
       border-radius:10px;
@@ -107,7 +109,7 @@
     }
 
     .back-link{ text-align:center; margin-top:16px; }
-    .back-link a{ color:#0ea5e9; text-decoration:none; font-weight:700; }
+    .back-link a{ color:#0ea5e9; text-decoration:none; font-weight:800; }
     .back-link a:hover{ color:#06b6d4; }
   </style>
 </head>
@@ -122,8 +124,8 @@
     <div class="tabs">
       <button class="tab active" onclick="switchTab('userLogin', event)">User Login</button>
       <button class="tab" onclick="switchTab('userSignup', event)">User Sign Up</button>
-      <button class="tab" onclick="switchTab('employeeLogin', event)">Employee Login</button>
-      <button class="tab" onclick="switchTab('admin', event)">Master Admin</button>
+      <button class="tab" onclick="switchTab('staffLogin', event)">Staff Login</button>
+      <button class="tab" onclick="switchTab('masterAdmin', event)">Master Admin</button>
     </div>
 
     <!-- User Login -->
@@ -192,37 +194,37 @@
       </form>
     </div>
 
-    <!-- Employee / Staff Admin Login -->
-    <div id="employeeLoginForm" class="form-container">
-      <div class="admin-note">Employee accounts are created by Admin only. Promoted staff admins also login here.</div>
-      <form onsubmit="handleEmployeeLogin(event)">
+    <!-- Staff Login (Employee/Admin promoted) -->
+    <div id="staffLoginForm" class="form-container">
+      <div class="note">Staff accounts are created by Admin. Promoted admins also login here.</div>
+      <form onsubmit="handleStaffLogin(event)">
         <div class="form-group">
-          <label for="empEmail">Email</label>
-          <input type="email" id="empEmail" required placeholder="employee@example.com">
+          <label for="staffEmail">Email</label>
+          <input type="email" id="staffEmail" required placeholder="staff@example.com">
         </div>
         <div class="form-group">
-          <label for="empPassword">Password</label>
+          <label for="staffPassword">Password</label>
           <div class="password-container">
-            <input type="password" id="empPassword" required placeholder="Enter password">
-            <button type="button" class="toggle-password" onclick="togglePassword('empPassword')">View</button>
+            <input type="password" id="staffPassword" required placeholder="Enter password">
+            <button type="button" class="toggle-password" onclick="togglePassword('staffPassword')">View</button>
           </div>
         </div>
         <button class="btn" type="submit">Login</button>
       </form>
     </div>
 
-    <!-- Master Admin Login -->
-    <div id="adminForm" class="form-container">
-      <div class="admin-note">Master Admin Access Only - Restricted Area</div>
+    <!-- Master Admin -->
+    <div id="masterAdminForm" class="form-container">
+      <div class="note">Master admin (hard-coded). Keep secret.</div>
       <form onsubmit="handleMasterAdminLogin(event)">
         <div class="form-group">
           <label for="adminEmail">Admin email</label>
-          <input type="email" id="adminEmail" required placeholder="Enter Admin Mail">
+          <input type="email" id="adminEmail" required placeholder="admin@shravsteleradiology.com">
         </div>
         <div class="form-group">
           <label for="adminPassword">Admin password</label>
           <div class="password-container">
-            <input type="password" id="adminPassword" required placeholder="Enter Admin password">
+            <input type="password" id="adminPassword" required placeholder="Enter admin password">
             <button type="button" class="toggle-password" onclick="togglePassword('adminPassword')">View</button>
           </div>
         </div>
@@ -258,6 +260,28 @@
   function getUsers(){ return JSON.parse(localStorage.getItem("users") || "[]"); }
   function saveUsers(users){ localStorage.setItem("users", JSON.stringify(users)); }
 
+  function ensureMasterAdminUserRecord() {
+    const adminEmail = "admin@shravsteleradiology.com";
+    const adminPassword = "Shravs2025";
+    const users = getUsers();
+
+    const idx = users.findIndex(u => (u.email || "").toLowerCase() === adminEmail.toLowerCase());
+    const adminUser = {
+      name: "Master Admin",
+      email: adminEmail,
+      phone: "",
+      organization: "Shravs",
+      role: "admin",
+      password: adminPassword,
+      createdAt: users[idx]?.createdAt || new Date().toISOString()
+    };
+
+    if (idx >= 0) users[idx] = { ...users[idx], ...adminUser };
+    else users.push(adminUser);
+
+    saveUsers(users);
+  }
+
   function handleUserLogin(e){
     e.preventDefault();
     const email = document.getElementById("userEmail").value.trim();
@@ -265,35 +289,26 @@
 
     const users = getUsers();
     const u = users.find(x => x.email === email && x.password === password);
-
     if (!u) return showMessage("Invalid credentials.", "error");
-
-    // If this user was promoted to admin, give admin powers
-    if (u.role === "admin") {
-      sessionStorage.setItem("currentUser", JSON.stringify(u));
-      sessionStorage.setItem("isLoggedIn", "true");
-      sessionStorage.setItem("isAdmin", "true");
-      showMessage("Admin login successful! Redirecting...", "success");
-      setTimeout(()=> window.location.href = "admin.html", 900);
-      return;
-    }
-
-    // Normal user
-    if (u.role === "employee") {
-      // employees should use employee login tab, but allow anyway
-      sessionStorage.setItem("currentUser", JSON.stringify(u));
-      sessionStorage.setItem("isLoggedIn", "true");
-      sessionStorage.removeItem("isAdmin");
-      showMessage("Employee login successful! Redirecting...", "success");
-      setTimeout(()=> window.location.href = "employee.html", 900);
-      return;
-    }
 
     sessionStorage.setItem("currentUser", JSON.stringify(u));
     sessionStorage.setItem("isLoggedIn", "true");
+
+    if (u.role === "admin") {
+      sessionStorage.setItem("isAdmin", "true");
+      showMessage("Admin login successful. Redirecting...", "success");
+      return setTimeout(()=> window.location.href = "admin.html", 900);
+    }
+
+    if (u.role === "employee") {
+      sessionStorage.removeItem("isAdmin");
+      showMessage("Employee login successful. Redirecting...", "success");
+      return setTimeout(()=> window.location.href = "employee.html", 900);
+    }
+
     sessionStorage.removeItem("isAdmin");
-    showMessage("Login successful! Redirecting...", "success");
-    setTimeout(()=> window.location.href = "index.html", 900);
+    showMessage("Login successful. Redirecting...", "success");
+    return setTimeout(()=> window.location.href = "index.html", 900);
   }
 
   function handleUserSignup(e){
@@ -308,17 +323,14 @@
 
     if (pw.length < 6) return showMessage("Password must be at least 6 characters.", "error");
     if (pw !== pw2) return showMessage("Passwords do not match.", "error");
-    if (!name || !email || !role) return showMessage("Please fill required fields.", "error");
 
     const users = getUsers();
-    if (users.some(x => x.email === email)) return showMessage("Email already registered. Please login.", "error");
+    if (users.some(x => x.email === email)) return showMessage("Email already registered.", "error");
 
-    users.push({
-      name, email, phone, organization: org, role,
-      password: pw, createdAt: new Date().toISOString()
-    });
+    users.push({ name, email, phone, organization: org, role, password: pw, createdAt: new Date().toISOString() });
     saveUsers(users);
-    showMessage("Account created successfully. Please login.", "success");
+
+    showMessage("Account created. Please login.", "success");
     document.querySelector("#userSignupForm form").reset();
     setTimeout(()=> {
       const firstTab = document.querySelectorAll(".tab")[0];
@@ -326,28 +338,27 @@
     }, 900);
   }
 
-  function handleEmployeeLogin(e){
+  function handleStaffLogin(e){
     e.preventDefault();
-    const email = document.getElementById("empEmail").value.trim();
-    const password = document.getElementById("empPassword").value.trim();
+    const email = document.getElementById("staffEmail").value.trim();
+    const password = document.getElementById("staffPassword").value.trim();
 
     const users = getUsers();
     const u = users.find(x => x.email === email && x.password === password && (x.role === "employee" || x.role === "admin"));
-
-    if (!u) return showMessage("Invalid credentials.", "error");
+    if (!u) return showMessage("Invalid staff credentials.", "error");
 
     sessionStorage.setItem("currentUser", JSON.stringify(u));
     sessionStorage.setItem("isLoggedIn", "true");
 
     if (u.role === "admin") {
       sessionStorage.setItem("isAdmin", "true");
-      showMessage("Admin login successful! Redirecting...", "success");
-      setTimeout(()=> window.location.href = "admin.html", 900);
-    } else {
-      sessionStorage.removeItem("isAdmin");
-      showMessage("Employee login successful! Redirecting...", "success");
-      setTimeout(()=> window.location.href = "employee.html", 900);
+      showMessage("Admin login successful. Redirecting...", "success");
+      return setTimeout(()=> window.location.href = "admin.html", 900);
     }
+
+    sessionStorage.removeItem("isAdmin");
+    showMessage("Employee login successful. Redirecting...", "success");
+    return setTimeout(()=> window.location.href = "employee.html", 900);
   }
 
   function handleMasterAdminLogin(e){
@@ -360,28 +371,25 @@
 
     if (email !== adminEmail || password !== adminPassword) return showMessage("Invalid master admin credentials.", "error");
 
-    // Master admin session
+    ensureMasterAdminUserRecord();
+
     sessionStorage.setItem("isAdmin", "true");
     sessionStorage.setItem("isLoggedIn", "true");
-    sessionStorage.setItem("currentUser", JSON.stringify({ name:"Admin", email:adminEmail, role:"admin" }));
+    sessionStorage.setItem("currentUser", JSON.stringify({ name:"Master Admin", email:adminEmail, role:"admin" }));
 
-    showMessage("Admin login successful! Redirecting...", "success");
-    setTimeout(()=> window.location.href = "admin.html", 900);
+    showMessage("Admin login successful. Redirecting...", "success");
+    return setTimeout(()=> window.location.href = "admin.html", 900);
   }
 
-  window.onload = function(){
-    const isAdmin = sessionStorage.getItem("isAdmin") === "true";
-    const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true";
-    if (!isLoggedIn) return;
-
-    if (isAdmin) return window.location.href = "admin.html";
+  window.addEventListener("load", () => {
+    const logged = sessionStorage.getItem("isLoggedIn") === "true";
+    if (!logged) return;
 
     const u = JSON.parse(sessionStorage.getItem("currentUser") || "null");
-    if (u && u.role === "employee") return window.location.href = "employee.html";
     if (u && u.role === "admin") return window.location.href = "admin.html";
-
+    if (u && u.role === "employee") return window.location.href = "employee.html";
     return window.location.href = "index.html";
-  };
+  });
 </script>
 </body>
 </html>
