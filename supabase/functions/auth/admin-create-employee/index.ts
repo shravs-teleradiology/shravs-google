@@ -1,37 +1,58 @@
-exports.handler = async (event) => {
-  if (event.httpMethod !== "POST") return badRequest("POST only");
-  
-  const { name, email, phone, organization } = parseJsonBody(event);
-  if (!name || !email) return badRequest("name, email required");
-  
-  const { data, error } = await sb
-    .from("offer_letters")
-    .insert({
-      name,
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
+
+  try {
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    )
+
+    const { name, email, phone, organization } = await req.json()
+
+    if (!name || !email) throw new Error('name and email required')
+
+    // Generate emp_id
+    const { data: empData } = await supabaseAdmin.rpc('next_emp_id')
+    const emp_id = empData
+    const password = emp_id
+
+    // Create auth user
+    const { data: createdUser, error: createErr } = await supabaseAdmin.auth.admin.createUser({
       email,
-      phone: phone || "",
-      organization: organization || "",
-      status: "pending",
-      created_by: auth.profile.id
+      password,
+      email_confirm: true,
+      user_metadata: { name, emp_id }
     })
-    .select()
-    .single();
-  
-  if (error) return badRequest(error.message);
-  
-  // Trigger email (call your offer-letter function)
-  await fetch(`${process.env.API_URL || ''}/api/offer-letter`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ 
-      to: email, 
+    if (createErr) throw createErr
+
+    // Create profile
+    await supabaseAdmin.from('profiles').upsert({
+      id: createdUser.user.id,
+      email,
       name,
-      offer_id: data.id 
+      emp_id,
+      phone: phone || '',
+      role: 'employee',
+      organization: organization || ''
     })
-  });
-  
-  return ok({ 
-    message: "Offer letter queued & email sent", 
-    offer_id: data.id 
-  });
-};
+
+    return new Response(JSON.stringify({ 
+      message: 'Employee created', 
+      emp_id, 
+      default_password: password,
+      email 
+    }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), 
+      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+  }
+})
