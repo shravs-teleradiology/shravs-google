@@ -20,27 +20,24 @@
     .pill{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid #333;color:#bbb;font-weight:900;font-size:.75em;text-transform:uppercase}
     .pill.pending{border-color:#f59e0b;color:#f59e0b}
     .pill.done{border-color:#22c55e;color:#22c55e}
-    .pill.high{border-color:#ef4444;color:#ef4444}
-    .pill.medium{border-color:#f59e0b;color:#f59e0b}
-    .pill.low{border-color:#22c55e;color:#22c55e}
-    .msgs{border:1px solid #222;border-radius:12px;background:#050505;padding:10px;max-height:340px;overflow:auto}
-    .m{border:1px solid #1f1f1f;background:#101010;border-radius:12px;padding:10px;margin-bottom:10px}
-    .m .meta{display:flex;justify-content:space-between;color:#777;font-size:.8em;margin-bottom:6px}
-    .m .author{color:#0ea5e9;font-weight:900}
-    .composer{display:flex;gap:10px;margin-top:10px}
-    .composer input{flex:1}
+    input{width:100%;padding:10px;border-radius:10px;border:1px solid #333;background:#000;color:#fff}
+    input:focus{outline:none;border-color:#0ea5e9}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .row1{display:grid;grid-template-columns:1fr;gap:10px}
+    .help{color:#888;font-size:.9em;margin-top:6px}
   </style>
 </head>
 <body>
   <header>
     <div class="left">
-      <img class="logo" src="https://i.ibb.co/FL6BLkS/P-Untitled-design.png" alt="Logo">
+      <a href="index.html"><img class="logo" src="logo.jpg" alt="Logo"></a>
       <div>
         <div style="font-weight:900;">Employee Dashboard</div>
         <div style="color:#aaa;font-size:.85em;" id="meLine"></div>
       </div>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <a class="btn ghost" href="chat.html">Open Chat</a>
       <button class="btn ghost" id="refreshBtn">Refresh</button>
       <button class="btn danger" id="logoutBtn">Logout</button>
     </div>
@@ -48,56 +45,116 @@
 
   <main>
     <div class="card">
-      <h3 style="margin:0;color:#0ea5e9;">My Tasks</h3>
-      <div id="tasksWrap"></div>
+      <h3 style="margin:0;color:#0ea5e9;">My Profile</h3>
+      <p class="help">Edit name/phone and upload profile photo.</p>
+      <div class="row" style="margin-top:10px;">
+        <div>
+          <label style="display:block;color:#aaa;margin-bottom:6px;">Name</label>
+          <input id="pName" placeholder="Name">
+        </div>
+        <div>
+          <label style="display:block;color:#aaa;margin-bottom:6px;">Phone</label>
+          <input id="pPhone" placeholder="Phone">
+        </div>
+      </div>
+      <div class="row1" style="margin-top:10px;">
+        <div>
+          <label style="display:block;color:#aaa;margin-bottom:6px;">Profile photo</label>
+          <input id="pPhoto" type="file" accept="image/*">
+          <div class="help" id="photoHint"></div>
+        </div>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn" id="saveProfileBtn">Save Profile</button>
+      </div>
     </div>
 
     <div class="card">
-      <h3 style="margin:0;color:#0ea5e9;">Chat (Common)</h3>
-      <div class="msgs" id="msgs"></div>
-      <div class="composer">
-        <input id="msgText" placeholder="Type message...">
-        <button class="btn" id="sendBtn">Send</button>
-      </div>
+      <h3 style="margin:0;color:#0ea5e9;">My Tasks</h3>
+      <div id="tasksWrap"></div>
     </div>
   </main>
 
   <script type="module">
-    import { authMe, logout, tasksList, tasksSetStatus, messagesList, messagesSend } from "./js/api.js";
+    import { getMe, logout, getTasks, setTaskStatus, getProfile, updateProfile, uploadProfilePhoto } from "./js/api.js";
 
     const meLine = document.getElementById("meLine");
+    const tasksWrap = document.getElementById("tasksWrap");
+
+    const pName = document.getElementById("pName");
+    const pPhone = document.getElementById("pPhone");
+    const pPhoto = document.getElementById("pPhoto");
+    const photoHint = document.getElementById("photoHint");
+
     let me = null;
 
-    function esc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])); }
+    function esc(s){ return String(s ?? "").replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',\"'\":'&#039;'}[c])); }
     function pill(cls, text){ return `<span class="pill ${esc(cls)}">${esc(text)}</span>`; }
 
     async function guard() {
-      me = await authMe();
+      me = await getMe();
       meLine.textContent = `${me.name} (${me.role})`;
       if (me.role === "admin") window.location.href = "admin.html";
+      if (me.role !== "employee") window.location.href = "index.html";
+    }
+
+    async function loadProfile() {
+      try{
+        const p = await getProfile();
+        pName.value = p.name || "";
+        pPhone.value = p.phone || "";
+      }catch(e){
+        // ignore if backend doesn't expose getProfile
+      }
+    }
+
+    async function saveProfile() {
+      try{
+        let photo_url = undefined;
+        if (pPhoto.files && pPhoto.files[0]) {
+          photoHint.textContent = "Uploading photo...";
+          photo_url = await uploadProfilePhoto(pPhoto.files[0]);
+        }
+        await updateProfile({
+          name: pName.value.trim(),
+          phone: pPhone.value.trim(),
+          photo_url
+        });
+        photoHint.textContent = "Saved!";
+        alert("Profile updated");
+      } catch(e){
+        photoHint.textContent = "";
+        alert(e.message || "Failed to update profile");
+      }
     }
 
     async function renderTasks() {
-      const tasks = await tasksList();
+      const tasks = await getTasks();
       if (!tasks.length) {
-        document.getElementById("tasksWrap").innerHTML = `<div style="color:#777;margin-top:10px;">No tasks assigned.</div>`;
+        tasksWrap.innerHTML = `<div style="color:#777;margin-top:10px;">No tasks assigned.</div>`;
         return;
       }
 
-      document.getElementById("tasksWrap").innerHTML = `
+      tasksWrap.innerHTML = `
         <table>
-          <thead><tr><th>Priority</th><th>Status</th><th>Title</th><th>Action</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Status</th>
+              <th>Priority</th>
+              <th>Action</th>
+            </tr>
+          </thead>
           <tbody>
             ${tasks.map(t => `
               <tr>
-                <td>${pill(t.priority, t.priority)}</td>
-                <td>${pill(t.status, t.status)}</td>
+                <td>${esc(t.title || t.name || "Task")}</td>
+                <td>${t.status === "done" ? pill("done","done") : pill("pending","pending")}</td>
+                <td>${pill((t.priority||"").toLowerCase() || "pending", (t.priority||"NA"))}</td>
                 <td>
-                  <div style="font-weight:900;">${esc(t.title)}</div>
-                  <div style="color:#888;margin-top:6px;white-space:pre-wrap;">${esc(t.description||"")}</div>
-                </td>
-                <td>
-                  <button class="btn ghost" data-toggle="${esc(t.id)}">${t.status === "pending" ? "Mark done" : "Mark pending"}</button>
+                  ${t.status === "done"
+                    ? `<button class="btn ghost" disabled>Done</button>`
+                    : `<button class="btn" data-done="${esc(t.id)}">Mark done</button>`}
                 </td>
               </tr>
             `).join("")}
@@ -105,58 +162,30 @@
         </table>
       `;
 
-      document.querySelectorAll("[data-toggle]").forEach(btn => {
+      tasksWrap.querySelectorAll("[data-done]").forEach(btn => {
         btn.addEventListener("click", async () => {
-          const id = btn.getAttribute("data-toggle");
-          const row = tasks.find(x => x.id === id);
-          const next = row.status === "pending" ? "done" : "pending";
-          await tasksSetStatus({ id, status: next });
+          const id = btn.getAttribute("data-done");
+          await setTaskStatus(id, "done");
           await renderTasks();
         });
       });
     }
 
-    async function renderMessages() {
-      const msgs = await messagesList({ room_type: "common", limit: 80 });
-      const box = document.getElementById("msgs");
-      if (!msgs.length) { box.innerHTML = `<div style="color:#777;">No messages.</div>`; return; }
-
-      box.innerHTML = msgs.map(m => `
-        <div class="m">
-          <div class="meta">
-            <div><span class="author">${esc(m.author_id)}</span></div>
-            <div>${new Date(m.created_at).toLocaleString()}</div>
-          </div>
-          <div style="white-space:pre-wrap;">${esc(m.text||"")}</div>
-        </div>
-      `).join("");
-      box.scrollTop = box.scrollHeight;
-    }
-
-    document.getElementById("sendBtn").addEventListener("click", async () => {
-      const textEl = document.getElementById("msgText");
-      const text = textEl.value.trim();
-      if (!text) return;
-
-      await messagesSend({ room_type: "common", text });
-      textEl.value = "";
-      await renderMessages();
-    });
-
     document.getElementById("logoutBtn").addEventListener("click", logout);
     document.getElementById("refreshBtn").addEventListener("click", async () => {
       await renderTasks();
-      await renderMessages();
     });
+    document.getElementById("saveProfileBtn").addEventListener("click", saveProfile);
 
     (async () => {
-      await guard();
-      await renderTasks();
-      await renderMessages();
-      setInterval(async () => {
+      try{
+        await guard();
+        await loadProfile();
         await renderTasks();
-        await renderMessages();
-      }, 5000);
+      } catch(e){
+        alert(e.message || "Please login");
+        logout();
+      }
     })();
   </script>
 </body>
