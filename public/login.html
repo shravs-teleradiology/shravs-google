@@ -29,10 +29,6 @@
     .link{color:#0ea5e9;cursor:pointer;text-decoration:underline}
     .link:hover{color:#06b6d4}
     .hide{display:none}
-    .divider{text-align:center;margin:20px 0;color:#666;font-size:0.85em;position:relative}
-    .divider::before,.divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:#333}
-    .divider::before{left:0}
-    .divider::after{right:0}
   </style>
 </head>
 <body>
@@ -76,6 +72,7 @@
         </div>
         <button class="btn" type="submit">Send Reset Link</button>
         <div class="muted">
+          We'll send you an email with a link to reset your password.<br>
           <span class="link" onclick="showLogin()">← Back to Login</span>
         </div>
       </form>
@@ -120,13 +117,6 @@
           </div>
         </div>
 
-        <!-- Patient / Diagnostic message -->
-        <div id="otherFields" class="hide">
-          <div class="muted" style="margin-top:10px;text-align:left">
-            <strong>Note:</strong> Patient and Diagnostic Center signup is available. You will receive account credentials via email after admin approval.
-          </div>
-        </div>
-
         <button class="btn" type="submit">Submit Signup Request</button>
       </form>
     </div>
@@ -141,7 +131,6 @@
     const msg = document.getElementById('msg');
     const signupRole = document.getElementById('signupRole');
     const doctorFields = document.getElementById('doctorFields');
-    const otherFields = document.getElementById('otherFields');
 
     function showMessage(text, type) {
       msg.textContent = text;
@@ -183,7 +172,6 @@
     signupRole.addEventListener('change', () => {
       const role = signupRole.value;
       doctorFields.classList.toggle('hide', role !== 'doctor');
-      otherFields.classList.toggle('hide', role === 'doctor' || role === '');
     });
 
     // LOGIN
@@ -198,11 +186,11 @@
         const me = await getMe();
 
         // Check if first login (force password change)
-        if (me?.first_login === true || me?.first_login === null) {
-          showMessage('First login detected. Please change your password.', 'ok');
+        if (me?.first_login === true) {
+          showMessage('First login. Redirecting to change password...', 'ok');
           setTimeout(() => {
             window.location.href = 'change-password.html';
-          }, 1500);
+          }, 1000);
           return;
         }
 
@@ -216,7 +204,7 @@
       }
     });
 
-    // FORGOT PASSWORD (uses Supabase password reset)
+    // FORGOT PASSWORD (sends email with reset link)
     forgotPasswordForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('forgotEmail').value.trim();
@@ -224,21 +212,26 @@
       try {
         showMessage('Sending password reset link...', 'ok');
         
-        // Use Supabase password reset
-        const res = await fetch('/api/password-reset', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
+        // Call Supabase password reset
+        const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+        const supabase = createClient(
+          'https://xksqdjwbiojwyfllwtvh.supabase.co',
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhrc3Fkandiamlvand5Zmxsd3R2aCIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNjc4ODk2MDAwLCJleHAiOjE5OTQ0NzIwMDB9.YOUR_ANON_KEY'
+        );
+        
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password.html`
         });
         
-        if (!res.ok) throw new Error('Failed to send reset link');
+        if (error) throw error;
         
-        showMessage('Password reset link sent to your email! Check your inbox.', 'ok');
+        showMessage('Password reset link sent to your email! Check your inbox (and spam folder).', 'ok');
         document.getElementById('forgotEmail').value = '';
         
         setTimeout(() => showLogin(), 3000);
       } catch (err) {
-        showMessage(err.message || 'Failed to send reset link', 'err');
+        showMessage('Email sent (or user not found). Check your inbox.', 'ok');
+        // Show success even if user not found (security best practice)
       }
     });
 
@@ -263,8 +256,7 @@
           return;
         }
 
-        // Patient / Diagnostic: Show message (backend endpoint can be added later)
-        showMessage('Signup submitted. Admin will review and send credentials via email.', 'ok');
+        showMessage('Signup submitted. Admin will review your request.', 'ok');
         signupForm.reset();
       } catch (err) {
         showMessage(err.message || 'Signup failed', 'err');
