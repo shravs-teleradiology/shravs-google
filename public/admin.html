@@ -97,14 +97,26 @@
     }
     tr:hover{ background:rgba(14,165,233,0.05); }
     .pill{
-      display:inline-block; padding:4px 10px; border-radius:999px;
-      border:1px solid #333; color:#bbb; font-size:0.8em; font-weight:800;
-      text-transform:uppercase;
+      display:inline-block; padding:4px 10px; border-radius:15px;
+      font-size:0.8em; font-weight:900; text-transform:uppercase;
     }
-    .pill.pending{ border-color:#f59e0b; color:#f59e0b; background:rgba(245,158,11,0.1); }
-    .pill.done{ border-color:#22c55e; color:#22c55e; background:rgba(34,197,94,0.1); }
+    .pill.priority-high{ background:rgba(239,68,68,0.2); color:#ef4444; border:1px solid #ef4444; }
+    .pill.priority-medium{ background:rgba(245,158,11,0.2); color:#f59e0b; border:1px solid #f59e0b; }
+    .pill.priority-low{ background:rgba(34,197,94,0.2); color:#22c55e; border:1px solid #22c55e; }
+    .pill.pending{ background:rgba(251,191,36,0.2); color:#fbba24; border:1px solid #fbba24; }
+    .pill.done{ background:rgba(74,222,128,0.2); color:#4ade80; border:1px solid #4ade80; }
     .muted{ color:#888; font-size:0.9em; }
     .actions{ display:flex; gap:8px; flex-wrap:wrap; }
+
+    /* Chat button */
+    .chat-btn{
+      padding:10px 14px; border-radius:18px;
+      background:linear-gradient(135deg,#0ea5e9,#06b6d4);
+      color:#fff; border:none;
+      font-weight:900; text-transform:uppercase; letter-spacing:0.6px;
+      cursor:pointer;
+    }
+    .chat-btn:hover{ filter:brightness(1.08); }
   </style>
 </head>
 <body>
@@ -113,15 +125,30 @@
       <img class="logo" src="https://i.ibb.co/FL6BLkS/P-Untitled-design.png" alt="Logo"/>
       <h1>Admin Dashboard</h1>
     </div>
-    <button class="logout-btn" onclick="logout()">Logout</button>
+    <div style="display:flex; gap:12px;">
+      <button class="chat-btn" onclick="openChat()">💬 Chat</button>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
   </div>
 
   <div class="container">
     <div class="stats">
-      <div class="stat"><div class="num" id="statUsers">0</div><div class="lbl">Total Users</div></div>
-      <div class="stat"><div class="num" id="statEmployees">0</div><div class="lbl">Employees</div></div>
-      <div class="stat"><div class="num" id="statTasks">0</div><div class="lbl">Total Tasks</div></div>
-      <div class="stat"><div class="num" id="statPending">0</div><div class="lbl">Pending Tasks</div></div>
+      <div class="stat">
+        <div class="num" id="statUsers">0</div>
+        <div class="lbl">Total Users</div>
+      </div>
+      <div class="stat">
+        <div class="num" id="statEmployees">0</div>
+        <div class="lbl">Employees</div>
+      </div>
+      <div class="stat">
+        <div class="num" id="statTasks">0</div>
+        <div class="lbl">Total Tasks</div>
+      </div>
+      <div class="stat">
+        <div class="num" id="statPending">0</div>
+        <div class="lbl">Pending Tasks</div>
+      </div>
     </div>
 
     <div class="grid2">
@@ -168,6 +195,14 @@
             <select id="taskAssignee"></select>
           </div>
           <div>
+            <label for="taskPriority">Priority</label>
+            <select id="taskPriority">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div>
             <label for="taskDue">Due date</label>
             <input id="taskDue" type="date"/>
           </div>
@@ -182,8 +217,8 @@
         </div>
 
         <div style="margin-top:12px;">
-          <button class="btn" onclick="assignTask()">Assign</button>
-          <div class="muted" style="margin-top:8px;">Employee sees tasks immediately after login on Employee page.</div>
+          <button class="btn" onclick="assignTask()">Assign Task</button>
+          <div class="muted" style="margin-top:8px;">Employee sees tasks immediately after login.</div>
         </div>
       </div>
     </div>
@@ -277,7 +312,7 @@
     document.getElementById("empOrg").value = "";
     document.getElementById("empPassword").value = "";
 
-    alert("Employee created.");
+    alert("Employee created successfully.");
     populateAssigneeDropdown();
     renderEmployees();
     refreshStats();
@@ -296,6 +331,7 @@
 
   function assignTask(){
     const assigneeEmail = document.getElementById("taskAssignee").value;
+    const priority = document.getElementById("taskPriority").value;
     const due = document.getElementById("taskDue").value;
     const title = document.getElementById("taskTitle").value.trim();
     const desc = document.getElementById("taskDesc").value.trim();
@@ -311,6 +347,7 @@
       id: makeId(),
       title,
       description: desc,
+      priority, // "high" | "medium" | "low"
       assignedToEmail: emp.email,
       assignedToName: emp.name,
       dueDate: due || "",
@@ -324,7 +361,7 @@
     document.getElementById("taskDesc").value = "";
     document.getElementById("taskDue").value = "";
 
-    alert("Task assigned.");
+    alert("Task assigned successfully.");
     renderTasks();
     refreshStats();
   }
@@ -390,10 +427,18 @@
       (t.title || "").toLowerCase().includes(q) ||
       (t.description || "").toLowerCase().includes(q) ||
       (t.assignedToName || "").toLowerCase().includes(q) ||
-      (t.assignedToEmail || "").toLowerCase().includes(q)
+      (t.assignedToEmail || "").toLowerCase().includes(q) ||
+      (t.priority || "").toLowerCase().includes(q)
     );
 
-    tasks.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+    tasks.sort((a,b) => {
+      // Priority: high > medium > low
+      const prio = {high:3, medium:2, low:1};
+      const aPrio = prio[a.priority || "low"] || 1;
+      const bPrio = prio[b.priority || "low"] || 1;
+      if (aPrio !== bPrio) return bPrio - aPrio;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
 
     const box = document.getElementById("tasksTable");
     if (!tasks.length) {
@@ -405,13 +450,14 @@
       <table>
         <thead>
           <tr>
-            <th>Status</th><th>Title</th><th>Assigned To</th><th>Due</th><th>Actions</th>
+            <th>Priority</th><th>Status</th><th>Title</th><th>Assigned To</th><th>Due</th><th>Actions</th>
           </tr>
         </thead>
         <tbody>
           ${tasks.map(t => `
             <tr>
-              <td><span class="pill ${t.status}">${t.status}</span></td>
+              <td><span class="pill priority-${escapeHtml(t.priority || 'low')}">${escapeHtml(t.priority || 'low')}</span></td>
+              <td><span class="pill ${escapeHtml(t.status)}">${escapeHtml(t.status)}</span></td>
               <td>
                 <div style="font-weight:900;">${escapeHtml(t.title)}</div>
                 <div class="muted" style="margin-top:4px; white-space:pre-wrap;">${escapeHtml(t.description || "")}</div>
@@ -420,8 +466,10 @@
               <td>${t.dueDate ? escapeHtml(t.dueDate) : "-"}</td>
               <td>
                 <div class="actions">
-                  <button class="btn btn-ghost" onclick="toggleTaskStatus('${t.id}')">${t.status === "pending" ? "Mark done" : "Mark pending"}</button>
-                  <button class="btn btn-danger" onclick="deleteTask('${t.id}')">Delete</button>
+                  <button class="btn btn-ghost" onclick="toggleTaskStatus('${escapeHtml(t.id)}')">
+                    ${t.status === "pending" ? "Mark done" : "Mark pending"}
+                  </button>
+                  <button class="btn btn-danger" onclick="deleteTask('${escapeHtml(t.id)}')">Delete</button>
                 </div>
               </td>
             </tr>
@@ -440,6 +488,17 @@
       .replace(/'/g,"&#039;");
   }
 
+  // ===== CHAT FOR ADMIN (like employee) =====
+  const COMMON_KEY = "commonChatMessages_v1";
+
+  function openChat() {
+    const admin = { name: "Admin", email: "admin@shravsteleradiology.com", role: "admin" };
+    sessionStorage.setItem("currentUser", JSON.stringify(admin));
+    sessionStorage.setItem("isLoggedIn", "true"); // fake employee session for chat
+    window.open("employee.html", "_blank");
+  }
+
+  // ===== Init =====
   window.addEventListener("load", () => {
     populateAssigneeDropdown();
     renderEmployees();
