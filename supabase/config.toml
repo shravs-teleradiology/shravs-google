@@ -1,0 +1,13 @@
+[api]
+  enabled = true
+  port = 54321
+  schemas = [ "public" ]
+  extra_search_path = [ "extensions" ]
+
+[db]
+  port = 54322
+
+[studio]
+  enabled = true
+  port = 54323
+  jwt_secret = "super-secret-jwt-token-with-at-least-32-characters-long-1234567890"
