@@ -123,7 +123,7 @@
       <button class="tab active" onclick="switchTab('userLogin', event)">User Login</button>
       <button class="tab" onclick="switchTab('userSignup', event)">User Sign Up</button>
       <button class="tab" onclick="switchTab('employeeLogin', event)">Employee Login</button>
-      <button class="tab" onclick="switchTab('admin', event)">Admin</button>
+      <button class="tab" onclick="switchTab('admin', event)">Master Admin</button>
     </div>
 
     <!-- User Login -->
@@ -144,7 +144,7 @@
       </form>
     </div>
 
-    <!-- User Signup (no employee role here) -->
+    <!-- User Signup -->
     <div id="userSignupForm" class="form-container">
       <form onsubmit="handleUserSignup(event)">
         <div class="form-group">
@@ -192,12 +192,12 @@
       </form>
     </div>
 
-    <!-- Employee Login -->
+    <!-- Employee / Staff Admin Login -->
     <div id="employeeLoginForm" class="form-container">
-      <div class="admin-note">Employee accounts are created by Admin only.</div>
+      <div class="admin-note">Employee accounts are created by Admin only. Promoted staff admins also login here.</div>
       <form onsubmit="handleEmployeeLogin(event)">
         <div class="form-group">
-          <label for="empEmail">Employee email</label>
+          <label for="empEmail">Email</label>
           <input type="email" id="empEmail" required placeholder="employee@example.com">
         </div>
         <div class="form-group">
@@ -207,14 +207,14 @@
             <button type="button" class="toggle-password" onclick="togglePassword('empPassword')">View</button>
           </div>
         </div>
-        <button class="btn" type="submit">Employee login</button>
+        <button class="btn" type="submit">Login</button>
       </form>
     </div>
 
-    <!-- Admin Login -->
+    <!-- Master Admin Login -->
     <div id="adminForm" class="form-container">
-      <div class="admin-note">Admin Access Only - Restricted Area</div>
-      <form onsubmit="handleAdminLogin(event)">
+      <div class="admin-note">Master Admin Access Only - Restricted Area</div>
+      <form onsubmit="handleMasterAdminLogin(event)">
         <div class="form-group">
           <label for="adminEmail">Admin email</label>
           <input type="email" id="adminEmail" required placeholder="Enter Admin Mail">
@@ -262,9 +262,33 @@
     e.preventDefault();
     const email = document.getElementById("userEmail").value.trim();
     const password = document.getElementById("userPassword").value.trim();
+
     const users = getUsers();
-    const u = users.find(x => x.email === email && x.password === password && x.role !== "employee");
-    if (!u) return showMessage("Invalid credentials (or not a general user).", "error");
+    const u = users.find(x => x.email === email && x.password === password);
+
+    if (!u) return showMessage("Invalid credentials.", "error");
+
+    // If this user was promoted to admin, give admin powers
+    if (u.role === "admin") {
+      sessionStorage.setItem("currentUser", JSON.stringify(u));
+      sessionStorage.setItem("isLoggedIn", "true");
+      sessionStorage.setItem("isAdmin", "true");
+      showMessage("Admin login successful! Redirecting...", "success");
+      setTimeout(()=> window.location.href = "admin.html", 900);
+      return;
+    }
+
+    // Normal user
+    if (u.role === "employee") {
+      // employees should use employee login tab, but allow anyway
+      sessionStorage.setItem("currentUser", JSON.stringify(u));
+      sessionStorage.setItem("isLoggedIn", "true");
+      sessionStorage.removeItem("isAdmin");
+      showMessage("Employee login successful! Redirecting...", "success");
+      setTimeout(()=> window.location.href = "employee.html", 900);
+      return;
+    }
+
     sessionStorage.setItem("currentUser", JSON.stringify(u));
     sessionStorage.setItem("isLoggedIn", "true");
     sessionStorage.removeItem("isAdmin");
@@ -306,39 +330,57 @@
     e.preventDefault();
     const email = document.getElementById("empEmail").value.trim();
     const password = document.getElementById("empPassword").value.trim();
+
     const users = getUsers();
-    const u = users.find(x => x.email === email && x.password === password && x.role === "employee");
-    if (!u) return showMessage("Invalid employee credentials.", "error");
+    const u = users.find(x => x.email === email && x.password === password && (x.role === "employee" || x.role === "admin"));
+
+    if (!u) return showMessage("Invalid credentials.", "error");
 
     sessionStorage.setItem("currentUser", JSON.stringify(u));
     sessionStorage.setItem("isLoggedIn", "true");
-    sessionStorage.removeItem("isAdmin");
-    showMessage("Employee login successful! Redirecting...", "success");
-    setTimeout(()=> window.location.href = "employee.html", 900);
+
+    if (u.role === "admin") {
+      sessionStorage.setItem("isAdmin", "true");
+      showMessage("Admin login successful! Redirecting...", "success");
+      setTimeout(()=> window.location.href = "admin.html", 900);
+    } else {
+      sessionStorage.removeItem("isAdmin");
+      showMessage("Employee login successful! Redirecting...", "success");
+      setTimeout(()=> window.location.href = "employee.html", 900);
+    }
   }
 
-  function handleAdminLogin(e){
+  function handleMasterAdminLogin(e){
     e.preventDefault();
     const email = document.getElementById("adminEmail").value.trim();
     const password = document.getElementById("adminPassword").value.trim();
+
     const adminEmail = "admin@shravsteleradiology.com";
     const adminPassword = "Shravs2025";
-    if (email !== adminEmail || password !== adminPassword) return showMessage("Invalid admin credentials.", "error");
 
+    if (email !== adminEmail || password !== adminPassword) return showMessage("Invalid master admin credentials.", "error");
+
+    // Master admin session
     sessionStorage.setItem("isAdmin", "true");
     sessionStorage.setItem("isLoggedIn", "true");
-    sessionStorage.removeItem("currentUser");
+    sessionStorage.setItem("currentUser", JSON.stringify({ name:"Admin", email:adminEmail, role:"admin" }));
+
     showMessage("Admin login successful! Redirecting...", "success");
     setTimeout(()=> window.location.href = "admin.html", 900);
   }
 
   window.onload = function(){
-    if (sessionStorage.getItem("isAdmin") === "true") return window.location.href = "admin.html";
-    if (sessionStorage.getItem("isLoggedIn") === "true") {
-      const u = JSON.parse(sessionStorage.getItem("currentUser") || "null");
-      if (u && u.role === "employee") return window.location.href = "employee.html";
-      return window.location.href = "index.html";
-    }
+    const isAdmin = sessionStorage.getItem("isAdmin") === "true";
+    const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true";
+    if (!isLoggedIn) return;
+
+    if (isAdmin) return window.location.href = "admin.html";
+
+    const u = JSON.parse(sessionStorage.getItem("currentUser") || "null");
+    if (u && u.role === "employee") return window.location.href = "employee.html";
+    if (u && u.role === "admin") return window.location.href = "admin.html";
+
+    return window.location.href = "index.html";
   };
 </script>
 </body>
