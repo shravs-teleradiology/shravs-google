@@ -3,393 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login / Signup - Shravs Teleradiology</title>
+  <title>Login - Shravs Teleradiology</title>
   <style>
-    *{ margin:0; padding:0; box-sizing:border-box; }
-    body{
-      font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;
-      background:linear-gradient(135deg,#000 0%,#1a1a1a 50%,#000 100%);
-      min-height:100vh; display:flex; align-items:center; justify-content:center;
-      padding:20px; position:relative;
-    }
-    body::before{
-      content:""; position:absolute; inset:0;
-      background:
-        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px),
-        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px);
-      pointer-events:none;
-    }
-    .container{
-      max-width:520px; width:100%;
-      background:#0a0a0a; border:2px solid #0ea5e9; border-radius:20px;
-      padding:36px; box-shadow:0 10px 50px rgba(14,165,233,0.3);
-      position:relative; z-index:1;
-    }
-    .logo{
-      width:100px; height:100px; margin:0 auto 10px; display:block;
-      border:3px solid #fff; border-radius:50%; object-fit:cover;
-      filter:drop-shadow(0 0 20px rgba(255,255,255,0.3));
-    }
-    h1{
-      text-align:center; color:#fff; margin-bottom:6px;
-      font-size:2em; text-transform:uppercase; letter-spacing:2px;
-    }
-    .subtitle{ text-align:center; color:#999; margin-bottom:20px; font-size:0.95em; }
-
-    .message{
-      padding:12px; border-radius:10px; margin-bottom:16px;
-      text-align:center; font-weight:800; display:none;
-    }
-    .message.success{ display:block; background:#1a4d2e; color:#4ade80; border:1px solid #4ade80; }
-    .message.error{ display:block; background:#4d1a1a; color:#ff6b6b; border:1px solid #ff6b6b; }
-
-    .tabs{
-      display:flex; gap:8px; flex-wrap:wrap;
-      border-bottom:2px solid #333; padding-bottom:10px; margin-bottom:18px;
-    }
-    .tab{
-      flex:1 1 150px;
-      padding:10px; background:transparent; border:none; cursor:pointer;
-      color:#999; font-weight:900; font-size:0.85em;
-      text-transform:uppercase; letter-spacing:1px;
-      border-bottom:3px solid transparent;
-      transition:0.2s ease;
-    }
-    .tab.active{ color:#0ea5e9; border-bottom-color:#0ea5e9; }
-    .tab:hover{ color:#06b6d4; }
-
-    .form-container{ display:none; }
-    .form-container.active{ display:block; }
-
-    .form-group{ margin-bottom:16px; }
-    label{
-      display:block; color:#fff; margin-bottom:6px;
-      font-weight:800; font-size:0.85em;
-      text-transform:uppercase; letter-spacing:0.5px;
-    }
-    input, select{
-      width:100%; padding:12px 14px;
-      background:#000; color:#fff;
-      border:1px solid #333; border-radius:10px;
-      font-size:0.95em;
-    }
-    input:focus, select:focus{
-      outline:none; border-color:#0ea5e9;
-      box-shadow:0 0 10px rgba(14,165,233,0.2);
-    }
-
-    .password-container{ position:relative; }
-    .toggle-password{
-      position:absolute; right:12px; top:50%;
-      transform:translateY(-50%);
-      background:none; border:none; color:#999;
-      cursor:pointer; font-size:0.95em; font-weight:900;
-      text-transform:uppercase;
-    }
-    .toggle-password:hover{ color:#0ea5e9; }
-
-    .btn{
-      width:100%; padding:14px;
-      background:linear-gradient(135deg,#0ea5e9,#06b6d4);
-      color:#fff; border:2px solid #0ea5e9; border-radius:50px;
-      font-weight:900; text-transform:uppercase; letter-spacing:1px;
-      cursor:pointer; transition:0.2s ease; margin-top:6px;
-    }
-    .btn:hover{ transform:translateY(-1px); box-shadow:0 5px 20px rgba(14,165,233,0.35); }
-
-    .note{
-      background:rgba(14,165,233,0.1);
-      border:1px solid rgba(14,165,233,0.3);
-      border-radius:10px;
-      padding:10px;
-      margin-bottom:12px;
-      color:#0ea5e9;
-      font-size:0.85em;
-      text-align:center;
-    }
-
-    .back-link{ text-align:center; margin-top:16px; }
-    .back-link a{ color:#0ea5e9; text-decoration:none; font-weight:800; }
-    .back-link a:hover{ color:#06b6d4; }
+    body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;background:#000;color:#fff;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:20px}
+    .card{width:100%;max-width:520px;border:2px solid #0ea5e9;border-radius:16px;background:#0a0a0a;padding:26px}
+    .row{margin-top:12px}
+    label{display:block;margin-bottom:6px;color:#cfcfcf;font-weight:800;font-size:.85em;text-transform:uppercase}
+    input{width:100%;padding:12px;border-radius:10px;border:1px solid #333;background:#000;color:#fff}
+    input:focus{outline:none;border-color:#0ea5e9}
+    .btn{margin-top:14px;width:100%;padding:12px 14px;border-radius:999px;border:1px solid #0ea5e9;background:#0ea5e9;color:#000;font-weight:900;text-transform:uppercase;cursor:pointer}
+    .btn:hover{filter:brightness(1.05)}
+    .msg{margin-top:14px;padding:10px;border-radius:10px;display:none}
+    .msg.ok{display:block;background:#0f2f1c;border:1px solid #22c55e;color:#22c55e}
+    .msg.err{display:block;background:#2f0f0f;border:1px solid #ef4444;color:#ef4444}
+    .muted{color:#aaa;font-size:.9em;margin-top:10px;line-height:1.4}
+    .logo{width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid #fff;display:block;margin:0 auto 10px}
+    h1{text-align:center;margin:0 0 8px}
   </style>
 </head>
 <body>
-  <div class="container">
-    <img src="https://i.ibb.co/FL6BLkS/P-Untitled-design.png" alt="Logo" class="logo"/>
-    <h1>Welcome</h1>
-    <div class="subtitle">Shravs Teleradiology E-Care Services</div>
+  <div class="card">
+    <img class="logo" src="https://i.ibb.co/FL6BLkS/P-Untitled-design.png" alt="Shravs Teleradiology Logo">
+    <h1>Secure Login</h1>
 
-    <div id="messageBox" class="message"></div>
+    <div id="msg" class="msg"></div>
 
-    <div class="tabs">
-      <button class="tab active" onclick="switchTab('userLogin', event)">User Login</button>
-      <button class="tab" onclick="switchTab('userSignup', event)">User Sign Up</button>
-      <button class="tab" onclick="switchTab('staffLogin', event)">Staff Login</button>
-      <button class="tab" onclick="switchTab('masterAdmin', event)">Master Admin</button>
+    <form id="loginForm">
+      <div class="row">
+        <label>Email</label>
+        <input id="email" type="email" required placeholder="admin@... or employee@...">
+      </div>
+      <div class="row">
+        <label>Password</label>
+        <input id="password" type="password" required placeholder="Enter password">
+      </div>
+      <button class="btn" type="submit">Login</button>
+    </form>
+
+    <div class="muted">
+      Note: Employees are created by Admin in the Admin dashboard.<br>
+      This login uses the backend token (not localStorage users).
     </div>
-
-    <!-- User Login -->
-    <div id="userLoginForm" class="form-container active">
-      <form onsubmit="handleUserLogin(event)">
-        <div class="form-group">
-          <label for="userEmail">Email</label>
-          <input type="email" id="userEmail" required placeholder="your.email@example.com">
-        </div>
-        <div class="form-group">
-          <label for="userPassword">Password</label>
-          <div class="password-container">
-            <input type="password" id="userPassword" required placeholder="Enter password">
-            <button type="button" class="toggle-password" onclick="togglePassword('userPassword')">View</button>
-          </div>
-        </div>
-        <button class="btn" type="submit">Login</button>
-      </form>
-    </div>
-
-    <!-- User Signup -->
-    <div id="userSignupForm" class="form-container">
-      <form onsubmit="handleUserSignup(event)">
-        <div class="form-group">
-          <label for="signupName">Full name</label>
-          <input type="text" id="signupName" required placeholder="Enter your name">
-        </div>
-        <div class="form-group">
-          <label for="signupEmail">Email</label>
-          <input type="email" id="signupEmail" required placeholder="your.email@example.com">
-        </div>
-        <div class="form-group">
-          <label for="signupPhone">Phone</label>
-          <input type="tel" id="signupPhone" placeholder="+91 XXXXX XXXXX">
-        </div>
-        <div class="form-group">
-          <label for="signupOrganization">Organization/Hospital</label>
-          <input type="text" id="signupOrganization" placeholder="Your organization">
-        </div>
-        <div class="form-group">
-          <label for="signupRole">Role</label>
-          <select id="signupRole" required>
-            <option value="">-- Select Role --</option>
-            <option value="doctor">Doctor</option>
-            <option value="radiologist">Radiologist</option>
-            <option value="hospital-admin">Hospital Administrator</option>
-            <option value="healthcare-professional">Healthcare Professional</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="signupPassword">Password</label>
-          <div class="password-container">
-            <input type="password" id="signupPassword" required placeholder="Min 6 characters">
-            <button type="button" class="toggle-password" onclick="togglePassword('signupPassword')">View</button>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="signupConfirmPassword">Confirm password</label>
-          <div class="password-container">
-            <input type="password" id="signupConfirmPassword" required placeholder="Confirm password">
-            <button type="button" class="toggle-password" onclick="togglePassword('signupConfirmPassword')">View</button>
-          </div>
-        </div>
-        <button class="btn" type="submit">Create account</button>
-      </form>
-    </div>
-
-    <!-- Staff Login (Employee/Admin promoted) -->
-    <div id="staffLoginForm" class="form-container">
-      <div class="note">Staff accounts are created by Admin. Promoted admins also login here.</div>
-      <form onsubmit="handleStaffLogin(event)">
-        <div class="form-group">
-          <label for="staffEmail">Email</label>
-          <input type="email" id="staffEmail" required placeholder="staff@example.com">
-        </div>
-        <div class="form-group">
-          <label for="staffPassword">Password</label>
-          <div class="password-container">
-            <input type="password" id="staffPassword" required placeholder="Enter password">
-            <button type="button" class="toggle-password" onclick="togglePassword('staffPassword')">View</button>
-          </div>
-        </div>
-        <button class="btn" type="submit">Login</button>
-      </form>
-    </div>
-
-    <!-- Master Admin -->
-    <div id="masterAdminForm" class="form-container">
-      <div class="note">Master admin (hard-coded). Keep secret.</div>
-      <form onsubmit="handleMasterAdminLogin(event)">
-        <div class="form-group">
-          <label for="adminEmail">Admin email</label>
-          <input type="email" id="adminEmail" required placeholder="admin@shravsteleradiology.com">
-        </div>
-        <div class="form-group">
-          <label for="adminPassword">Admin password</label>
-          <div class="password-container">
-            <input type="password" id="adminPassword" required placeholder="Enter admin password">
-            <button type="button" class="toggle-password" onclick="togglePassword('adminPassword')">View</button>
-          </div>
-        </div>
-        <button class="btn" type="submit">Admin login</button>
-      </form>
-    </div>
-
-    <div class="back-link"><a href="index.html">Back to Home</a></div>
   </div>
 
-<script>
-  function switchTab(tab, event) {
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".form-container").forEach(f => f.classList.remove("active"));
-    if (event && event.target) event.target.classList.add("active");
-    document.getElementById(tab + "Form").classList.add("active");
-    document.getElementById("messageBox").style.display = "none";
-  }
+  <script type="module">
+    import { authLogin, authMe } from "./js/api.js";
 
-  function togglePassword(id) {
-    const el = document.getElementById(id);
-    el.type = el.type === "password" ? "text" : "password";
-  }
+    const msg = document.getElementById("msg");
 
-  function showMessage(msg, type) {
-    const box = document.getElementById("messageBox");
-    box.textContent = msg;
-    box.className = "message " + type;
-    box.style.display = "block";
-    setTimeout(() => box.style.display = "none", 5000);
-  }
-
-  function getUsers(){ return JSON.parse(localStorage.getItem("users") || "[]"); }
-  function saveUsers(users){ localStorage.setItem("users", JSON.stringify(users)); }
-
-  function ensureMasterAdminUserRecord() {
-    const adminEmail = "admin@shravsteleradiology.com";
-    const adminPassword = "Shravs2025";
-    const users = getUsers();
-
-    const idx = users.findIndex(u => (u.email || "").toLowerCase() === adminEmail.toLowerCase());
-    const adminUser = {
-      name: "Master Admin",
-      email: adminEmail,
-      phone: "",
-      organization: "Shravs",
-      role: "admin",
-      password: adminPassword,
-      createdAt: users[idx]?.createdAt || new Date().toISOString()
-    };
-
-    if (idx >= 0) users[idx] = { ...users[idx], ...adminUser };
-    else users.push(adminUser);
-
-    saveUsers(users);
-  }
-
-  function handleUserLogin(e){
-    e.preventDefault();
-    const email = document.getElementById("userEmail").value.trim();
-    const password = document.getElementById("userPassword").value.trim();
-
-    const users = getUsers();
-    const u = users.find(x => x.email === email && x.password === password);
-    if (!u) return showMessage("Invalid credentials.", "error");
-
-    sessionStorage.setItem("currentUser", JSON.stringify(u));
-    sessionStorage.setItem("isLoggedIn", "true");
-
-    if (u.role === "admin") {
-      sessionStorage.setItem("isAdmin", "true");
-      showMessage("Admin login successful. Redirecting...", "success");
-      return setTimeout(()=> window.location.href = "admin.html", 900);
+    function show(text, type) {
+      msg.textContent = text;
+      msg.className = "msg " + type;
     }
 
-    if (u.role === "employee") {
-      sessionStorage.removeItem("isAdmin");
-      showMessage("Employee login successful. Redirecting...", "success");
-      return setTimeout(()=> window.location.href = "employee.html", 900);
-    }
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      show("", ""); msg.style.display = "none";
 
-    sessionStorage.removeItem("isAdmin");
-    showMessage("Login successful. Redirecting...", "success");
-    return setTimeout(()=> window.location.href = "index.html", 900);
-  }
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
 
-  function handleUserSignup(e){
-    e.preventDefault();
-    const name = document.getElementById("signupName").value.trim();
-    const email = document.getElementById("signupEmail").value.trim();
-    const phone = document.getElementById("signupPhone").value.trim();
-    const org = document.getElementById("signupOrganization").value.trim();
-    const role = document.getElementById("signupRole").value;
-    const pw = document.getElementById("signupPassword").value;
-    const pw2 = document.getElementById("signupConfirmPassword").value;
+      try {
+        await authLogin(email, password);
+        const profile = await authMe();
 
-    if (pw.length < 6) return showMessage("Password must be at least 6 characters.", "error");
-    if (pw !== pw2) return showMessage("Passwords do not match.", "error");
-
-    const users = getUsers();
-    if (users.some(x => x.email === email)) return showMessage("Email already registered.", "error");
-
-    users.push({ name, email, phone, organization: org, role, password: pw, createdAt: new Date().toISOString() });
-    saveUsers(users);
-
-    showMessage("Account created. Please login.", "success");
-    document.querySelector("#userSignupForm form").reset();
-    setTimeout(()=> {
-      const firstTab = document.querySelectorAll(".tab")[0];
-      switchTab("userLogin", { target: firstTab });
-    }, 900);
-  }
-
-  function handleStaffLogin(e){
-    e.preventDefault();
-    const email = document.getElementById("staffEmail").value.trim();
-    const password = document.getElementById("staffPassword").value.trim();
-
-    const users = getUsers();
-    const u = users.find(x => x.email === email && x.password === password && (x.role === "employee" || x.role === "admin"));
-    if (!u) return showMessage("Invalid staff credentials.", "error");
-
-    sessionStorage.setItem("currentUser", JSON.stringify(u));
-    sessionStorage.setItem("isLoggedIn", "true");
-
-    if (u.role === "admin") {
-      sessionStorage.setItem("isAdmin", "true");
-      showMessage("Admin login successful. Redirecting...", "success");
-      return setTimeout(()=> window.location.href = "admin.html", 900);
-    }
-
-    sessionStorage.removeItem("isAdmin");
-    showMessage("Employee login successful. Redirecting...", "success");
-    return setTimeout(()=> window.location.href = "employee.html", 900);
-  }
-
-  function handleMasterAdminLogin(e){
-    e.preventDefault();
-    const email = document.getElementById("adminEmail").value.trim();
-    const password = document.getElementById("adminPassword").value.trim();
-
-    const adminEmail = "admin@shravsteleradiology.com";
-    const adminPassword = "Shravs2025";
-
-    if (email !== adminEmail || password !== adminPassword) return showMessage("Invalid master admin credentials.", "error");
-
-    ensureMasterAdminUserRecord();
-
-    sessionStorage.setItem("isAdmin", "true");
-    sessionStorage.setItem("isLoggedIn", "true");
-    sessionStorage.setItem("currentUser", JSON.stringify({ name:"Master Admin", email:adminEmail, role:"admin" }));
-
-    showMessage("Admin login successful. Redirecting...", "success");
-    return setTimeout(()=> window.location.href = "admin.html", 900);
-  }
-
-  window.addEventListener("load", () => {
-    const logged = sessionStorage.getItem("isLoggedIn") === "true";
-    if (!logged) return;
-
-    const u = JSON.parse(sessionStorage.getItem("currentUser") || "null");
-    if (u && u.role === "admin") return window.location.href = "admin.html";
-    if (u && u.role === "employee") return window.location.href = "employee.html";
-    return window.location.href = "index.html";
-  });
-</script>
+        if (profile.role === "admin") window.location.href = "admin.html";
+        else if (profile.role === "employee") window.location.href = "employee.html";
+        else window.location.href = "index.html";
+      } catch (err) {
+        msg.style.display = "block";
+        show(err.message || "Login failed", "err");
+      }
+    });
+  </script>
 </body>
 </html>
