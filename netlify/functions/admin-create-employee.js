@@ -1,44 +1,37 @@
-const { ok, badRequest, unauthorized, forbidden, isOptions, optionsOk, parseJsonBody } = require("./_lib/http");
-const { requireUser, requireAdmin } = require("./_lib/auth");
-const { supabaseAdmin } = require("./_lib/supabase");
-
 exports.handler = async (event) => {
-  if (isOptions(event)) return optionsOk();
-  if (event.httpMethod !== "POST") return badRequest("Use POST");
-
-  const auth = await requireUser(event);
-  if (auth.error) return unauthorized(auth.error);
-  if (!requireAdmin(auth.profile)) return forbidden("Admin only");
-
-  const body = parseJsonBody(event);
-  if (!body) return badRequest("Invalid JSON");
-
-  const { name, email, password, organization } = body;
-  if (!name || !email || !password) return badRequest("name, email, password required");
-
-  const admin = supabaseAdmin();
-
-  // Create Auth user
-  const { data: created, error: cErr } = await admin.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true,
-    user_metadata: { name }
-  });
-  if (cErr || !created?.user) return badRequest(cErr?.message || "Failed to create user");
-
-  // Create/Update profile row as employee
-  const { error: pErr } = await admin
-    .from("profiles")
-    .upsert({
-      id: created.user.id,
-      email,
+  if (event.httpMethod !== "POST") return badRequest("POST only");
+  
+  const { name, email, phone, organization } = parseJsonBody(event);
+  if (!name || !email) return badRequest("name, email required");
+  
+  const { data, error } = await sb
+    .from("offer_letters")
+    .insert({
       name,
-      role: "employee",
-      organization: organization || ""
-    });
-
-  if (pErr) return badRequest(pErr.message);
-
-  return ok({ user_id: created.user.id, email, role: "employee" });
+      email,
+      phone: phone || "",
+      organization: organization || "",
+      status: "pending",
+      created_by: auth.profile.id
+    })
+    .select()
+    .single();
+  
+  if (error) return badRequest(error.message);
+  
+  // Trigger email (call your offer-letter function)
+  await fetch(`${process.env.API_URL || ''}/api/offer-letter`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+      to: email, 
+      name,
+      offer_id: data.id 
+    })
+  });
+  
+  return ok({ 
+    message: "Offer letter queued & email sent", 
+    offer_id: data.id 
+  });
 };
