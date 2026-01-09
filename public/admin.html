@@ -3,388 +3,354 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Shravs</title>
+    <title>Admin Panel - Shravs Teleradiology</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; }
-        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
         .header { 
-            background: linear-gradient(135deg, #0a0a0a, #1a1a1a); 
-            border-bottom: 2px solid #0ea5e9; 
-            padding: 15px 30px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .logo { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #fff; object-fit: cover; }
-        .header-title { font-size: 1.3em; font-weight: bold; }
-        
-        .container { 
-            max-width: 1400px; 
-            margin: 30px auto; 
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-            gap: 25px;
-        }
-        
-        @media (max-width: 968px) {
-            .container { grid-template-columns: 1fr; }
-        }
-        
-        .card { 
-            background: linear-gradient(135deg, #0a0a0a, #1a1a1a); 
-            border: 2px solid #333; 
-            border-radius: 15px; 
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transition: all 0.3s ease;
-        }
-        
-        .card:hover {
-            border-color: #0ea5e9;
-            box-shadow: 0 10px 40px rgba(14, 165, 233, 0.2);
-        }
-        
-        .card.full-width { grid-column: 1 / -1; }
-        
-        h2 { 
-            color: #0ea5e9; 
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        button { 
-            background: linear-gradient(135deg, #0ea5e9, #06b6d4); 
+            text-align: center; 
             color: white; 
-            border: none; 
-            padding: 12px 24px; 
-            border-radius: 25px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            margin: 5px;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            font-size: 0.85em;
-            letter-spacing: 0.5px;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
-        button:hover { 
-            background: linear-gradient(135deg, #06b6d4, #0ea5e9);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(14, 165, 233, 0.4);
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .stats-grid { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 20px; margin-bottom: 30px;
         }
-        
-        button.btn-full { width: 100%; margin-top: 15px; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #333; }
-        th { color: #0ea5e9; font-weight: bold; text-transform: uppercase; font-size: 0.85em; }
-        td { color: #ccc; }
-        
+        .stat-card { 
+            background: rgba(255,255,255,0.95); 
+            padding: 25px; border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center; transition: transform 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-number { font-size: 2.5em; font-weight: bold; color: #667eea; }
+        .stat-label { color: #666; font-size: 1.1em; margin-top: 5px; }
+        .form-section { 
+            background: rgba(255,255,255,0.95); 
+            padding: 30px; border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 20px;
+        }
+        .form-row { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
+        .form-group { flex: 1; min-width: 200px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; }
         input, select, textarea { 
-            width: 100%; 
-            padding: 12px 15px; 
-            border-radius: 10px; 
-            border: 2px solid #333; 
-            background: #000; 
-            color: #fff; 
-            margin: 8px 0;
-            font-size: 0.95em;
-            transition: all 0.3s ease;
+            width: 100%; padding: 12px; border: 2px solid #e1e5e9; 
+            border-radius: 8px; font-size: 16px; transition: border-color 0.3s;
         }
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #0ea5e9;
-            box-shadow: 0 0 10px rgba(14, 165, 233, 0.2);
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #667eea; }
+        button { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; padding: 12px 30px; border: none; 
+            border-radius: 8px; font-size: 16px; cursor: pointer; 
+            transition: transform 0.2s; min-width: 120px;
         }
-        
-        label {
-            display: block;
-            color: #0ea5e9;
-            font-weight: bold;
-            margin-top: 12px;
-            font-size: 0.9em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        button:hover { transform: translateY(-2px); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .employee-list { 
+            background: rgba(255,255,255,0.95); 
+            padding: 25px; border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
-        
-        .empty-state { text-align: center; padding: 40px 20px; color: #666; }
-        
-        .success-msg {
-            background: #1a4d2e;
-            color: #4ade80;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-weight: bold;
-            display: none;
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e1e5e9; }
+        th { background: #f8f9fa; font-weight: 600; color: #333; }
+        tr:hover { background: #f8f9fa; }
+        .status { padding: 4px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 600; }
+        .status.active { background: #d4edda; color: #155724; }
+        .status.inactive { background: #f8d7da; color: #721c24; }
+        .actions { white-space: nowrap; }
+        .btn-small { padding: 6px 12px; font-size: 14px; margin: 0 2px; }
+        .alert { 
+            padding: 15px; margin: 20px 0; border-radius: 8px; 
+            font-weight: 500; display: none;
         }
-        .success-msg.show { display: block; animation: slideIn 0.3s ease; }
-        
-        .error-msg {
-            background: #4d1a1a;
-            color: #ef4444;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-weight: bold;
-            display: none;
-        }
-        .error-msg.show { display: block; animation: slideIn 0.3s ease; }
-        
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .note {
-            background: rgba(14, 165, 233, 0.1);
-            border-left: 3px solid #0ea5e9;
-            padding: 12px;
-            margin-top: 10px;
-            border-radius: 5px;
-            font-size: 0.85em;
-            color: #999;
-        }
-
-        .debug {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            background: #111;
-            border: 1px solid #333;
-            padding: 10px;
-            font-size: 0.7em;
-            color: #0ea5e9;
-            max-width: 300px;
-            border-radius: 5px;
-            max-height: 200px;
-            overflow-y: auto;
+        .alert.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        @media (max-width: 768px) {
+            .form-row { flex-direction: column; }
+            .stats-grid { grid-template-columns: 1fr; }
+            table { font-size: 14px; }
+            th, td { padding: 8px 4px; }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="header-left">
-            <img src="logo.jpg" alt="Shravs Logo" class="logo" onerror="this.style.display='none'">
-            <div class="header-title">Admin Dashboard</div>
-        </div>
-        <button onclick="logout()">Logout</button>
-    </div>
-
     <div class="container">
-        
-        <!-- CREATE NEW EMPLOYEE (SIMPLIFIED) -->
-        <div class="card">
-            <h2>👤 Create New Employee</h2>
-            <div class="success-msg" id="createEmployeeSuccess"></div>
-            <div class="error-msg" id="createEmployeeError"></div>
-            <form id="createEmployeeForm">
-                <label>Full Name *</label>
-                <input type="text" id="empName" required placeholder="Employee name">
-                
-                <label>Email *</label>
-                <input type="email" id="empEmail" required placeholder="employee@example.com">
-                
-                <label>Temporary Password *</label>
-                <input type="password" id="empPassword" required placeholder="Create temporary password" minlength="6">
-                
-                <div class="note">
-                    ℹ️ Employee will be asked to change password on first login and receive an email with login credentials
-                </div>
-                
-                <button type="submit" class="btn-full">➕ Create Employee</button>
-            </form>
+        <div class="header">
+            <h1>👨‍⚕️ Shravs Teleradiology Admin</h1>
+            <p>Manage Radiologists & Staff</p>
         </div>
 
-        <!-- ALL EMPLOYEES -->
-        <div class="card">
-            <h2>👥 All Employees</h2>
-            <div id="employeesList">
-                <div class="empty-state">Loading...</div>
+        <div id="alert" class="alert"></div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div id="totalEmployees" class="stat-number">0</div>
+                <div class="stat-label">Total Staff</div>
+            </div>
+            <div class="stat-card">
+                <div id="activeEmployees" class="stat-number">0</div>
+                <div class="stat-label">Active</div>
+            </div>
+            <div class="stat-card">
+                <div id="inactiveEmployees" class="stat-number">0</div>
+                <div class="stat-label">Inactive</div>
             </div>
         </div>
+
+        <!-- Add Employee Form -->
+        <div class="form-section">
+            <h2>➕ Add New Radiologist/Staff</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="employeeName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="employeeEmail" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="employeePhone">
+                </div>
+                <div class="form-group">
+                    <label>Specialization</label>
+                    <input type="text" id="employeeSpecialization" placeholder="MRI, CT, X-Ray, etc.">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Status *</label>
+                    <select id="employeeStatus" required>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="employeeRole">
+                        <option value="radiologist">Radiologist</option>
+                        <option value="technician">Technician</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="addEmployee()">➕ Add Employee</button>
+        </div>
+
+        <!-- Employees List -->
+        <div class="employee-list">
+            <h2>👥 All Staff Members <span id="liveCount">(0)</span></h2>
+            <table id="employeeTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Specialization</th>
+                        <th>Status</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody">
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- Debug console -->
-    <div class="debug" id="debugConsole">Initializing...</div>
-
-    <script type="module">
+    <script>
+        // Supabase config
         const SUPABASE_URL = 'https://xksqdjwbiojwyfllwtvh.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_zZe-aVVerbOt7joJQMt6QQ_bq3Ej7Ze';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhrc3Fkandi...'; // Your anon key
 
-        const debugConsole = document.getElementById('debugConsole');
-        function debug(msg) {
-            console.log(msg);
-            const time = new Date().toLocaleTimeString();
-            debugConsole.innerHTML = `[${time}] ${msg}<br>` + debugConsole.innerHTML;
+        const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Edge Function URLs
+        const AUTH_FUNCTION = 'https://xksqdjwbiojwyfllwtvh.supabase.co/functions/v1/auth';
+        const CREATE_EMPLOYEE_FUNCTION = 'https://xksqdjwbiojwyfllwtvh.supabase.co/functions/v1/api~1admin-create-employee';
+        const GET_EMPLOYEES_FUNCTION = 'https://xksqdjwbiojwyfllwtvh.supabase.co/functions/v1/api~1get-employee-list';
+
+        // Show alert
+        function showAlert(message, type = 'success') {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = `alert ${type}`;
+            alert.style.display = 'block';
+            setTimeout(() => alert.style.display = 'none', 5000);
         }
 
-        debug('Admin page loaded');
-
-        // Import Supabase
-        const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        debug('Supabase initialized');
-
-        // Check auth
-        const token = localStorage.getItem('token');
-        if (!token) {
-            debug('No token found - redirecting to login');
-            window.location.href = 'login.html';
-        }
-
-        // Get current user
-        const { data: { user } } = await supabase.auth.getUser(token);
-        if (!user) {
-            debug('Invalid token - redirecting');
-            window.location.href = 'login.html';
-        }
-
-        debug('User authenticated: ' + user.email);
-
-        // Check if admin
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('user_id', user.id)
-            .single();
-
-        if (profile?.role !== 'admin') {
-            debug('Not admin - access denied');
-            alert('Access denied. Admin only.');
-            window.location.href = 'login.html';
-        }
-
-        debug('Admin access confirmed ✓');
-
-        // Logout function
-        window.logout = async () => {
-            await supabase.auth.signOut();
-            localStorage.removeItem('token');
-            window.location.href = 'login.html';
-        };
-
-        // Show message functions
-        function showSuccess(elementId, message) {
-            const el = document.getElementById(elementId);
-            el.textContent = message;
-            el.classList.add('show');
-            setTimeout(() => el.classList.remove('show'), 5000);
-        }
-
-        function showError(elementId, message) {
-            const el = document.getElementById(elementId);
-            el.textContent = message;
-            el.classList.add('show');
-            setTimeout(() => el.classList.remove('show'), 5000);
-        }
-
-        // CREATE EMPLOYEE
-        document.getElementById('createEmployeeForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            debug('Creating employee...');
-            
-            const employeeData = {
-                name: document.getElementById('empName').value.trim(),
-                email: document.getElementById('empEmail').value.trim(),
-                password: document.getElementById('empPassword').value
-            };
-            
-            debug('Employee data: ' + JSON.stringify(employeeData));
-            
+        // Load employees
+        async function loadEmployees() {
             try {
-                // Call Supabase Edge Function
-                const response = await fetch(`${SUPABASE_URL}/functions/v1/admin-create-employee`, {
-                    method: 'POST',
+                const response = await fetch(GET_EMPLOYEES_FUNCTION, {
+                    method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(employeeData)
+                        'Authorization': `Bearer ${await getAuthToken()}`,
+                        'Content-Type': 'application/json'
+                    }
                 });
 
-                debug('Response status: ' + response.status);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    debug('Error response: ' + JSON.stringify(errorData));
-                    throw new Error(errorData.error || 'Failed to create employee');
-                }
-
-                const result = await response.json();
-                debug('Success: ' + JSON.stringify(result));
-
-                showSuccess('createEmployeeSuccess', '✅ Employee created! Email sent with credentials.');
-                document.getElementById('createEmployeeForm').reset();
+                const employees = await response.json();
                 
-                // Reload employees list
-                loadEmployees();
+                displayEmployees(employees);
+                updateStats(employees);
             } catch (error) {
-                debug('ERROR: ' + error.message);
-                showError('createEmployeeError', '❌ Error: ' + error.message);
-            }
-        });
-
-        // LOAD EMPLOYEES
-        async function loadEmployees() {
-            debug('Loading employees...');
-            try {
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('role', 'employee')
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-
-                debug('Loaded ' + data.length + ' employees');
-
-                const container = document.getElementById('employeesList');
-                
-                if (data.length === 0) {
-                    container.innerHTML = '<div class="empty-state">No employees yet</div>';
-                    return;
-                }
-
-                container.innerHTML = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>First Login</th>
-                                <th>Created</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${data.map(emp => `
-                                <tr>
-                                    <td>${emp.name || 'N/A'}</td>
-                                    <td>${emp.email}</td>
-                                    <td>${emp.first_login ? '⚠️ Pending' : '✅ Done'}</td>
-                                    <td>${new Date(emp.created_at).toLocaleDateString()}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                `;
-            } catch (error) {
-                debug('Error loading employees: ' + error.message);
-                document.getElementById('employeesList').innerHTML = 
-                    '<div class="empty-state" style="color: #ef4444;">Error loading employees</div>';
+                console.error('Load employees error:', error);
+                showAlert('Failed to load employees: ' + error.message, 'error');
             }
         }
 
-        // Initial load
-        loadEmployees();
-        debug('Ready! ✓');
+        // Get auth token via Edge Function
+        async function getAuthToken() {
+            try {
+                const response = await fetch(AUTH_FUNCTION, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'get_token' })
+                });
+                const data = await response.json();
+                return data.token;
+            } catch {
+                return SUPABASE_ANON_KEY; // Fallback
+            }
+        }
+
+        // Add new employee
+        async function addEmployee() {
+            const formData = {
+                name: document.getElementById('employeeName').value.trim(),
+                email: document.getElementById('employeeEmail').value.trim(),
+                phone: document.getElementById('employeePhone').value.trim(),
+                specialization: document.getElementById('employeeSpecialization').value.trim(),
+                status: document.getElementById('employeeStatus').value,
+                role: document.getElementById('employeeRole').value
+            };
+
+            if (!formData.name || !formData.email) {
+                showAlert('Name and Email are required!', 'error');
+                return;
+            }
+
+            const button = event.target;
+            button.disabled = true;
+            button.textContent = 'Adding...';
+
+            try {
+                const response = await fetch(CREATE_EMPLOYEE_FUNCTION, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${await getAuthToken()}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showAlert('✅ Employee added successfully!');
+                    document.querySelectorAll('input, select').forEach(el => el.value = '');
+                    loadEmployees(); // Refresh list
+                } else {
+                    throw new Error(result.error || 'Failed to add employee');
+                }
+            } catch (error) {
+                console.error('Add employee error:', error);
+                showAlert('❌ ' + (error.message || 'Failed to add employee'), 'error');
+            } finally {
+                button.disabled = false;
+                button.textContent = '➕ Add Employee';
+            }
+        }
+
+        // Display employees in table
+        function displayEmployees(employees) {
+            const tbody = document.getElementById('employeeTableBody');
+            tbody.innerHTML = '';
+
+            document.getElementById('liveCount').textContent = `(${employees.length})`;
+
+            employees.forEach((emp, index) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${emp.name || 'N/A'}</td>
+                    <td>${emp.email || 'N/A'}</td>
+                    <td>${emp.phone || 'N/A'}</td>
+                    <td>${emp.specialization || 'General'}</td>
+                    <td><span class="status ${emp.status}">${emp.status.toUpperCase()}</span></td>
+                    <td>${emp.role || 'staff'}</td>
+                    <td class="actions">
+                        <button class="btn-small" onclick="toggleStatus(${emp.id}, '${emp.status}')">
+                            ${emp.status === 'active' ? '⏸️ Pause' : '▶️ Activate'}
+                        </button>
+                    </td>
+                `;
+            });
+        }
+
+        // Update stats
+        function updateStats(employees) {
+            const total = employees.length;
+            const active = employees.filter(e => e.status === 'active').length;
+            const inactive = total - active;
+
+            document.getElementById('totalEmployees').textContent = total;
+            document.getElementById('activeEmployees').textContent = active;
+            document.getElementById('inactiveEmployees').textContent = inactive;
+        }
+
+        // Toggle employee status
+        async function toggleStatus(id, currentStatus) {
+            if (!confirm(`Mark employee as ${currentStatus === 'active' ? 'inactive' : 'active'}?`)) return;
+
+            try {
+                const token = await getAuthToken();
+                const response = await fetch(`${GET_EMPLOYEES_FUNCTION}/${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: currentStatus === 'active' ? 'inactive' : 'active' })
+                });
+
+                if (response.ok) {
+                    showAlert('Status updated!');
+                    loadEmployees();
+                }
+            } catch (error) {
+                showAlert('Failed to update status', 'error');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadEmployees();
+            setInterval(loadEmployees, 30000); // Refresh every 30s
+        });
+
+        // Form submit on Enter
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                addEmployee();
+            }
+        });
     </script>
 </body>
 </html>
