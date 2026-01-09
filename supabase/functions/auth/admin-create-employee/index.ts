@@ -1,58 +1,59 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { corsHeaders, json, requireAdmin, supabaseAdmin } from "../_shared.ts";
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method !== "POST") return json({ error: "Use POST" }, 405);
 
   try {
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-      { auth: { autoRefreshToken: false, persistSession: false } }
-    )
+    await requireAdmin(req);
 
-    const { name, email, phone, organization } = await req.json()
+    const body = await req.json();
+    const name = (body.name || "").trim();
+    const email = (body.email || "").trim().toLowerCase();
+    const phone = (body.phone || "").trim();
+    const organization = (body.organization || "").trim();
 
-    if (!name || !email) throw new Error('name and email required')
+    if (!name || !email) return json({ error: "name and email required" }, 400);
 
-    // Generate emp_id
-    const { data: empData } = await supabaseAdmin.rpc('next_emp_id')
-    const emp_id = empData
-    const password = emp_id
+    const admin = supabaseAdmin();
 
-    // Create auth user
-    const { data: createdUser, error: createErr } = await supabaseAdmin.auth.admin.createUser({
+    // 1) Generate STR-01, STR-02...
+    const { data: empId, error: empErr } = await admin.rpc("next_emp_id");
+    if (empErr) return json({ error: "emp-id generation failed: " + empErr.message }, 400);
+
+    const emp_id = String(empId);
+    const password = emp_id;
+
+    // 2) Create auth user
+    const { data: created, error: cErr } = await admin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
-      user_metadata: { name, emp_id }
-    })
-    if (createErr) throw createErr
+      user_metadata: { name, emp_id },
+    });
+    if (cErr || !created?.user) return json({ error: cErr?.message || "Failed to create user" }, 400);
 
-    // Create profile
-    await supabaseAdmin.from('profiles').upsert({
-      id: createdUser.user.id,
+    // 3) Upsert profile
+    const { error: pErr } = await admin.from("profiles").upsert({
+      id: created.user.id,
       email,
       name,
       emp_id,
-      phone: phone || '',
-      role: 'employee',
-      organization: organization || ''
-    })
+      phone: phone || "",
+      role: "employee",
+      organization: organization || "",
+    });
+    if (pErr) return json({ error: pErr.message }, 400);
 
-    return new Response(JSON.stringify({ 
-      message: 'Employee created', 
-      emp_id, 
+    return json({
+      message: "Employee created",
+      user_id: created.user.id,
+      email,
+      emp_id,
       default_password: password,
-      email 
-    }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), 
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    }, 200);
+  } catch (e) {
+    return json({ error: e?.message || String(e) }, 401);
   }
-})
+});
