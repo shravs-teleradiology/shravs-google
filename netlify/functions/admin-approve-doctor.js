@@ -1,116 +1,67 @@
-import { createClient } from '@supabase/supabase-js';
+const { ok, badRequest, unauthorized, forbidden, isOptions, optionsOk, parseJsonBody } = require("./_lib/http");
+const { requireUser, requireAdmin } = require("./_lib/auth");
+const { supabaseAdmin } = require("./_lib/supabase");
 
-const supabaseUrl = Deno.env.get('SUPABASE_URL');
-const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-const sb = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: { autoRefreshToken: false, persistSession: false }
-});
+function makeTempPassword(prefix = "DOC") {
+  return `${prefix}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+}
 
-export default async function handler(req, res) {
-  // Verify admin (service_role bypasses RLS, but we check auth anyway)
-  const token = req.headers.get('Authorization')?.replace('Bearer ', '');
-  if (!token) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+exports.handler = async (event) => {
+  if (isOptions(event)) return optionsOk();
+  if (event.httpMethod !== "POST") return badRequest("Use POST");
 
-  const { data: { user }, error: authErr } = await sb.auth.getUser(token);
-  if (authErr || !user) {
-    return res.status(401).json({ error: 'Invalid token' });
-  }
+  const auth = await requireUser(event);
+  if (auth.error) return unauthorized(auth.error);
+  if (!requireAdmin(auth.profile)) return forbidden("Admin only");
 
-  const { data: profile, error: profileErr } = await sb
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
+  const body = parseJsonBody(event);
+  if (!body) return badRequest("Invalid JSON");
+
+  const doctor_id = body.doctor_id;
+  if (!doctor_id) return badRequest("doctor_id required");
+
+  const admin = supabaseAdmin();
+
+  const { data: reqRow, error: reqErr } = await admin
+    .from("doctor_requests")
+    .select("id,name,email,organization,status")
+    .eq("id", doctor_id)
     .single();
 
-  if (profileErr || !profile || profile.role !== 'admin') {
-    return res.status(403).json({ error: 'Admin access required' });
-  }
+  if (reqErr) return badRequest(reqErr.message);
+  if (!reqRow || reqRow.status !== "pending") return badRequest("Request not pending");
 
-  // Validate input
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'POST only' });
-  }
+  const temp_password = makeTempPassword("DOC");
 
-  const { doctor_id } = req.body;
-  if (!doctor_id) {
-    return res.status(400).json({ error: 'Missing doctor_id' });
-  }
+  const { data: created, error: cErr } = await admin.auth.admin.createUser({
+    email: reqRow.email,
+    password: temp_password,
+    email_confirm: true,
+    user_metadata: { name: reqRow.name, role: "doctor" }
+  });
+  if (cErr || !created?.user) return badRequest(cErr?.message || "Failed to create doctor user");
 
-  try {
-    // 1) Fetch doctor request details
-    const { data: reqData, error: reqErr } = await sb
-      .from('doctor_requests')
-      .select('name, email, organization')
-      .eq('id', doctor_id)
-      .eq('status', 'pending')
-      .single();
+  const { error: pErr } = await admin.from("profiles").upsert({
+    id: created.user.id,
+    email: reqRow.email,
+    name: reqRow.name,
+    role: "doctor",
+    organization: reqRow.organization || "",
+    approved: true
+  });
+  if (pErr) return badRequest(pErr.message);
 
-    if (reqErr || !reqData) {
-      return res.status(404).json({ error: 'Pending doctor request not found' });
-    }
+  const { error: uErr } = await admin
+    .from("doctor_requests")
+    .update({ status: "approved", approved_by: auth.profile.id, approved_at: new Date().toISOString() })
+    .eq("id", doctor_id);
 
-    // 2) Create auth user (service_role bypasses email confirmation)
-    const { data: authData, error: authErr } = await sb.auth.admin.createUser({
-      email: reqData.email,
-      password: 'temp' + Math.random().toString(36).slice(-8), // Random temp password
-      email_confirm: true,
-      user_metadata: { 
-        name: reqData.name, 
-        role: 'doctor',
-        organization: reqData.organization 
-      }
-    });
+  if (uErr) return badRequest(uErr.message);
 
-    if (authErr) {
-      return res.status(500).json({ error: `Auth creation failed: ${authErr.message}` });
-    }
-
-    // 3) Create profile (service_role bypasses RLS)
-    const { data: profileData, error: profileErr } = await sb
-      .from('profiles')
-      .insert({
-        id: authData.user.id,
-        name: reqData.name,
-        email: reqData.email,
-        role: 'doctor',
-        organization: reqData.organization,
-        updated_at: new Date().toISOString()
-      })
-      .select()
-      .single();
-
-    if (profileErr) {
-      return res.status(500).json({ error: `Profile creation failed: ${profileErr.message}` });
-    }
-
-    // 4) Mark request as approved
-    const { error: updateErr } = await sb
-      .from('doctor_requests')
-      .update({ 
-        status: 'approved', 
-        approved_by: user.id,
-        approved_at: new Date().toISOString()
-      })
-      .eq('id', doctor_id);
-
-    if (updateErr) {
-      console.error('Warning: Approval update failed:', updateErr);
-    }
-
-    res.status(200).json({ 
-      message: 'Doctor approved successfully',
-      doctor: {
-        id: authData.user.id,
-        name: reqData.name,
-        email: reqData.email,
-        temp_password: authData.user.password || 'temp-generated'
-      }
-    });
-
-  } catch (err) {
-    console.error('Approve doctor error:', err);
-    res.status(500).json({ error: err.message || 'Internal server error' });
-  }
-}
+  return ok({
+    message: "Doctor approved",
+    doctor_user_id: created.user.id,
+    email: reqRow.email,
+    temp_password
+  });
+};
