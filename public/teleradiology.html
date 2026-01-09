@@ -3,268 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teleradiology Services - Shravs Teleradiology</title>
+    <title>Teleradiology Services - Shravs</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #000000;
-            color: #ffffff;
-            line-height: 1.6;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
-            border-bottom: 2px solid #0ea5e9;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 5px 20px rgba(14, 165, 233, 0.2);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-
-         .logo {
-            width: 80px; 
-            height: 80px;
-            border: 2px solid #ffffff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #0ea5e9, #06b6d4);
-        }
-
-        .logo-container {
-            margin-bottom: 30px;
-            animation: fadeIn 1.5s ease-out;
-        }
-
-
-        .header h1 {
-            font-size: 1.5em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .back-btn {
-            padding: 10px 25px;
-            background: transparent;
-            color: #0ea5e9;
-            border: 2px solid #0ea5e9;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            text-transform: uppercase;
-        }
-
-        .back-btn:hover {
-            background: #0ea5e9;
-            color: #ffffff;
-        }
-
-        .hero-section {
-            padding: 80px 20px;
-            text-align: center;
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
-        }
-
-        .hero-section h2 {
-            font-size: 3em;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            background: linear-gradient(90deg, #0ea5e9, #06b6d4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero-section p {
-            font-size: 1.3em;
-            color: #999;
-            max-width: 800px;
-            margin: 0 auto 40px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 60px 20px;
-        }
-
-        .section {
-            margin-bottom: 80px;
-        }
-
-        .section-title {
-            font-size: 2.5em;
-            margin-bottom: 30px;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #0ea5e9;
-        }
-
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-
-        .service-card {
-            background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
-            border: 2px solid #0ea5e9;
-            border-radius: 15px;
-            padding: 40px;
-            transition: all 0.3s ease;
-        }
-
-        .service-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 50px rgba(14, 165, 233, 0.3);
-        }
-
-        .service-icon {
-            font-size: 3em;
-            margin-bottom: 20px;
-        }
-
-        .service-card h3 {
-            font-size: 1.5em;
-            margin-bottom: 15px;
-            color: #ffffff;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .service-card p {
-            color: #999;
-            line-height: 1.8;
-            margin-bottom: 15px;
-        }
-
-        .service-card ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .service-card li {
-            color: #ccc;
-            padding: 8px 0;
-            padding-left: 25px;
-            position: relative;
-        }
-
-        .service-card li:before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: #0ea5e9;
-            font-weight: bold;
-        }
-
-        .feature-list {
-            background: #0a0a0a;
-            border: 2px solid #333;
-            border-radius: 15px;
-            padding: 40px;
-            margin: 40px 0;
-        }
-
-        .feature-list h3 {
-            color: #0ea5e9;
-            font-size: 1.8em;
-            margin-bottom: 25px;
-            text-transform: uppercase;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: start;
-            gap: 20px;
-            padding: 20px;
-            margin: 15px 0;
-            background: #000000;
-            border-left: 3px solid #0ea5e9;
-            border-radius: 8px;
-        }
-
-        .feature-icon-small {
-            font-size: 2em;
-            min-width: 50px;
-        }
-
-        .cta-section {
-            background: linear-gradient(135deg, #0ea5e9, #06b6d4);
-            padding: 60px 40px;
-            border-radius: 20px;
-            text-align: center;
-            margin: 60px 0;
-        }
-
-        .cta-section h3 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            color: #ffffff;
-        }
-
-        .cta-section p {
-            font-size: 1.2em;
-            margin-bottom: 30px;
-            color: #ffffff;
-        }
-
-        .cta-btn {
-            padding: 18px 50px;
-            background: #ffffff;
-            color: #0ea5e9;
-            border: 2px solid #ffffff;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .cta-btn:hover {
-            background: transparent;
-            color: #ffffff;
-            transform: scale(1.05);
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #000000; color: #ffffff; line-height: 1.6; }
+        .header { background: linear-gradient(135deg, #0a0a0a, #1a1a1a); border-bottom: 2px solid #0ea5e9; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .logo { width: 70px; height: 70px; border-radius: 50%; border: 2px solid #ffffff; object-fit: cover; }
+        .back-btn { padding: 10px 25px; background: transparent; color: #0ea5e9; border: 2px solid #0ea5e9; border-radius: 25px; font-weight: bold; text-decoration: none; text-transform: uppercase; }
+        .back-btn:hover { background: #0ea5e9; color: #ffffff; }
+        .hero-section { padding: 80px 20px; text-align: center; background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%); }
+        .hero-section h2 { font-size: 3em; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 3px; background: linear-gradient(90deg, #0ea5e9, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-section p { font-size: 1.3em; color: #999; max-width: 800px; margin: 0 auto 40px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
+        .section-title { font-size: 2.5em; margin-bottom: 30px; text-align: center; text-transform: uppercase; letter-spacing: 2px; color: #0ea5e9; }
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px; }
+        .service-card { background: linear-gradient(135deg, #0a0a0a, #1a1a1a); border: 2px solid #0ea5e9; border-radius: 15px; padding: 40px; transition: all 0.3s ease; }
+        .service-card:hover { transform: translateY(-10px); box-shadow: 0 15px 50px rgba(14, 165, 233, 0.3); }
+        .service-icon { font-size: 3em; margin-bottom: 20px; }
+        .service-card h3 { font-size: 1.5em; margin-bottom: 15px; color: #ffffff; text-transform: uppercase; }
+        .service-card p { color: #999; line-height: 1.8; margin-bottom: 15px; }
+        .service-card ul { list-style: none; padding-left: 0; }
+        .service-card li { color: #ccc; padding: 8px 0; padding-left: 25px; position: relative; }
+        .service-card li:before { content: '✓'; position: absolute; left: 0; color: #0ea5e9; font-weight: bold; }
+        .cta-section { background: linear-gradient(135deg, #0ea5e9, #06b6d4); padding: 60px 40px; border-radius: 20px; text-align: center; margin: 60px 0; }
+        .cta-btn { padding: 18px 50px; background: #ffffff; color: #0ea5e9; border: 2px solid #ffffff; border-radius: 50px; font-weight: bold; font-size: 1.1em; text-decoration: none; display: inline-block; text-transform: uppercase; }
+        .cta-btn:hover { background: transparent; color: #ffffff; transform: scale(1.05); }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="header-left">
-             <div class="logo-container">
-                <img src="https://i.ibb.co/FL6BLkSP/Untitled-design.png" alt="Shravs Teleradiology Logo" class="logo" href="index.html">
-            </div>
-            <h1>Teleradiology Services</h1>
-        </div>
-        <a href="index.html" class="back-btn">← Back to Home</a>
+        <a href="index.html"><img src="logo.jpg" alt="Shravs Logo" class="logo"></a>
+        <h1>Teleradiology Services</h1>
+        <a href="index.html" class="back-btn">Back to Home</a>
     </div>
 
     <div class="hero-section">
@@ -273,139 +43,81 @@
     </div>
 
     <div class="container">
-        <!-- Core Services -->
-        <div class="section">
-            <h2 class="section-title">Our Teleradiology Services</h2>
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon">🔬</div>
-                    <h3>X-Ray Interpretation</h3>
-                    <p>Comprehensive analysis of digital radiographs with rapid reporting.</p>
-                    <ul>
-                        <li>Chest X-rays</li>
-                        <li>Skeletal imaging</li>
-                        <li>Abdominal studies</li>
-                        <li>Emergency reads available</li>
-                    </ul>
-                </div>
+        <h2 class="section-title">Our Teleradiology Services</h2>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">🩻</div>
+                <h3>X-Ray Interpretation</h3>
+                <p>Comprehensive analysis of digital radiographs with rapid reporting.</p>
+                <ul>
+                    <li>Chest X-rays</li>
+                    <li>Skeletal imaging</li>
+                    <li>Abdominal studies</li>
+                    <li>Emergency reads available</li>
+                </ul>
+            </div>
 
-                <div class="service-card">
-                    <div class="service-icon">🧠</div>
-                    <h3>CT Scan Analysis</h3>
-                    <p>Advanced computed tomography interpretation by board-certified radiologists.</p>
-                    <ul>
-                        <li>Brain & spine CT</li>
-                        <li>Body CT imaging</li>
-                        <li>CT angiography</li>
-                        <li>3D reconstructions</li>
-                    </ul>
-                </div>
+            <div class="service-card">
+                <div class="service-icon">🔬</div>
+                <h3>CT Scan Analysis</h3>
+                <p>Advanced computed tomography interpretation by board-certified radiologists.</p>
+                <ul>
+                    <li>Brain & spine CT</li>
+                    <li>Body CT imaging</li>
+                    <li>CT angiography</li>
+                    <li>3D reconstructions</li>
+                </ul>
+            </div>
 
-                <div class="service-card">
-                    <div class="service-icon">🔍</div>
-                    <h3>MRI Interpretation</h3>
-                    <p>Detailed magnetic resonance imaging reports with expert analysis.</p>
-                    <ul>
-                        <li>Neuroimaging</li>
-                        <li>Musculoskeletal MRI</li>
-                        <li>Cardiac MRI</li>
-                        <li>Specialized protocols</li>
-                    </ul>
-                </div>
+            <div class="service-card">
+                <div class="service-icon">🧲</div>
+                <h3>MRI Interpretation</h3>
+                <p>Detailed magnetic resonance imaging reports with expert analysis.</p>
+                <ul>
+                    <li>Neuroimaging</li>
+                    <li>Musculoskeletal MRI</li>
+                    <li>Cardiac MRI</li>
+                    <li>Specialized protocols</li>
+                </ul>
+            </div>
 
-                <div class="service-card">
-                    <div class="service-icon">📡</div>
-                    <h3>Ultrasound Reports</h3>
-                    <p>Comprehensive ultrasound study interpretations and consultations.</p>
-                    <ul>
-                        <li>Abdominal ultrasound</li>
-                        <li>Obstetric imaging</li>
-                        <li>Vascular studies</li>
-                        <li>Musculoskeletal US</li>
-                    </ul>
-                </div>
+            <div class="service-card">
+                <div class="service-icon">🔊</div>
+                <h3>Ultrasound Reports</h3>
+                <p>Comprehensive ultrasound study interpretations and consultations.</p>
+                <ul>
+                    <li>Abdominal ultrasound</li>
+                    <li>Obstetric imaging</li>
+                    <li>Vascular studies</li>
+                    <li>Musculoskeletal US</li>
+                </ul>
+            </div>
 
-                <div class="service-card">
-                    <div class="service-icon">⚡</div>
-                    <h3>Stat/Emergency Reads</h3>
-                    <p>Priority reporting for urgent and emergency cases.</p>
-                    <ul>
-                        <li>15-30 minute turnaround</li>
-                        <li>24/7 availability</li>
-                        <li>Direct radiologist contact</li>
-                        <li>Critical findings alerts</li>
-                    </ul>
-                </div>
+            <div class="service-card">
+                <div class="service-icon">⚡</div>
+                <h3>STAT/Emergency Reads</h3>
+                <p>Priority reporting for urgent and emergency cases.</p>
+                <ul>
+                    <li>15-30 minute turnaround</li>
+                    <li>24/7 availability</li>
+                    <li>Direct radiologist contact</li>
+                    <li>Critical findings alerts</li>
+                </ul>
+            </div>
 
-                <div class="service-card">
-                    <div class="service-icon">💬</div>
-                    <h3>Expert Consultation</h3>
-                    <p>Second opinions and complex case discussions with specialists.</p>
-                    <ul>
-                        <li>Subspecialty expertise</li>
-                        <li>Multidisciplinary conferences</li>
-                        <li>Teaching file reviews</li>
-                        <li>Protocol optimization</li>
-                    </ul>
-                </div>
+            <div class="service-card">
+                <div class="service-icon">👨‍⚕️</div>
+                <h3>Expert Consultation</h3>
+                <p>Second opinions and complex case discussions with specialists.</p>
+                <ul>
+                    <li>Subspecialty expertise</li>
+                    <li>Multidisciplinary conferences</li>
+                    <li>Teaching file reviews</li>
+                    <li>Protocol optimization</li>
+                </ul>
             </div>
         </div>
 
-        <!-- Key Features -->
-        <div class="section">
-            <h2 class="section-title">Why Choose Our Teleradiology Services</h2>
-            <div class="feature-list">
-                <div class="feature-item">
-                    <div class="feature-icon-small">⏱️</div>
-                    <div>
-                        <h3>Rapid Turnaround Time</h3>
-                        <p>Routine studies: 4-6 hours | Urgent studies: 1-2 hours | STAT: 15-30 minutes</p>
-                    </div>
-                </div>
-
-                <div class="feature-item">
-                    <div class="feature-icon-small">🏥</div>
-                    <div>
-                        <h3>Board-Certified Radiologists</h3>
-                        <p>All reports signed by experienced, board-certified radiologists with subspecialty expertise</p>
-                    </div>
-                </div>
-
-                <div class="feature-item">
-                    <div class="feature-icon-small">🔒</div>
-                    <div>
-                        <h3>HIPAA Compliant & Secure</h3>
-                        <p>End-to-end encryption, secure data transmission, and full HIPAA compliance</p>
-                    </div>
-                </div>
-
-                <div class="feature-item">
-                    <div class="feature-icon-small">🌐</div>
-                    <div>
-                        <h3>Seamless PACS Integration</h3>
-                        <p>Direct integration with your existing PACS system for streamlined workflow</p>
-                    </div>
-                </div>
-
-                <div class="feature-item">
-                    <div class="feature-icon-small">📱</div>
-                    <div>
-                        <h3>Cloud-Based Platform</h3>
-                        <p>Access reports and images from anywhere via our secure cloud platform</p>
-                    </div>
-                </div>
-
-                <div class="feature-item">
-                    <div class="feature-icon-small">💰</div>
-                    <div>
-                        <h3>Cost-Effective Solutions</h3>
-                        <p>Reduce overhead costs while maintaining high-quality diagnostic services</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- CTA Section -->
         <div class="cta-section">
             <h3>Ready to Get Started?</h3>
             <p>Join hundreds of healthcare facilities that trust our teleradiology services</p>
