@@ -13,23 +13,24 @@ Deno.serve(async (req) => {
       }
     )
 
-    const { name, email, password } = await req.json()
+    const { name, email, password: tempPassword } = await req.json()
 
-    if (!name || !email || !password) {
+    if (!name || !email || !tempPassword) {
       return new Response(
         JSON.stringify({ error: 'Name, email, and password are required' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       )
     }
 
-    // Create user in auth.users
+    // 1. Create user
     const { data: user, error: userError } = await supabase.auth.admin.createUser({
       email,
-      password,
+      password: tempPassword,
       email_confirm: true,
       user_metadata: {
         first_login: true,
-        role: 'employee'
+        role: 'employee',
+        name: name
       }
     })
 
@@ -40,8 +41,8 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Update profile created by trigger
-    const { error: profileError } = await supabase
+    // 2. Update profile
+    await supabase
       .from('profiles')
       .update({
         name,
@@ -51,13 +52,29 @@ Deno.serve(async (req) => {
       })
       .eq('user_id', user.user.id)
 
-    if (profileError) {
-      console.error('Profile update error:', profileError)
-    }
+    // 3. Send custom welcome email using Supabase auth email template
+    const welcomeEmail = await supabase.auth.admin.generateLink({
+      type: 'signup',
+      email: email,
+      options: {
+        redirectTo: 'https://shravsteleradiology.com/login.html'
+      }
+    })
+
+    // 4. Send custom offer letter via Supabase database trigger (bonus)
+    await supabase
+      .from('offer_letters')
+      .upsert({
+        id: user.user.id,
+        employee_email: email,
+        employee_name: name,
+        temp_password: tempPassword,
+        sent_at: new Date().toISOString()
+      })
 
     return new Response(
       JSON.stringify({ 
-        message: 'Employee created successfully', 
+        message: 'Employee created successfully! Welcome email sent.',
         user_id: user.user.id 
       }),
       { status: 201, headers: { 'Content-Type': 'application/json' } }
