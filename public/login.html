@@ -1,555 +1,345 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login / Sign Up - Shravs Teleradiology</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login & Sign Up - Shravs Teleradiology</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body{
+      font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;
+      background:linear-gradient(135deg,#000 0%,#1a1a1a 50%,#000 100%);
+      min-height:100vh; display:flex; align-items:center; justify-content:center;
+      padding:20px; position:relative;
+    }
+    body::before{
+      content:""; position:absolute; inset:0;
+      background:
+        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px),
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px);
+      pointer-events:none;
+    }
+    .container{
+      width:100%; max-width:560px;
+      background:#0a0a0a; border:2px solid #0ea5e9; border-radius:20px;
+      padding:36px; box-shadow:0 10px 50px rgba(14,165,233,0.3);
+      position:relative; z-index:1;
+    }
+    .logo{
+      width:100px; height:100px; margin:0 auto 10px; display:block;
+      border:3px solid #fff; border-radius:50%; object-fit:cover;
+      filter:drop-shadow(0 0 20px rgba(255,255,255,0.3));
+    }
+    h1{
+      text-align:center; color:#fff; margin-bottom:8px;
+      font-size:2em; text-transform:uppercase; letter-spacing:2px;
+    }
+    .subtitle{ text-align:center; color:#999; margin-bottom:22px; font-size:0.95em; }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            position: relative;
-        }
+    .message{
+      padding:12px; border-radius:10px; margin-bottom:16px;
+      text-align:center; font-weight:700; display:none;
+    }
+    .message.success{ display:block; background:#1a4d2e; color:#4ade80; border:1px solid #4ade80; }
+    .message.error{ display:block; background:#4d1a1a; color:#ff6b6b; border:1px solid #ff6b6b; }
 
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px),
-                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px);
-            pointer-events: none;
-        }
+    .tabs{
+      display:flex; gap:8px; flex-wrap:wrap;
+      border-bottom:2px solid #333; padding-bottom:10px; margin-bottom:18px;
+    }
+    .tab{
+      flex:1 1 160px;
+      padding:10px; background:transparent; border:none; cursor:pointer;
+      color:#999; font-weight:800; font-size:0.85em;
+      text-transform:uppercase; letter-spacing:1px;
+      border-bottom:3px solid transparent;
+      transition:0.2s ease;
+    }
+    .tab.active{ color:#0ea5e9; border-bottom-color:#0ea5e9; }
+    .tab:hover{ color:#06b6d4; }
 
-        .container {
-            max-width: 450px;
-            width: 100%;
-            background: #0a0a0a;
-            border: 2px solid #0ea5e9;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 10px 50px rgba(14, 165, 233, 0.3);
-            position: relative;
-            z-index: 1;
-            animation: slideUp 0.5s ease;
-        }
+    .form-container{ display:none; }
+    .form-container.active{ display:block; }
 
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+    .form-group{ margin-bottom:16px; }
+    label{
+      display:block; color:#fff; margin-bottom:6px;
+      font-weight:700; font-size:0.85em;
+      text-transform:uppercase; letter-spacing:0.5px;
+    }
+    input, select{
+      width:100%; padding:12px 14px;
+      background:#000; color:#fff;
+      border:1px solid #333; border-radius:10px;
+      font-size:0.95em;
+    }
+    input:focus, select:focus{
+      outline:none; border-color:#0ea5e9;
+      box-shadow:0 0 10px rgba(14,165,233,0.2);
+    }
+    .password-container{ position:relative; }
+    .toggle-password{
+      position:absolute; right:12px; top:50%;
+      transform:translateY(-50%);
+      background:none; border:none; color:#999;
+      cursor:pointer; font-size:1.1em;
+    }
+    .toggle-password:hover{ color:#0ea5e9; }
 
-        .logo {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto;
-            border: 3px solid #ffffff;
-            border-radius: 50%;
-            display: block;
-            align-items: center;
-            justify-content: center;
-            filter: drop-shadow(0 0 20px rgba(255,255,255,0.3));
-        }
+    .btn{
+      width:100%; padding:14px;
+      background:linear-gradient(135deg,#0ea5e9,#06b6d4);
+      color:#fff; border:2px solid #0ea5e9; border-radius:50px;
+      font-weight:900; text-transform:uppercase; letter-spacing:1px;
+      cursor:pointer; transition:0.2s ease; margin-top:6px;
+    }
+    .btn:hover{ transform:translateY(-1px); box-shadow:0 5px 20px rgba(14,165,233,0.35); }
 
-        h1 {
-            text-align: center;
-            color: #ffffff;
-            margin-bottom: 10px;
-            font-size: 2em;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
+    .admin-note{
+      background:rgba(14,165,233,0.1);
+      border:1px solid rgba(14,165,233,0.3);
+      border-radius:10px;
+      padding:10px;
+      margin-bottom:12px;
+      color:#0ea5e9;
+      font-size:0.85em;
+      text-align:center;
+    }
 
-        .subtitle {
-            text-align: center;
-            color: #999;
-            margin-bottom: 30px;
-            font-size: 0.95em;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #333;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 12px;
-            background: transparent;
-            border: none;
-            color: #999;
-            font-size: 1em;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
-        }
-
-        .tab.active {
-            color: #0ea5e9;
-            border-bottom-color: #0ea5e9;
-        }
-
-        .tab:hover {
-            color: #06b6d4;
-        }
-
-        .form-container {
-            display: none;
-        }
-
-        .form-container.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            color: #ffffff;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 0.9em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px 15px;
-            background: #000000;
-            border: 1px solid #333;
-            border-radius: 8px;
-            color: #ffffff;
-            font-size: 1em;
-            transition: all 0.3s ease;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: #0ea5e9;
-            box-shadow: 0 0 10px rgba(14, 165, 233, 0.2);
-        }
-
-        .password-container {
-            position: relative;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #999;
-            cursor: pointer;
-            font-size: 1.2em;
-            transition: color 0.3s ease;
-        }
-
-        .toggle-password:hover {
-            color: #0ea5e9;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #0ea5e9, #06b6d4);
-            color: #ffffff;
-            border: 2px solid #0ea5e9;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 1em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-        }
-
-        .btn:hover {
-            background: linear-gradient(135deg, #06b6d4, #0ea5e9);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(14, 165, 233, 0.4);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .message {
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: bold;
-            display: none;
-        }
-
-        .message.success {
-            background: #1a4d2e;
-            color: #4ade80;
-            border: 1px solid #4ade80;
-            display: block;
-            animation: slideIn 0.3s ease;
-        }
-
-        .message.error {
-            background: #4d1a1a;
-            color: #ff6b6b;
-            border: 1px solid #ff6b6b;
-            display: block;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .back-link {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .back-link a {
-            color: #0ea5e9;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
-
-        .back-link a:hover {
-            color: #06b6d4;
-        }
-
-        .admin-note {
-            background: rgba(14, 165, 233, 0.1);
-            border: 1px solid rgba(14, 165, 233, 0.3);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 20px;
-            color: #0ea5e9;
-            font-size: 0.9em;
-            text-align: center;
-        }
-    </style>
+    .back-link{ text-align:center; margin-top:16px; }
+    .back-link a{ color:#0ea5e9; text-decoration:none; font-weight:700; }
+    .back-link a:hover{ color:#06b6d4; }
+  </style>
 </head>
 <body>
-    <section class="hero">
-        <div class="hero-content">
-            <div class="logo-container">
-                <img src="https://i.ibb.co/FL6BLkSP/Untitled-design.png" alt="Shravs Teleradiology Logo" class="logo">
-            </div>
-        <h1>Welcome</h1>
-        <p class="subtitle">Shravs Teleradiology & E-Care Services</p>
+  <div class="container">
+    <img src="https://i.ibb.co/FL6BLkS/P-Untitled-design.png" alt="Logo" class="logo"/>
+    <h1>Welcome</h1>
+    <div class="subtitle">Shravs Teleradiology E-Care Services</div>
 
-        <div id="messageBox" class="message"></div>
+    <div id="messageBox" class="message"></div>
 
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('login')">Login</button>
-            <button class="tab" onclick="switchTab('signup')">Sign Up</button>
-            <button class="tab" onclick="switchTab('admin')">Admin</button>
-        </div>
-
-        <!-- Login Form -->
-        <div id="loginForm" class="form-container active">
-            <form onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label for="loginEmail">Email Address *</label>
-                    <input type="email" id="loginEmail" required placeholder="your.email@example.com">
-                </div>
-                
-                <div class="form-group">
-                    <label for="loginPassword">Password *</label>
-                    <div class="password-container">
-                        <input type="password" id="loginPassword" required placeholder="Enter your password">
-                        <button type="button" class="toggle-password" onclick="togglePassword('loginPassword')">👁️</button>
-                    </div>
-                </div>
-                
-                <button type="submit" class="btn">Login</button>
-            </form>
-        </div>
-
-        <!-- Sign Up Form -->
-        <div id="signupForm" class="form-container">
-            <form onsubmit="handleSignup(event)">
-                <div class="form-group">
-                    <label for="signupName">Full Name *</label>
-                    <input type="text" id="signupName" required placeholder="Enter your full name">
-                </div>
-
-                <div class="form-group">
-                    <label for="signupEmail">Email Address *</label>
-                    <input type="email" id="signupEmail" required placeholder="your.email@example.com">
-                </div>
-
-                <div class="form-group">
-                    <label for="signupPhone">Phone Number *</label>
-                    <input type="tel" id="signupPhone" required placeholder="+91 XXXXX XXXXX">
-                </div>
-
-                <div class="form-group">
-                    <label for="signupOrganization">Organization/Hospital *</label>
-                    <input type="text" id="signupOrganization" required placeholder="Your organization name">
-                </div>
-
-                <div class="form-group">
-                    <label for="signupRole">Role *</label>
-                    <select id="signupRole" required>
-                        <option value="">-- Select Role --</option>
-                        <option value="doctor">Doctor</option>
-                        <option value="radiologist">Radiologist</option>
-                        <option value="hospital-admin">Hospital Administrator</option>
-                        <option value="healthcare-professional">Healthcare Professional</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="signupPassword">Password *</label>
-                    <div class="password-container">
-                        <input type="password" id="signupPassword" required placeholder="Create a password (min 6 characters)">
-                        <button type="button" class="toggle-password" onclick="togglePassword('signupPassword')">👁️</button>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="signupConfirmPassword">Confirm Password *</label>
-                    <div class="password-container">
-                        <input type="password" id="signupConfirmPassword" required placeholder="Confirm your password">
-                        <button type="button" class="toggle-password" onclick="togglePassword('signupConfirmPassword')">👁️</button>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn">Create Account</button>
-            </form>
-        </div>
-
-        <!-- Admin Login Form -->
-        <div id="adminForm" class="form-container">
-            <div class="admin-note">
-                🔒 Admin Access Only - Restricted Area
-            </div>
-            
-            <form onsubmit="handleAdminLogin(event)">
-                <div class="form-group">
-                    <label for="adminEmail">Admin Email *</label>
-                    <input type="email" id="adminEmail" required placeholder="Enter Admin Mail">
-                </div>
-                
-                <div class="form-group">
-                    <label for="adminPassword">Admin Password *</label>
-                    <div class="password-container">
-                        <input type="password" id="adminPassword" required placeholder="*********">
-                        <button type="button" class="toggle-password" onclick="togglePassword('adminPassword')">👁️</button>
-                    </div>
-                </div>
-                
-                <button type="submit" class="btn">Admin Login</button>
-            </form>
-        </div>
-
-        <div class="back-link">
-            <a href="index.html">← Back to Home</a>
-        </div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('userLogin', event)">User Login</button>
+      <button class="tab" onclick="switchTab('userSignup', event)">User Sign Up</button>
+      <button class="tab" onclick="switchTab('employeeLogin', event)">Employee Login</button>
+      <button class="tab" onclick="switchTab('admin', event)">Admin</button>
     </div>
 
-    <script>
-        // Tab switching
-        function switchTab(tab) {
-            const tabs = document.querySelectorAll('.tab');
-            const forms = document.querySelectorAll('.form-container');
-            
-            tabs.forEach(t => t.classList.remove('active'));
-            forms.forEach(f => f.classList.remove('active'));
-            
-            event.target.classList.add('active');
-            document.getElementById(tab + 'Form').classList.add('active');
-            
-            // Clear message
-            document.getElementById('messageBox').style.display = 'none';
-        }
+    <!-- User Login -->
+    <div id="userLoginForm" class="form-container active">
+      <form onsubmit="handleUserLogin(event)">
+        <div class="form-group">
+          <label for="userEmail">Email</label>
+          <input type="email" id="userEmail" required placeholder="your.email@example.com">
+        </div>
+        <div class="form-group">
+          <label for="userPassword">Password</label>
+          <div class="password-container">
+            <input type="password" id="userPassword" required placeholder="Enter password">
+            <button type="button" class="toggle-password" onclick="togglePassword('userPassword')">View</button>
+          </div>
+        </div>
+        <button class="btn" type="submit">Login</button>
+      </form>
+    </div>
 
-        // Password visibility toggle
-        function togglePassword(fieldId) {
-            const field = document.getElementById(fieldId);
-            field.type = field.type === 'password' ? 'text' : 'password';
-        }
+    <!-- User Signup (no employee role here) -->
+    <div id="userSignupForm" class="form-container">
+      <form onsubmit="handleUserSignup(event)">
+        <div class="form-group">
+          <label for="signupName">Full name</label>
+          <input type="text" id="signupName" required placeholder="Enter your name">
+        </div>
+        <div class="form-group">
+          <label for="signupEmail">Email</label>
+          <input type="email" id="signupEmail" required placeholder="your.email@example.com">
+        </div>
+        <div class="form-group">
+          <label for="signupPhone">Phone</label>
+          <input type="tel" id="signupPhone" placeholder="+91 XXXXX XXXXX">
+        </div>
+        <div class="form-group">
+          <label for="signupOrganization">Organization/Hospital</label>
+          <input type="text" id="signupOrganization" placeholder="Your organization">
+        </div>
+        <div class="form-group">
+          <label for="signupRole">Role</label>
+          <select id="signupRole" required>
+            <option value="">-- Select Role --</option>
+            <option value="doctor">Doctor</option>
+            <option value="radiologist">Radiologist</option>
+            <option value="hospital-admin">Hospital Administrator</option>
+            <option value="healthcare-professional">Healthcare Professional</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="signupPassword">Password</label>
+          <div class="password-container">
+            <input type="password" id="signupPassword" required placeholder="Min 6 characters">
+            <button type="button" class="toggle-password" onclick="togglePassword('signupPassword')">View</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="signupConfirmPassword">Confirm password</label>
+          <div class="password-container">
+            <input type="password" id="signupConfirmPassword" required placeholder="Confirm password">
+            <button type="button" class="toggle-password" onclick="togglePassword('signupConfirmPassword')">View</button>
+          </div>
+        </div>
+        <button class="btn" type="submit">Create account</button>
+      </form>
+    </div>
 
-        // Show message
-        function showMessage(message, type) {
-            const messageBox = document.getElementById('messageBox');
-            messageBox.textContent = message;
-            messageBox.className = 'message ' + type;
-            messageBox.style.display = 'block';
-            
-            setTimeout(() => {
-                messageBox.style.display = 'none';
-            }, 5000);
-        }
+    <!-- Employee Login -->
+    <div id="employeeLoginForm" class="form-container">
+      <div class="admin-note">Employee accounts are created by Admin only.</div>
+      <form onsubmit="handleEmployeeLogin(event)">
+        <div class="form-group">
+          <label for="empEmail">Employee email</label>
+          <input type="email" id="empEmail" required placeholder="employee@example.com">
+        </div>
+        <div class="form-group">
+          <label for="empPassword">Password</label>
+          <div class="password-container">
+            <input type="password" id="empPassword" required placeholder="Enter password">
+            <button type="button" class="toggle-password" onclick="togglePassword('empPassword')">View</button>
+          </div>
+        </div>
+        <button class="btn" type="submit">Employee login</button>
+      </form>
+    </div>
 
-        // Handle Login
-        function handleLogin(event) {
-            event.preventDefault();
-            
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            // Get stored users
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            
-            // Find user
-            const user = users.find(u => u.email === email && u.password === password);
-            
-            if (user) {
-                // Store session
-                sessionStorage.setItem('currentUser', JSON.stringify(user));
-                sessionStorage.setItem('isLoggedIn', 'true');
-                
-                showMessage('Login successful! Redirecting...', 'success');
-                
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1500);
-            } else {
-                showMessage('Invalid email or password. Please try again.', 'error');
-            }
-        }
+    <!-- Admin Login -->
+    <div id="adminForm" class="form-container">
+      <div class="admin-note">Admin Access Only - Restricted Area</div>
+      <form onsubmit="handleAdminLogin(event)">
+        <div class="form-group">
+          <label for="adminEmail">Admin email</label>
+          <input type="email" id="adminEmail" required placeholder="Enter Admin Mail">
+        </div>
+        <div class="form-group">
+          <label for="adminPassword">Admin password</label>
+          <div class="password-container">
+            <input type="password" id="adminPassword" required placeholder="Enter Admin password">
+            <button type="button" class="toggle-password" onclick="togglePassword('adminPassword')">View</button>
+          </div>
+        </div>
+        <button class="btn" type="submit">Admin login</button>
+      </form>
+    </div>
 
-        // Handle Signup
-        function handleSignup(event) {
-            event.preventDefault();
-            
-            const name = document.getElementById('signupName').value;
-            const email = document.getElementById('signupEmail').value;
-            const phone = document.getElementById('signupPhone').value;
-            const organization = document.getElementById('signupOrganization').value;
-            const role = document.getElementById('signupRole').value;
-            const password = document.getElementById('signupPassword').value;
-            const confirmPassword = document.getElementById('signupConfirmPassword').value;
-            
-            // Validation
-            if (password.length < 6) {
-                showMessage('Password must be at least 6 characters long.', 'error');
-                return;
-            }
-            
-            if (password !== confirmPassword) {
-                showMessage('Passwords do not match. Please try again.', 'error');
-                return;
-            }
-            
-            // Get existing users
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            
-            // Check if email already exists
-            if (users.some(u => u.email === email)) {
-                showMessage('Email already registered. Please login instead.', 'error');
-                return;
-            }
-            
-            // Create new user
-            const newUser = {
-                name,
-                email,
-                phone,
-                organization,
-                role,
-                password,
-                createdAt: new Date().toISOString()
-            };
-            
-            users.push(newUser);
-            localStorage.setItem('users', JSON.stringify(users));
-            
-            showMessage('Account created successfully! Please login.', 'success');
-            
-            // Clear form
-            document.getElementById('signupForm').querySelector('form').reset();
-            
-            // Switch to login tab
-            setTimeout(() => {
-                switchTab('login');
-            }, 2000);
-        }
+    <div class="back-link"><a href="index.html">Back to Home</a></div>
+  </div>
 
-        // Handle Admin Login
-        function handleAdminLogin(event) {
-            event.preventDefault();
-            
-            const email = document.getElementById('adminEmail').value;
-            const password = document.getElementById('adminPassword').value;
-            
-            // Admin credentials (in production, this should be server-side)
-            const adminEmail = 'admin@shravsteleradiology.com';
-            const adminPassword = 'Shravs@2025';
-            
-            if (email === adminEmail && password === adminPassword) {
-                // Store admin session
-                sessionStorage.setItem('isAdmin', 'true');
-                sessionStorage.setItem('isLoggedIn', 'true');
-                
-                showMessage('Admin login successful! Redirecting...', 'success');
-                
-                setTimeout(() => {
-                    window.location.href = 'admin.html';
-                }, 1500);
-            } else {
-                showMessage('Invalid admin credentials.', 'error');
-            }
-        }
+<script>
+  function switchTab(tab, event) {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".form-container").forEach(f => f.classList.remove("active"));
+    if (event && event.target) event.target.classList.add("active");
+    document.getElementById(tab + "Form").classList.add("active");
+    document.getElementById("messageBox").style.display = "none";
+  }
 
-        // Check if already logged in
-        window.onload = function() {
-            if (sessionStorage.getItem('isLoggedIn') === 'true') {
-                if (sessionStorage.getItem('isAdmin') === 'true') {
-                    window.location.href = 'admin.html';
-                } else {
-                    showMessage('You are already logged in!', 'success');
-                }
-            }
-        };
-    </script>
+  function togglePassword(id) {
+    const el = document.getElementById(id);
+    el.type = el.type === "password" ? "text" : "password";
+  }
+
+  function showMessage(msg, type) {
+    const box = document.getElementById("messageBox");
+    box.textContent = msg;
+    box.className = "message " + type;
+    box.style.display = "block";
+    setTimeout(() => box.style.display = "none", 5000);
+  }
+
+  function getUsers(){ return JSON.parse(localStorage.getItem("users") || "[]"); }
+  function saveUsers(users){ localStorage.setItem("users", JSON.stringify(users)); }
+
+  function handleUserLogin(e){
+    e.preventDefault();
+    const email = document.getElementById("userEmail").value.trim();
+    const password = document.getElementById("userPassword").value.trim();
+    const users = getUsers();
+    const u = users.find(x => x.email === email && x.password === password && x.role !== "employee");
+    if (!u) return showMessage("Invalid credentials (or not a general user).", "error");
+    sessionStorage.setItem("currentUser", JSON.stringify(u));
+    sessionStorage.setItem("isLoggedIn", "true");
+    sessionStorage.removeItem("isAdmin");
+    showMessage("Login successful! Redirecting...", "success");
+    setTimeout(()=> window.location.href = "index.html", 900);
+  }
+
+  function handleUserSignup(e){
+    e.preventDefault();
+    const name = document.getElementById("signupName").value.trim();
+    const email = document.getElementById("signupEmail").value.trim();
+    const phone = document.getElementById("signupPhone").value.trim();
+    const org = document.getElementById("signupOrganization").value.trim();
+    const role = document.getElementById("signupRole").value;
+    const pw = document.getElementById("signupPassword").value;
+    const pw2 = document.getElementById("signupConfirmPassword").value;
+
+    if (pw.length < 6) return showMessage("Password must be at least 6 characters.", "error");
+    if (pw !== pw2) return showMessage("Passwords do not match.", "error");
+    if (!name || !email || !role) return showMessage("Please fill required fields.", "error");
+
+    const users = getUsers();
+    if (users.some(x => x.email === email)) return showMessage("Email already registered. Please login.", "error");
+
+    users.push({
+      name, email, phone, organization: org, role,
+      password: pw, createdAt: new Date().toISOString()
+    });
+    saveUsers(users);
+    showMessage("Account created successfully. Please login.", "success");
+    document.querySelector("#userSignupForm form").reset();
+    setTimeout(()=> {
+      const firstTab = document.querySelectorAll(".tab")[0];
+      switchTab("userLogin", { target: firstTab });
+    }, 900);
+  }
+
+  function handleEmployeeLogin(e){
+    e.preventDefault();
+    const email = document.getElementById("empEmail").value.trim();
+    const password = document.getElementById("empPassword").value.trim();
+    const users = getUsers();
+    const u = users.find(x => x.email === email && x.password === password && x.role === "employee");
+    if (!u) return showMessage("Invalid employee credentials.", "error");
+
+    sessionStorage.setItem("currentUser", JSON.stringify(u));
+    sessionStorage.setItem("isLoggedIn", "true");
+    sessionStorage.removeItem("isAdmin");
+    showMessage("Employee login successful! Redirecting...", "success");
+    setTimeout(()=> window.location.href = "employee.html", 900);
+  }
+
+  function handleAdminLogin(e){
+    e.preventDefault();
+    const email = document.getElementById("adminEmail").value.trim();
+    const password = document.getElementById("adminPassword").value.trim();
+    const adminEmail = "admin@shravsteleradiology.com";
+    const adminPassword = "Shravs2025";
+    if (email !== adminEmail || password !== adminPassword) return showMessage("Invalid admin credentials.", "error");
+
+    sessionStorage.setItem("isAdmin", "true");
+    sessionStorage.setItem("isLoggedIn", "true");
+    sessionStorage.removeItem("currentUser");
+    showMessage("Admin login successful! Redirecting...", "success");
+    setTimeout(()=> window.location.href = "admin.html", 900);
+  }
+
+  window.onload = function(){
+    if (sessionStorage.getItem("isAdmin") === "true") return window.location.href = "admin.html";
+    if (sessionStorage.getItem("isLoggedIn") === "true") {
+      const u = JSON.parse(sessionStorage.getItem("currentUser") || "null");
+      if (u && u.role === "employee") return window.location.href = "employee.html";
+      return window.location.href = "index.html";
+    }
+  };
+</script>
 </body>
 </html>
