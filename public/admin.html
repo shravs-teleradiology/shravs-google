@@ -10,7 +10,7 @@
         
         .header { 
             background: linear-gradient(135deg, #0a0a0a, #1a1a1a); 
-            border-bottom: 2px solid #ff6b6b; 
+            border-bottom: 2px solid #0ea5e9; 
             padding: 15px 30px; 
             display: flex; 
             justify-content: space-between; 
@@ -46,14 +46,14 @@
         }
         
         .card:hover {
-            border-color: #ff6b6b;
-            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.2);
+            border-color: #0ea5e9;
+            box-shadow: 0 10px 40px rgba(14, 165, 233, 0.2);
         }
         
         .card.full-width { grid-column: 1 / -1; }
         
         h2 { 
-            color: #ff6b6b; 
+            color: #0ea5e9; 
             margin-bottom: 20px;
             font-size: 1.5em;
             text-transform: uppercase;
@@ -61,7 +61,7 @@
         }
         
         button { 
-            background: linear-gradient(135deg, #ff6b6b, #ee5a52); 
+            background: linear-gradient(135deg, #0ea5e9, #06b6d4); 
             color: white; 
             border: none; 
             padding: 12px 24px; 
@@ -75,16 +75,16 @@
             letter-spacing: 0.5px;
         }
         button:hover { 
-            background: linear-gradient(135deg, #ee5a52, #ff6b6b);
+            background: linear-gradient(135deg, #06b6d4, #0ea5e9);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+            box-shadow: 0 5px 15px rgba(14, 165, 233, 0.4);
         }
         
         button.btn-full { width: 100%; margin-top: 15px; }
         
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid #333; }
-        th { color: #ff6b6b; font-weight: bold; text-transform: uppercase; font-size: 0.85em; }
+        th { color: #0ea5e9; font-weight: bold; text-transform: uppercase; font-size: 0.85em; }
         td { color: #ccc; }
         
         input, select, textarea { 
@@ -100,22 +100,19 @@
         }
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #ff6b6b;
-            box-shadow: 0 0 10px rgba(255, 107, 107, 0.2);
+            border-color: #0ea5e9;
+            box-shadow: 0 0 10px rgba(14, 165, 233, 0.2);
         }
         
         label {
             display: block;
-            color: #ff6b6b;
+            color: #0ea5e9;
             font-weight: bold;
             margin-top: 12px;
             font-size: 0.9em;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
         
         .empty-state { text-align: center; padding: 40px 20px; color: #666; }
         
@@ -130,9 +127,20 @@
             display: none;
         }
         .success-msg.show { display: block; animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         
-        textarea { resize: vertical; min-height: 80px; font-family: 'Segoe UI', sans-serif; }
+        .error-msg {
+            background: #4d1a1a;
+            color: #ef4444;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        .error-msg.show { display: block; animation: slideIn 0.3s ease; }
+        
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         
         .note {
             background: rgba(14, 165, 233, 0.1);
@@ -143,12 +151,27 @@
             font-size: 0.85em;
             color: #999;
         }
+
+        .debug {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: #111;
+            border: 1px solid #333;
+            padding: 10px;
+            font-size: 0.7em;
+            color: #0ea5e9;
+            max-width: 300px;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="header-left">
-            <a href="index.html"><img src="logo.jpg" alt="Shravs Logo" class="logo"></a>
+            <img src="logo.jpg" alt="Shravs Logo" class="logo" onerror="this.style.display='none'">
             <div class="header-title">Admin Dashboard</div>
         </div>
         <button onclick="logout()">Logout</button>
@@ -159,7 +182,8 @@
         <!-- CREATE NEW EMPLOYEE (SIMPLIFIED) -->
         <div class="card">
             <h2>👤 Create New Employee</h2>
-            <div class="success-msg" id="createEmployeeSuccess">Employee created successfully!</div>
+            <div class="success-msg" id="createEmployeeSuccess"></div>
+            <div class="error-msg" id="createEmployeeError"></div>
             <form id="createEmployeeForm">
                 <label>Full Name *</label>
                 <input type="text" id="empName" required placeholder="Employee name">
@@ -168,67 +192,14 @@
                 <input type="email" id="empEmail" required placeholder="employee@example.com">
                 
                 <label>Temporary Password *</label>
-                <input type="password" id="empPassword" required placeholder="Create temporary password">
+                <input type="password" id="empPassword" required placeholder="Create temporary password" minlength="6">
                 
                 <div class="note">
-                    ℹ️ Employee will be asked to change password on first login
+                    ℹ️ Employee will be asked to change password on first login and receive an email with login credentials
                 </div>
                 
                 <button type="submit" class="btn-full">➕ Create Employee</button>
             </form>
-        </div>
-
-        <!-- ASSIGN TASK -->
-        <div class="card">
-            <h2>📝 Assign Task to Employee</h2>
-            <div class="success-msg" id="assignTaskSuccess">Task assigned successfully!</div>
-            <form id="assignTaskForm">
-                <label>Select Employee *</label>
-                <select id="taskEmployee" required>
-                    <option value="">Loading employees...</option>
-                </select>
-                
-                <label>Task Title *</label>
-                <input type="text" id="taskTitle" required placeholder="Task title">
-                
-                <label>Description</label>
-                <textarea id="taskDescription" rows="3" placeholder="Task details"></textarea>
-                
-                <div class="form-grid">
-                    <div>
-                        <label>Priority *</label>
-                        <select id="taskPriority" required>
-                            <option value="high">High</option>
-                            <option value="medium" selected>Medium</option>
-                            <option value="low">Low</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>Due Date</label>
-                        <input type="date" id="taskDueDate">
-                    </div>
-                </div>
-                
-                <button type="submit" class="btn-full">Assign Task</button>
-            </form>
-        </div>
-
-        <!-- PENDING DOCTORS -->
-        <div class="card">
-            <h2>🩺 Pending Doctor Approvals</h2>
-            <div id="pendingDoctors">
-                <div class="empty-state">Loading...</div>
-            </div>
-        </div>
-
-        <!-- PROMOTE EMPLOYEE -->
-        <div class="card">
-            <h2>⬆️ Promote Employee to Admin</h2>
-            <label>Select Employee</label>
-            <select id="promoteEmployee">
-                <option value="">Loading employees...</option>
-            </select>
-            <button onclick="promoteToAdmin()" class="btn-full">Promote to Admin</button>
         </div>
 
         <!-- ALL EMPLOYEES -->
@@ -238,22 +209,87 @@
                 <div class="empty-state">Loading...</div>
             </div>
         </div>
-
-        <!-- ALL QUERIES -->
-        <div class="card full-width">
-            <h2>📧 All User Queries</h2>
-            <div id="allQueries">
-                <div class="empty-state">Loading...</div>
-            </div>
-        </div>
     </div>
 
-    <script type="module">
-        import { adminPendingDoctors, adminApproveDoctor, logout as apiLogout } from './api.js';
+    <!-- Debug console -->
+    <div class="debug" id="debugConsole">Initializing...</div>
 
-        // CREATE EMPLOYEE (SIMPLIFIED - only name, email, password)
+    <script type="module">
+        const SUPABASE_URL = 'https://xksqdjwbiojwyfllwtvh.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_zZe-aVVerbOt7joJQMt6QQ_bq3Ej7Ze';
+
+        const debugConsole = document.getElementById('debugConsole');
+        function debug(msg) {
+            console.log(msg);
+            const time = new Date().toLocaleTimeString();
+            debugConsole.innerHTML = `[${time}] ${msg}<br>` + debugConsole.innerHTML;
+        }
+
+        debug('Admin page loaded');
+
+        // Import Supabase
+        const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        debug('Supabase initialized');
+
+        // Check auth
+        const token = localStorage.getItem('token');
+        if (!token) {
+            debug('No token found - redirecting to login');
+            window.location.href = 'login.html';
+        }
+
+        // Get current user
+        const { data: { user } } = await supabase.auth.getUser(token);
+        if (!user) {
+            debug('Invalid token - redirecting');
+            window.location.href = 'login.html';
+        }
+
+        debug('User authenticated: ' + user.email);
+
+        // Check if admin
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('user_id', user.id)
+            .single();
+
+        if (profile?.role !== 'admin') {
+            debug('Not admin - access denied');
+            alert('Access denied. Admin only.');
+            window.location.href = 'login.html';
+        }
+
+        debug('Admin access confirmed ✓');
+
+        // Logout function
+        window.logout = async () => {
+            await supabase.auth.signOut();
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        };
+
+        // Show message functions
+        function showSuccess(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 5000);
+        }
+
+        function showError(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 5000);
+        }
+
+        // CREATE EMPLOYEE
         document.getElementById('createEmployeeForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            debug('Creating employee...');
             
             const employeeData = {
                 name: document.getElementById('empName').value.trim(),
@@ -261,218 +297,94 @@
                 password: document.getElementById('empPassword').value
             };
             
+            debug('Employee data: ' + JSON.stringify(employeeData));
+            
             try {
-                const res = await fetch('/api/admin-create-employee', {
+                // Call Supabase Edge Function
+                const response = await fetch(`${SUPABASE_URL}/functions/v1/admin-create-employee`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify(employeeData)
                 });
-                
-                if (!res.ok) {
-                    const error = await res.json();
-                    throw new Error(error.error || 'Failed to create employee');
+
+                debug('Response status: ' + response.status);
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    debug('Error response: ' + JSON.stringify(errorData));
+                    throw new Error(errorData.error || 'Failed to create employee');
                 }
-                
-                document.getElementById('createEmployeeSuccess').classList.add('show');
+
+                const result = await response.json();
+                debug('Success: ' + JSON.stringify(result));
+
+                showSuccess('createEmployeeSuccess', '✅ Employee created! Email sent with credentials.');
                 document.getElementById('createEmployeeForm').reset();
                 
-                setTimeout(() => {
-                    document.getElementById('createEmployeeSuccess').classList.remove('show');
-                }, 3000);
-                
+                // Reload employees list
                 loadEmployees();
-            } catch (e) {
-                alert('Failed to create employee: ' + e.message);
+            } catch (error) {
+                debug('ERROR: ' + error.message);
+                showError('createEmployeeError', '❌ Error: ' + error.message);
             }
         });
 
         // LOAD EMPLOYEES
         async function loadEmployees() {
+            debug('Loading employees...');
             try {
-                const res = await fetch('/api/team?role=employee', {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
-                const data = await res.json();
-                const employees = data.items || data || [];
-                
-                const taskSelect = document.getElementById('taskEmployee');
-                const promoteSelect = document.getElementById('promoteEmployee');
-                const options = employees.map(e => 
-                    `<option value="${e.id}">${e.name} (${e.email})</option>`
-                ).join('');
-                
-                taskSelect.innerHTML = '<option value="">-- Select Employee --</option>' + options;
-                promoteSelect.innerHTML = '<option value="">-- Select Employee --</option>' + options;
-                
-                const listContainer = document.getElementById('employeesList');
-                if (!employees.length) {
-                    listContainer.innerHTML = '<div class="empty-state">No employees found.</div>';
-                    return;
-                }
-                
-                let html = '<table><tr><th>Name</th><th>Email</th><th>Joined</th></tr>';
-                employees.forEach(e => {
-                    html += `<tr>
-                        <td>${e.name}</td>
-                        <td>${e.email}</td>
-                        <td>${new Date(e.created_at || Date.now()).toLocaleDateString()}</td>
-                    </tr>`;
-                });
-                html += '</table>';
-                listContainer.innerHTML = html;
-            } catch (e) {
-                console.error('Failed to load employees:', e);
-            }
-        }
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('role', 'employee')
+                    .order('created_at', { ascending: false });
 
-        // ASSIGN TASK
-        document.getElementById('assignTaskForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const employeeId = document.getElementById('taskEmployee').value;
-            const title = document.getElementById('taskTitle').value.trim();
-            const description = document.getElementById('taskDescription').value.trim();
-            const priority = document.getElementById('taskPriority').value;
-            const dueDate = document.getElementById('taskDueDate').value;
-            
-            if (!employeeId) return alert('Select an employee');
-            
-            try {
-                const res = await fetch('/api/tasks', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: JSON.stringify({
-                        assigned_to: employeeId,
-                        title,
-                        description,
-                        priority,
-                        due_date: dueDate || null,
-                        status: 'pending'
-                    })
-                });
-                
-                if (!res.ok) throw new Error('Failed to assign task');
-                
-                document.getElementById('assignTaskSuccess').classList.add('show');
-                document.getElementById('assignTaskForm').reset();
-                
-                setTimeout(() => {
-                    document.getElementById('assignTaskSuccess').classList.remove('show');
-                }, 3000);
-            } catch (e) {
-                alert('Failed to assign task: ' + e.message);
-            }
-        });
+                if (error) throw error;
 
-        // LOAD PENDING DOCTORS
-        async function loadPendingDoctors() {
-            try {
-                const doctors = await adminPendingDoctors();
-                const container = document.getElementById('pendingDoctors');
+                debug('Loaded ' + data.length + ' employees');
+
+                const container = document.getElementById('employeesList');
                 
-                if (!doctors.length) {
-                    container.innerHTML = '<div class="empty-state">No pending doctors.</div>';
+                if (data.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No employees yet</div>';
                     return;
                 }
 
-                let html = '<table><tr><th>Name</th><th>Email</th><th>Speciality</th><th>Action</th></tr>';
-                doctors.forEach(d => {
-                    html += `<tr>
-                        <td>${d.name}</td>
-                        <td>${d.email}</td>
-                        <td>${d.speciality || d.organization || 'N/A'}</td>
-                        <td><button onclick="approveDoctor('${d.id}')">✓ Approve</button></td>
-                    </tr>`;
-                });
-                html += '</table>';
-                container.innerHTML = html;
-            } catch (e) {
-                document.getElementById('pendingDoctors').innerHTML = 
-                    '<div class="empty-state">Error: ' + e.message + '</div>';
+                container.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>First Login</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(emp => `
+                                <tr>
+                                    <td>${emp.name || 'N/A'}</td>
+                                    <td>${emp.email}</td>
+                                    <td>${emp.first_login ? '⚠️ Pending' : '✅ Done'}</td>
+                                    <td>${new Date(emp.created_at).toLocaleDateString()}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (error) {
+                debug('Error loading employees: ' + error.message);
+                document.getElementById('employeesList').innerHTML = 
+                    '<div class="empty-state" style="color: #ef4444;">Error loading employees</div>';
             }
         }
 
-        window.approveDoctor = async (id) => {
-            if (!confirm('Approve this doctor?')) return;
-            try {
-                await adminApproveDoctor(id);
-                alert('Doctor approved successfully!');
-                loadPendingDoctors();
-            } catch (e) {
-                alert('Approval failed: ' + e.message);
-            }
-        };
-
-        // PROMOTE TO ADMIN
-        window.promoteToAdmin = async () => {
-            const userId = document.getElementById('promoteEmployee').value;
-            if (!userId) return alert('Select an employee');
-            if (!confirm('Promote this employee to admin? They will have full admin access.')) return;
-            
-            try {
-                const res = await fetch('/api/admin-set-role', {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: JSON.stringify({ user_id: userId, role: 'admin' })
-                });
-                
-                if (!res.ok) {
-                    const error = await res.json();
-                    throw new Error(error.error || 'Failed to promote');
-                }
-                
-                alert('Employee promoted to admin successfully!');
-                loadEmployees();
-            } catch (e) {
-                alert('Promotion failed: ' + e.message);
-            }
-        };
-
-        // LOAD QUERIES
-        function loadQueries() {
-            const queries = JSON.parse(localStorage.getItem('queries') || '[]');
-            const container = document.getElementById('allQueries');
-            
-            if (!queries.length) {
-                container.innerHTML = '<div class="empty-state">No queries yet.</div>';
-                return;
-            }
-            
-            let html = '<table><tr><th>Type</th><th>Name</th><th>Email</th><th>Message</th><th>Date</th></tr>';
-            queries.forEach(q => {
-                html += `<tr>
-                    <td style="text-transform:capitalize">${q.type}</td>
-                    <td>${q.name}</td>
-                    <td>${q.email}</td>
-                    <td>${q.message.substring(0, 60)}${q.message.length > 60 ? '...' : ''}</td>
-                    <td>${new Date(q.timestamp).toLocaleDateString()}</td>
-                </tr>`;
-            });
-            html += '</table>';
-            container.innerHTML = html;
-        }
-
-        window.logout = () => {
-            apiLogout();
-        };
-
+        // Initial load
         loadEmployees();
-        loadPendingDoctors();
-        loadQueries();
-        
-        setInterval(() => {
-            loadPendingDoctors();
-            loadQueries();
-        }, 30000);
+        debug('Ready! ✓');
     </script>
 </body>
 </html>
