@@ -1,25 +1,28 @@
+const { ok, badRequest, isOptions, optionsOk, parseJsonBody } = require("./_lib/http");
+const { supabaseAdmin } = require("./_lib/supabase");
+
 exports.handler = async (event) => {
-  if (event.httpMethod !== "POST") return badRequest("POST only");
-  
-  const { name, email, organization } = parseJsonBody(event);
-  
-  if (!name || !email || !organization) return badRequest("Missing fields");
-  
-  const { data, error } = await sb
+  if (isOptions(event)) return optionsOk();
+  if (event.httpMethod !== "POST") return badRequest("Use POST");
+
+  const body = parseJsonBody(event);
+  if (!body) return badRequest("Invalid JSON");
+
+  const name = (body.name || "").trim();
+  const email = (body.email || "").trim().toLowerCase();
+  const organization = (body.organization || "").trim();
+
+  if (!name || !email || !organization) return badRequest("name, email, organization required");
+
+  const admin = supabaseAdmin();
+
+  const { data, error } = await admin
     .from("doctor_requests")
-    .insert({
-      name, 
-      email, 
-      organization,
-      status: "pending"  // ← ADD THIS LINE
-    })
-    .select()
+    .insert({ name, email, organization, status: "pending" })
+    .select("id,status,created_at")
     .single();
-  
+
   if (error) return badRequest(error.message);
-  
-  return ok({ 
-    message: "Request submitted. Wait for admin approval.", 
-    request_id: data.id 
-  });
+
+  return ok({ message: "Doctor request submitted for admin approval.", request: data });
 };
