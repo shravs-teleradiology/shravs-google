@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Employees Chat - Shravs Teleradiology</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background:#000000;
+      color:#ffffff;
+    }
+    .header {
+      background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+      border-bottom: 2px solid #0ea5e9;
+      padding: 15px 25px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .header-left {
+      display:flex;
+      align-items:center;
+      gap:15px;
+    }
+    .logo {
+      width:60px;
+      height:60px;
+      border-radius:50%;
+      border:2px solid #ffffff;
+      object-fit:cover;
+    }
+    .header-title {
+      font-size:1.1em;
+      text-transform:uppercase;
+      letter-spacing:1px;
+    }
+    .header-actions button,
+    .header-actions a {
+      padding:8px 18px;
+      border-radius:20px;
+      border:1px solid #0ea5e9;
+      background:transparent;
+      color:#0ea5e9;
+      cursor:pointer;
+      font-size:0.85em;
+      text-decoration:none;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      margin-left:10px;
+    }
+    .header-actions button:hover,
+    .header-actions a:hover {
+      background:#0ea5e9;
+      color:#ffffff;
+    }
+    .container {
+      max-width:1000px;
+      margin:20px auto;
+      padding:0 15px 30px;
+    }
+    .page-title {
+      font-size:1.6em;
+      margin-bottom:5px;
+    }
+    .page-subtitle {
+      color:#999;
+      font-size:0.95em;
+      margin-bottom:20px;
+    }
+    .chat-box {
+      border:2px solid #333;
+      border-radius:12px;
+      background:#050505;
+      display:flex;
+      flex-direction:column;
+      height:72vh;
+      max-height:650px;
+    }
+    .chat-messages {
+      flex:1;
+      padding:15px;
+      overflow-y:auto;
+    }
+    .message-item {
+      margin-bottom:12px;
+      padding:10px 12px;
+      border-radius:8px;
+      background:#111111;
+      border:1px solid #222;
+    }
+    .message-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:4px;
+    }
+    .author {
+      font-weight:600;
+      color:#0ea5e9;
+    }
+    .timestamp {
+      font-size:0.75em;
+      color:#777;
+    }
+    .message-text {
+      font-size:0.95em;
+      color:#ddd;
+      white-space:pre-wrap;
+    }
+    .attachment {
+      margin-top:6px;
+      font-size:0.85em;
+    }
+    .attachment a {
+      color:#22c55e;
+      text-decoration:none;
+    }
+    .attachment a:hover {
+      text-decoration:underline;
+    }
+
+    /* Input area + drag drop */
+    .chat-input {
+      border-top:1px solid #222;
+      padding:10px 12px;
+      background:#0a0a0a;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .chat-input.drag-over {
+      background:#04151f;
+      border-top-color:#0ea5e9;
+    }
+
+    .chat-input-top {
+      display:flex;
+      gap:8px;
+      margin-bottom:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .file-label {
+      padding:6px 12px;
+      border-radius:16px;
+      border:1px dashed #444;
+      font-size:0.8em;
+      cursor:pointer;
+      color:#aaa;
+      user-select:none;
+    }
+    #fileName {
+      font-size:0.8em;
+      color:#ccc;
+      margin-left:6px;
+    }
+    .note {
+      font-size:0.75em;
+      color:#777;
+      margin-top:4px;
+      width:100%;
+    }
+    .chat-input-bottom {
+      display:flex;
+      gap:10px;
+    }
+    .chat-input textarea {
+      flex:1;
+      resize:none;
+      min-height:40px;
+      max-height:90px;
+      padding:8px 10px;
+      border-radius:6px;
+      border:1px solid #333;
+      background:#000;
+      color:#fff;
+      font-size:0.95em;
+    }
+    .chat-input textarea:focus {
+      outline:none;
+      border-color:#0ea5e9;
+    }
+    .send-btn {
+      padding:10px 20px;
+      border-radius:20px;
+      border:1px solid #0ea5e9;
+      background:linear-gradient(135deg,#0ea5e9,#06b6d4);
+      color:#ffffff;
+      cursor:pointer;
+      font-weight:bold;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      font-size:0.85em;
+    }
+    .send-btn:hover { filter:brightness(1.1); }
+
+    .empty-state {
+      padding:20px;
+      text-align:center;
+      color:#666;
+      font-size:0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      <img class="logo" src="https://i.ibb.co/G4ys78CY/logo-image.png" alt="Shravs Teleradiology Logo">
+      <div>
+        <div class="header-title">Employees Chat</div>
+        <div style="font-size:0.8em;color:#999;" id="currentUserInfo"></div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a href="index.html">Home</a>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2 class="page-title">Internal Communication</h2>
+    <p class="page-subtitle">Drag & drop or attach files, then send.</p>
+
+    <div class="chat-box">
+      <div id="chatMessages" class="chat-messages"></div>
+
+      <div class="chat-input" id="chatDropZone">
+        <div class="chat-input-top">
+          <label class="file-label">
+            📎 Attach file
+            <input
+              type="file"
+              id="chatFile"
+              style="display:none"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.txt"
+            />
+            <span id="fileName">No file chosen</span>
+          </label>
+          <div class="note" id="sizeNote"></div>
+        </div>
+
+        <div class="chat-input-bottom">
+          <textarea id="chatInput" placeholder="Type your message..."></textarea>
+          <button class="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentUser = null;
+    let pendingFile = null;
+
+    // Increase/decrease this as you want (but localStorage can fill quickly).
+    const MAX_FILE_MB = 3;
+    const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024;
+
+    function checkAuth() {
+      const loggedIn = sessionStorage.getItem("isLoggedIn") === "true";
+      if (!loggedIn) {
+        alert("Please login as employee to access chat.");
+        window.location.href = "login.html";
+        return;
+      }
+      currentUser = JSON.parse(sessionStorage.getItem("currentUser") || "null");
+      if (!currentUser || currentUser.role !== "employee") {
+        alert("Only employees are allowed to access this chat.");
+        window.location.href = "index.html";
+        return;
+      }
+      document.getElementById("currentUserInfo").textContent =
+        currentUser.name + " (" + currentUser.email + ")";
+    }
+
+    function escapeHtml(text) {
+      return (text || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function loadMessages() {
+      const list = JSON.parse(localStorage.getItem("employeeChats") || "[]");
+      const box = document.getElementById("chatMessages");
+
+      if (list.length === 0) {
+        box.innerHTML = '<div class="empty-state">No messages yet. Start the discussion!</div>';
+        return;
+      }
+
+      list.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+      let html = "";
+
+      list.forEach((msg) => {
+        const date = new Date(msg.timestamp).toLocaleString();
+        html += `
+          <div class="message-item">
+            <div class="message-header">
+              <span class="author">${escapeHtml(msg.authorName)}</span>
+              <span class="timestamp">${date}</span>
+            </div>
+            <div class="message-text">${escapeHtml(msg.text)}</div>`;
+
+        if (msg.attachment && msg.attachment.dataUrl && msg.attachment.name) {
+          html += `
+            <div class="attachment">
+              📎 Attachment:
+              <a href="${msg.attachment.dataUrl}" download="${escapeHtml(msg.attachment.name)}" target="_blank">
+                ${escapeHtml(msg.attachment.name)}
+              </a>
+            </div>`;
+        }
+
+        html += `</div>`;
+      });
+
+      box.innerHTML = html;
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function clearPendingFile() {
+      pendingFile = null;
+      document.getElementById("chatFile").value = "";
+      document.getElementById("fileName").textContent = "No file chosen";
+    }
+
+    function handleSelectedFile(file) {
+      if (!file) {
+        clearPendingFile();
+        return;
+      }
+
+      if (file.size > MAX_FILE_BYTES) {
+        alert(`File is too large. Please choose a file under ${MAX_FILE_MB} MB.`);
+        clearPendingFile();
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        pendingFile = {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          dataUrl: e.target.result
+        };
+      };
+      reader.readAsDataURL(file);
+
+      document.getElementById("fileName").textContent = file.name;
+    }
+
+    function safeSaveChats(list) {
+      try {
+        localStorage.setItem("employeeChats", JSON.stringify(list));
+        return true;
+      } catch (e) {
+        alert(
+          "Storage is full in this browser, so the message/attachment cannot be saved.\n\n" +
+          "Tip: delete old chat messages, use smaller files, or switch to IndexedDB/server upload."
+        );
+        return false;
+      }
+    }
+
+    function sendMessage() {
+      const input = document.getElementById("chatInput");
+      const text = input.value.trim();
+
+      if (!text && !pendingFile) return;
+
+      const list = JSON.parse(localStorage.getItem("employeeChats") || "[]");
+      list.push({
+        text,
+        authorName: currentUser.name,
+        authorEmail: currentUser.email,
+        timestamp: new Date().toISOString(),
+        attachment: pendingFile
+      });
+
+      const saved = safeSaveChats(list);
+      if (!saved) return;
+
+      input.value = "";
+      clearPendingFile();
+      loadMessages();
+    }
+
+    function logout() {
+      if (confirm("Are you sure you want to logout?")) {
+        sessionStorage.clear();
+        window.location.href = "login.html";
+      }
+    }
+
+    function setupDragDrop() {
+      const dropZone = document.getElementById("chatDropZone");
+      const preventDefaults = (e) => { e.preventDefault(); e.stopPropagation(); };
+
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((evt) => {
+        dropZone.addEventListener(evt, preventDefaults, false);
+      });
+
+      ["dragenter", "dragover"].forEach((evt) => {
+        dropZone.addEventListener(evt, () => dropZone.classList.add("drag-over"), false);
+      });
+
+      ["dragleave", "drop"].forEach((evt) => {
+        dropZone.addEventListener(evt, () => dropZone.classList.remove("drag-over"), false);
+      });
+
+      dropZone.addEventListener("drop", (e) => {
+        const dt = e.dataTransfer;
+        if (!dt || !dt.files || !dt.files.length) return;
+        handleSelectedFile(dt.files[0]);
+      }, false);
+    }
+
+    window.addEventListener("load", () => {
+      document.getElementById("sizeNote").textContent =
+        `Max file size: ${MAX_FILE_MB} MB. You can also drag & drop a file here.`;
+
+      checkAuth();
+      loadMessages();
+
+      document.getElementById("chatFile").addEventListener("change", function () {
+        handleSelectedFile(this.files[0]);
+      });
+
+      setupDragDrop();
+      setInterval(loadMessages, 5000);
+    });
+  </script>
+</body>
+</html>

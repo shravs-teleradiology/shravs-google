@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shravs Teleradiology and E-Care Services</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+            padding: 20px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px),
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 1;
+            max-width: 900px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-container {
+            margin-bottom: 30px;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            display: block;
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.3));
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            line-height: 1.2;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #ffffff, #cccccc, #ffffff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        .tagline {
+            font-size: 1.5em;
+            color: #cccccc;
+            margin-bottom: 40px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .divider {
+            width: 100px;
+            height: 2px;
+            background: #ffffff;
+            margin: 30px auto;
+        }
+
+        .description {
+            font-size: 1.2em;
+            line-height: 1.8;
+            color: #aaaaaa;
+            margin-bottom: 50px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+            animation: fadeInUp 1.2s ease-out 0.3s backwards;
+        }
+
+        .feature-card {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #ffffff, transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: #ffffff;
+            box-shadow: 0 10px 40px rgba(255,255,255,0.15);
+        }
+
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .feature-text {
+            color: #999;
+            line-height: 1.6;
+            font-size: 0.95em;
+            margin-bottom: 20px;
+        }
+
+        .feature-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 25px;
+            background: transparent;
+            color: #ffffff;
+            text-decoration: none;
+            border: 1px solid #ffffff;
+            border-radius: 25px;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .feature-btn:hover {
+            background: #ffffff;
+            color: #000000;
+            transform: translateX(5px);
+        }
+
+        .cta-section {
+            margin-top: 60px;
+            animation: fadeInUp 1.4s ease-out 0.6s backwards;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 18px 50px;
+            background: #ffffff;
+            color: #000000;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            border: 2px solid #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            background: transparent;
+            color: #ffffff;
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #ffffff;
+        }
+
+        .btn-secondary:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .cta-section.logged-in .btn-login {
+            display: none !important;
+        }
+
+        .info-bar {
+            background: #0a0a0a;
+            border-top: 2px solid #333;
+            padding: 40px 20px;
+            margin-top: 80px;
+        }
+
+        .info-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            text-align: center;
+        }
+
+        .info-item {
+            padding: 20px;
+        }
+
+        .info-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .info-label {
+            color: #888;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        footer {
+            background: #000000;
+            border-top: 2px solid #ffffff;
+            padding: 30px 20px;
+            text-align: center;
+            color: #666;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-text {
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .footer-links {
+            margin-top: 20px;
+        }
+
+        .footer-link {
+            color: #999;
+            text-decoration: none;
+            margin: 0 15px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #ffffff;
+        }
+
+        .contact-dropdown-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .user-profile {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            gap: 15px;
+            background: rgba(10, 10, 10, 0.95);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 2px solid #0ea5e9;
+            box-shadow: 0 5px 20px rgba(14, 165, 233, 0.3);
+        }
+
+        .user-profile.active {
+            display: flex;
+        }
+
+        .user-info {
+            color: #ffffff;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .profile-logout-btn {
+            background: transparent;
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .profile-logout-btn:hover {
+            background: #ff6b6b;
+            color: #ffffff;
+        }
+
+        .contact-dropdown-toggle {
+            background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+            color: #ffffff;
+            border: 2px solid #0ea5e9;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 25px rgba(14, 165, 233, 0.4);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .contact-dropdown-toggle:hover {
+            background: linear-gradient(135deg, #06b6d4, #0ea5e9);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(14, 165, 233, 0.5);
+        }
+
+        .contact-dropdown-panel {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 400px;
+            max-width: calc(100vw - 40px);
+            background: #0a0a0a;
+            border: 2px solid #ffffff;
+            border-radius: 15px;
+            padding: 0;
+            box-shadow: 0 10px 50px rgba(255, 255, 255, 0.2);
+            transform: translateY(20px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .contact-dropdown-panel.active {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .contact-form-header {
+            background: #000000;
+            padding: 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 13px 13px 0 0;
+        }
+
+        .contact-form-header h3 {
+            color: #ffffff;
+            font-size: 1.3em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 2em;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            transform: rotate(90deg);
+            color: #ff6b6b;
+        }
+
+        .contact-form {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #ffffff;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background: #000000;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 0.95em;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group select {
+            cursor: pointer;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+            color: #ffffff;
+            border: 2px solid #0ea5e9;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #06b6d4, #0ea5e9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(14, 165, 233, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .success-message {
+            background: #1a4d2e;
+            color: #4ade80;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 30px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+            border: 1px solid #4ade80;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .team-section {
+            padding: 80px 20px;
+            background: #000000;
+            border-top: 2px solid #333;
+            overflow: hidden;
+        }
+
+        .team-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .team-scroll-wrapper {
+            position: relative;
+            margin-top: 50px;
+        }
+
+        .team-scroll {
+            display: flex;
+            gap: 30px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 20px 0;
+            scrollbar-width: thin;
+            scrollbar-color: #0ea5e9 #1a1a1a;
+        }
+
+        .team-scroll::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .team-scroll::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            border-radius: 10px;
+        }
+
+        .team-scroll::-webkit-scrollbar-thumb {
+            background: linear-gradient(90deg, #0ea5e9, #06b6d4);
+            border-radius: 10px;
+        }
+
+        .team-card {
+            min-width: 300px;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            border: 2px solid #0ea5e9;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(14, 165, 233, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .team-card:hover::before {
+            left: 100%;
+        }
+
+        .team-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 50px rgba(14, 165, 233, 0.3);
+            border-color: #06b6d4;
+        }
+
+        .team-avatar {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: #ffffff;
+            border: 3px solid #ffffff;
+            box-shadow: 0 5px 20px rgba(14, 165, 233, 0.4);
+        }
+
+        .team-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .team-role {
+            font-size: 1em;
+            color: #0ea5e9;
+            margin-bottom: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .team-description {
+            color: #999;
+            line-height: 1.6;
+            font-size: 0.95em;
+            margin-bottom: 20px;
+        }
+
+        .team-expertise {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .expertise-tag {
+            background: rgba(14, 165, 233, 0.1);
+            color: #0ea5e9;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            border: 1px solid rgba(14, 165, 233, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .tagline {
+                font-size: 1.1em;
+            }
+
+            .description {
+                font-size: 1em;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                padding: 15px 35px;
+                font-size: 1em;
+            }
+
+            .contact-dropdown-container {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .contact-dropdown-panel {
+                width: calc(100vw - 40px);
+                right: -20px;
+            }
+
+            .contact-dropdown-toggle {
+                padding: 12px 25px;
+                font-size: 0.9em;
+            }
+
+            .logo {
+                width: 140px;
+                height: 140px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="user-profile" id="userProfile">
+        <span class="user-info" id="userInfo">👤 Welcome</span>
+        <button class="profile-logout-btn" onclick="logoutUser()">Logout</button>
+    </div>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="logo-container">
+                <img src="https://i.ibb.co/FL6BLkSP/Untitled-design.png" alt="Shravs Teleradiology Logo" class="logo">
+            </div>
+
+            <h1>Shravs Teleradiology<br>& E-Care Services</h1>
+            <p class="tagline">Advanced Healthcare Solutions, Delivered Digitally</p>
+            
+            <div class="divider"></div>
+
+            <p class="description">
+                Pioneering the future of medical diagnostics through cutting-edge teleradiology 
+                and comprehensive e-care services. We bridge the gap between expert radiologists 
+                and healthcare providers, ensuring accurate diagnoses and timely patient care.
+            </p>
+
+            <div style="background: linear-gradient(135deg, #0a0a0a, #1a1a1a); border: 2px solid #0ea5e9; border-radius: 20px; padding: 40px; margin: 40px 0; text-align: left;">
+                <h3 style="text-align: center; font-size: 2em; color: #0ea5e9; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 2px;">Why Choose Shravs Teleradiology</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;">
+                    <div style="display: flex; gap: 15px; align-items: start;">
+                        <span style="font-size: 1.5em; color: #0ea5e9; min-width: 30px;">⚖️</span>
+                        <div>
+                            <h4 style="color: #ffffff; margin-bottom: 8px; font-size: 1.1em;">Integrity & Ethics</h4>
+                            <p style="color: #999; font-size: 0.95em; line-height: 1.6;">Integrity and ethics are the foundation of our business and patient care</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; align-items: start;">
+                        <span style="font-size: 1.5em; color: #0ea5e9; min-width: 30px;">🕐</span>
+                        <div>
+                            <h4 style="color: #ffffff; margin-bottom: 8px; font-size: 1.1em;">24×7 Availability</h4>
+                            <p style="color: #999; font-size: 0.95em; line-height: 1.6;">Round-the-clock availability of staff and doctors for uninterrupted service</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; align-items: start;">
+                        <span style="font-size: 1.5em; color: #0ea5e9; min-width: 30px;">🎓</span>
+                        <div>
+                            <h4 style="color: #ffffff; margin-bottom: 8px; font-size: 1.1em;">Expert Radiologists</h4>
+                            <p style="color: #999; font-size: 0.95em; line-height: 1.6;">Highly qualified radiologists with minimum 14 years of experience</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; align-items: start;">
+                        <span style="font-size: 1.5em; color: #0ea5e9; min-width: 30px;">🏥</span>
+                        <div>
+                            <h4 style="color: #ffffff; margin-bottom: 8px; font-size: 1.1em;">Army Medical Corps</h4>
+                            <p style="color: #999; font-size: 0.95em; line-height: 1.6;">All doctors and radiologists retired from Army Medical Corps</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; align-items: start;">
+                        <span style="font-size: 1.5em; color: #0ea5e9; min-width: 30px;">🔬</span>
+                        <div>
+                            <h4 style="color: #ffffff; margin-bottom: 8px; font-size: 1.1em;">Multimodality Reporting</h4>
+                            <p style="color: #999; font-size: 0.95em; line-height: 1.6;">X-rays, Mammography, CT & MRI Scans, CT/MR Angiography, Seizure & Stroke Protocols, Musculoskeletal systems</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; align-items: start;">
+                        <span style="font-size: 1.5em; color: #0ea5e9; min-width: 30px;">📋</span>
+                        <div>
+                            <h4 style="color: #ffffff; margin-bottom: 8px; font-size: 1.1em;">Latest Classifications</h4>
+                            <p style="color: #999; font-size: 0.95em; line-height: 1.6;">BIRADS, LIRADS, TIRADS, TNM Classifications with standard management recommendations</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; align-items: start;">
+                        <span style="font-size: 1.5em; color: #0ea5e9; min-width: 30px;">🚨</span>
+                        <div>
+                            <h4 style="color: #ffffff; margin-bottom: 8px; font-size: 1.1em;">Priority Reporting</h4>
+                            <p style="color: #999; font-size: 0.95em; line-height: 1.6;">Priority given to critical and accident case reporting for urgent care</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; align-items: start;">
+                        <span style="font-size: 1.5em; color: #0ea5e9; min-width: 30px;">📱</span>
+                        <div>
+                            <h4 style="color: #ffffff; margin-bottom: 8px; font-size: 1.1em;">QR Code Reports</h4>
+                            <p style="color: #999; font-size: 0.95em; line-height: 1.6;">Generation of QR code for reports ensuring easy accessibility and security</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; align-items: start;">
+                        <span style="font-size: 1.5em; color: #0ea5e9; min-width: 30px;">⚡</span>
+                        <div>
+                            <h4 style="color: #ffffff; margin-bottom: 8px; font-size: 1.1em;">Low Turnaround Time</h4>
+                            <p style="color: #999; font-size: 0.95em; line-height: 1.6;">Quick report delivery even during peak hours with efficient workflow</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; align-items: start;">
+                        <span style="font-size: 1.5em; color: #0ea5e9; min-width: 30px;">🔄</span>
+                        <div>
+                            <h4 style="color: #ffffff; margin-bottom: 8px; font-size: 1.1em;">Seamless Transfer</h4>
+                            <p style="color: #999; font-size: 0.95em; line-height: 1.6;">Seamless image transfer and remote technical support available 24×7</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="features">
+                <div class="feature-card">
+                    <span class="feature-icon">&#128147;</span>
+                    <h3 class="feature-title">E-Care Services</h3>
+                    <p class="feature-text">Comprehensive digital healthcare solutions for modern medical practices</p>
+                    <a href="ecare.html" class="feature-btn">Explore Services</a>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">&#128337;</span>
+                    <h3 class="feature-title">24/7 Availability</h3>
+                    <p class="feature-text">Round-the-clock access to qualified medical professionals and services</p>
+                    <a href="#contact" class="feature-btn">Contact Us</a>
+                </div>
+            </div>
+
+            <div class="cta-section" id="ctaSection">
+                <a href="login.html" class="btn btn-login">Login / Sign Up</a>
+                <a href="#about" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="info-bar">
+        <div class="info-container">
+            <div class="info-item">
+                <div class="info-number">2025</div>
+                <div class="info-label">Established</div>
+            </div>
+            <div class="info-item">
+                <div class="info-number">5</div>
+                <div class="info-label">Team Members</div>
+            </div>
+            <div class="info-item">
+                <div class="info-number">Micro</div>
+                <div class="info-label">Enterprise Type</div>
+            </div>
+            <div class="info-item">
+                <div class="info-number">AP</div>
+                <div class="info-label">Andhra Pradesh</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teleradiology Section -->
+    <section id="teleradiology" style="padding: 80px 20px; background: #0a0a0a; border-top: 2px solid #333;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <h2 style="text-align: center; font-size: 2.5em; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px;">Teleradiology Services</h2>
+            <div class="divider" style="margin: 30px auto 50px;"></div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+                <div class="feature-card">
+                    <h3 style="font-size: 1.3em; margin-bottom: 15px; color: #ffffff;">Remote Diagnostics</h3>
+                    <p style="color: #999; line-height: 1.6;">Advanced imaging interpretation from anywhere, ensuring expert analysis of X-rays, CT scans, MRIs, and ultrasounds with rapid turnaround times.</p>
+                </div>
+                <div class="feature-card">
+                    <h3 style="font-size: 1.3em; margin-bottom: 15px; color: #ffffff;">Expert Consultation</h3>
+                    <p style="color: #999; line-height: 1.6;">Connect with specialized radiologists for second opinions, complex case reviews, and collaborative diagnostic decision-making.</p>
+                </div>
+                <div class="feature-card">
+                    <h3 style="font-size: 1.3em; margin-bottom: 15px; color: #ffffff;">PACS Integration</h3>
+                    <p style="color: #999; line-height: 1.6;">Seamless integration with Picture Archiving and Communication Systems for efficient image transfer and secure data management.</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 50px;">
+                <a href="teleradiology.html" class="btn">View All Services</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- E-Care Services Section -->
+    <section id="ecare" style="padding: 80px 20px; background: #000000; border-top: 2px solid #333;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <h2 style="text-align: center; font-size: 2.5em; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px;">E-Care Services</h2>
+            <div class="divider" style="margin: 30px auto 50px;"></div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+                <div class="feature-card">
+                    <h3 style="font-size: 1.3em; margin-bottom: 15px; color: #ffffff;">Digital Health Records</h3>
+                    <p style="color: #999; line-height: 1.6;">Comprehensive electronic health record management systems for secure storage, easy access, and streamlined patient care coordination.</p>
+                </div>
+                <div class="feature-card">
+                    <h3 style="font-size: 1.3em; margin-bottom: 15px; color: #ffffff;">Telemedicine Platform</h3>
+                    <p style="color: #999; line-height: 1.6;">Virtual consultation services connecting patients with healthcare providers through secure video conferencing and digital communication tools.</p>
+                </div>
+                <div class="feature-card">
+                    <h3 style="font-size: 1.3em; margin-bottom: 15px; color: #ffffff;">Healthcare Analytics</h3>
+                    <p style="color: #999; line-height: 1.6;">Data-driven insights and reporting tools to optimize healthcare delivery, improve patient outcomes, and enhance operational efficiency.</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 50px;">
+                <a href="ecare.html" class="btn">View All Services</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Showcase Section -->
+    <section class="team-section">
+        <div class="team-container">
+            <h2 style="text-align: center; font-size: 2.5em; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; color: #ffffff;">Meet Our Expert Team</h2>
+            <div class="divider" style="margin: 30px auto 20px;"></div>
+            <p style="text-align: center; color: #999; font-size: 1.1em; max-width: 700px; margin: 0 auto 50px;">
+                A dedicated team of healthcare professionals committed to delivering excellence in teleradiology and digital healthcare services.
+            </p>
+            
+            <div class="team-scroll-wrapper">
+                <div class="team-scroll">
+                    <div class="team-card">
+                        <div class="team-avatar">S</div>
+                        <h3 class="team-name">Dr. Sravanthi Uppalapati</h3>
+                        <p class="team-role">Founder & Director</p>
+                        <p class="team-description">Leading healthcare innovation with expertise in diagnostic radiology and telemedicine solutions. Committed to making quality healthcare accessible to all.</p>
+                        <div class="team-expertise">
+                            <span class="expertise-tag">Radiology</span>
+                            <span class="expertise-tag">Leadership</span>
+                            <span class="expertise-tag">Telemedicine</span>
+                        </div>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="team-avatar">M</div>
+                        <h3 class="team-name">Mathsa Naveen Kumar</h3>
+                        <p class="team-role">Operational Manager</p>
+                        <p class="team-description">Ensuring seamless operations and service delivery. Specializes in healthcare technology integration and client relationship management.</p>
+                        <div class="team-expertise">
+                            <span class="expertise-tag">Operations</span>
+                            <span class="expertise-tag">Tech Integration</span>
+                            <span class="expertise-tag">Client Relations</span>
+                        </div>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="team-avatar">&#128100;</div>
+                        <h3 class="team-name">Clinical Team</h3>
+                        <p class="team-role">Medical Professionals</p>
+                        <p class="team-description">A dedicated team of radiologists, technicians, and healthcare specialists providing 24/7 expert diagnostic services and consultation.</p>
+                        <div class="team-expertise">
+                            <span class="expertise-tag">Diagnostics</span>
+                            <span class="expertise-tag">24/7 Support</span>
+                            <span class="expertise-tag">Expert Analysis</span>
+                        </div>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="team-avatar">&#128187;</div>
+                        <h3 class="team-name">Technical Team</h3>
+                        <p class="team-role">IT & Support</p>
+                        <p class="team-description">Maintaining robust digital infrastructure and ensuring secure, efficient data management for all teleradiology services.</p>
+                        <div class="team-expertise">
+                            <span class="expertise-tag">IT Systems</span>
+                            <span class="expertise-tag">Data Security</span>
+                            <span class="expertise-tag">Technical Support</span>
+                        </div>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="team-avatar">&#128202;</div>
+                        <h3 class="team-name">Quality Assurance</h3>
+                        <p class="team-role">Quality Control</p>
+                        <p class="team-description">Maintaining the highest standards in diagnostic accuracy and service quality through continuous monitoring and improvement.</p>
+                        <div class="team-expertise">
+                            <span class="expertise-tag">Quality Control</span>
+                            <span class="expertise-tag">Compliance</span>
+                            <span class="expertise-tag">Standards</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" style="padding: 80px 20px; background: #0a0a0a; border-top: 2px solid #333;">
+        <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+            <h2 style="font-size: 2.5em; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px;">Get In Touch</h2>
+            <div class="divider" style="margin: 30px auto 40px;"></div>
+            
+            <div style="background: #000; border: 1px solid #333; border-radius: 10px; padding: 40px; margin-top: 30px;">
+                <p style="color: #999; font-size: 1.1em; line-height: 1.8; margin-bottom: 30px;">
+                    Ready to transform your healthcare delivery? Contact us today to learn more about our teleradiology and e-care services.
+                </p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; text-align: left;">
+                    <div style="padding: 20px; background: #0a0a0a; border-left: 3px solid #ffffff; border-radius: 5px;">
+                        <h4 style="color: #ffffff; margin-bottom: 10px; font-size: 1.1em;">Founder And Director</h4>
+                        <p style="color: #999;">Sravanthi Uppalapati</p>
+                        <p style="color: #999; margin-top: 10px;">dr.u.sravanthi2310@gmail.com</p>
+                        <p style="color: #999;">+91 70602 54254</p>
+                    </div>
+                    <div style="padding: 20px; background: #0a0a0a; border-left: 3px solid #ffffff; border-radius: 5px;">
+                        <h4 style="color: #ffffff; margin-bottom: 10px; font-size: 1.1em;">Operational Manager</h4>
+                        <p style="color: #999;">Mathsa Naveen Kumar</p>
+                        <p style="color: #999; margin-top: 10px;">mathsanaveenkumar@gmail.com</p>
+                        <p style="color: #999;">+91 73820 38154</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Inquiry Dropdown -->
+    <div class="contact-dropdown-container">
+        <button class="contact-dropdown-toggle" id="contactToggle">
+            &#128172; Send Query
+        </button>
+        
+        <div class="contact-dropdown-panel" id="contactPanel">
+            <div class="contact-form-header">
+                <h3>Send Your Query</h3>
+                <button class="close-btn" id="closeBtn">&times;</button>
+            </div>
+            
+            <div class="contact-form">
+                <div class="form-group">
+                    <label for="inquiryType">Select Query Type *</label>
+                    <select id="inquiryType" name="inquiryType" required>
+                        <option value="">-- Choose Service --</option>
+                        <option value="teleradiology">Teleradiology Services</option>
+                        <option value="ecare">E-Care Services</option>
+                        <option value="consultation">Expert Consultation</option>
+                        <option value="partnership">Partnership Query</option>
+                        <option value="general">General Query</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="name">Full Name *</label>
+                    <input type="text" id="name" name="name" required placeholder="Enter your name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="designation">Designation/Organization *</label>
+                    <input type="text" id="designation" name="designation" required placeholder="Your designation or organization">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" required placeholder="your.email@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="+91 XXXXX XXXXX">
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Your Query *</label>
+                    <textarea id="message" name="message" required placeholder="Please describe your query..." rows="4"></textarea>
+                </div>
+                
+                <button type="button" class="submit-btn" id="submitInquiry">Send Query</button>
+            </div>
+            
+            <div class="success-message" id="successMessage">
+                Query sent successfully! We'll get back to you within 24 hours.
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p class="footer-text">
+                <strong>Shravs Teleradiology and E-Care Services</strong><br>
+                Village Bapulapadu, Krishna, Vijayawada, Andhra Pradesh - 521105
+            </p>
+            <div class="footer-links">
+                <a href="teleradiology.html" class="footer-link">Teleradiology</a>
+                <a href="ecare.html" class="footer-link">E-Care Services</a>
+                <a href="#contact" class="footer-link">Contact</a>
+                <a href="#about" class="footer-link">About Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Check login status
+        function checkLoginStatus() {
+            return sessionStorage.getItem('isLoggedIn') === 'true';
+        }
+
+        // Update UI based on login status
+        function updateUIForLoginStatus() {
+            const isLoggedIn = checkLoginStatus();
+            const ctaSection = document.getElementById('ctaSection');
+            
+            if (isLoggedIn) {
+                ctaSection.classList.add('logged-in');
+                displayUserProfile();
+            } else {
+                ctaSection.classList.remove('logged-in');
+            }
+        }
+
+        // Display user profile
+        function displayUserProfile() {
+            if (checkLoginStatus()) {
+                const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+                const userProfile = document.getElementById('userProfile');
+                const userInfo = document.getElementById('userInfo');
+                
+                if (currentUser.name) {
+                    userInfo.textContent = `👤 ${currentUser.name}`;
+                    userProfile.classList.add('active');
+                }
+            }
+        }
+
+        // Logout function
+        function logoutUser() {
+            if (confirm('Are you sure you want to logout?')) {
+                sessionStorage.clear();
+                alert('Logged out successfully!');
+                window.location.reload();
+            }
+        }
+
+        // Inquiry Dropdown Toggle
+        const contactToggle = document.getElementById('contactToggle');
+        const contactPanel = document.getElementById('contactPanel');
+        const closeBtn = document.getElementById('closeBtn');
+        const submitBtn = document.getElementById('submitInquiry');
+        const successMessage = document.getElementById('successMessage');
+
+        contactToggle.addEventListener('click', () => {
+            if (!checkLoginStatus()) {
+                alert('Please login to send a query. You will be redirected to the login page.');
+                window.location.href = 'login.html';
+                return;
+            }
+            contactPanel.classList.toggle('active');
+        });
+
+        closeBtn.addEventListener('click', () => {
+            contactPanel.classList.remove('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!contactPanel.contains(e.target) && !contactToggle.contains(e.target)) {
+                contactPanel.classList.remove('active');
+            }
+        });
+
+        // Handle query submission - SAVE TO LOCALSTORAGE FOR ADMIN
+        submitBtn.addEventListener('click', () => {
+            if (!checkLoginStatus()) {
+                alert('Session expired. Please login again.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const inquiryType = document.getElementById('inquiryType').value;
+            const name = document.getElementById('name').value;
+            const designation = document.getElementById('designation').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const message = document.getElementById('message').value;
+
+            if (!inquiryType || !name || !designation || !email || !message) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Get current user info
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+
+            // Save query to localStorage for admin to view
+            const queries = JSON.parse(localStorage.getItem('queries') || '[]');
+            queries.push({
+                type: inquiryType,
+                name,
+                designation,
+                email,
+                phone: phone || 'Not provided',
+                message,
+                submittedBy: currentUser.name || 'Unknown User',
+                submittedByEmail: currentUser.email || 'Unknown',
+                timestamp: new Date().toISOString(),
+                status: 'pending',
+                read: false
+            });
+            localStorage.setItem('queries', JSON.stringify(queries));
+
+            // Show success message
+            successMessage.classList.add('show');
+            
+            // Clear form
+            document.getElementById('inquiryType').value = '';
+            document.getElementById('name').value = '';
+            document.getElementById('designation').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('message').value = '';
+
+            // Hide success message and close panel after 3 seconds
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+                setTimeout(() => {
+                    contactPanel.classList.remove('active');
+                }, 500);
+            }, 3000);
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#' && href !== '#contact') {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Initialize on page load
+        window.addEventListener('load', updateUIForLoginStatus);
+    </script>
+</body>
+</html>
