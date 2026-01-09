@@ -1,30 +1,23 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
-const corsHeaders = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type' }
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { corsHeaders, json, requireAdmin, supabaseAdmin } from "../_shared.ts";
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method !== "GET") return json({ error: "Use GET" }, 405);
 
   try {
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-      { auth: { autoRefreshToken: false, persistSession: false } }
-    )
+    await requireAdmin(req);
 
-    const { data, error } = await supabaseAdmin
-      .from('doctor_requests')
-      .select('id,name,email,organization,status,created_at')
-      .eq('status', 'pending')
-      .order('created_at', { ascending: false })
+    const admin = supabaseAdmin();
+    const { data, error } = await admin
+      .from("doctor_requests")
+      .select("id,name,email,organization,status,created_at")
+      .eq("status", "pending")
+      .order("created_at", { ascending: false });
 
-    if (error) throw error
-
-    return new Response(JSON.stringify({ items: data || [] }), 
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), 
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    if (error) return json({ error: error.message }, 400);
+    return json({ items: data || [] }, 200);
+  } catch (e) {
+    return json({ error: e?.message || String(e) }, 401);
   }
-})
+});
