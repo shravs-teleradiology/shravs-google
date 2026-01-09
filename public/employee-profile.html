@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - Employee</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; }
+        
+        .header { 
+            background: linear-gradient(135deg, #0a0a0a, #1a1a1a); 
+            border-bottom: 2px solid #0ea5e9; 
+            padding: 15px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .logo { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #fff; object-fit: cover; }
+        
+        .container { 
+            max-width: 800px; 
+            margin: 40px auto; 
+            padding: 0 20px; 
+        }
+        
+        .card { 
+            background: linear-gradient(135deg, #0a0a0a, #1a1a1a); 
+            border: 2px solid #0ea5e9; 
+            border-radius: 20px; 
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(14, 165, 233, 0.2);
+        }
+        
+        h2 { 
+            color: #0ea5e9; 
+            margin-bottom: 30px;
+            font-size: 2em;
+            text-align: center;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+        }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group.full { grid-column: 1 / -1; }
+        
+        label { 
+            display: block; 
+            color: #0ea5e9; 
+            margin-bottom: 8px; 
+            font-weight: bold;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        input, textarea { 
+            width: 100%; 
+            padding: 12px 15px; 
+            border-radius: 10px; 
+            border: 2px solid #333; 
+            background: #000; 
+            color: #fff;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, textarea:focus { 
+            outline: none; 
+            border-color: #0ea5e9;
+            box-shadow: 0 0 10px rgba(14, 165, 233, 0.2);
+        }
+        
+        textarea { 
+            resize: vertical; 
+            min-height: 80px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        
+        .photo-upload {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .photo-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #0ea5e9;
+            object-fit: cover;
+        }
+        
+        .btn { 
+            background: linear-gradient(135deg, #0ea5e9, #06b6d4); 
+            color: white; 
+            border: none; 
+            padding: 14px 32px; 
+            border-radius: 25px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            text-transform: uppercase;
+            font-size: 1em;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn:hover { 
+            background: linear-gradient(135deg, #06b6d4, #0ea5e9); 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(14, 165, 233, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid #0ea5e9;
+            color: #0ea5e9;
+        }
+        
+        .btn-secondary:hover {
+            background: #0ea5e9;
+            color: #fff;
+        }
+        
+        .success-msg {
+            background: #1a4d2e;
+            color: #4ade80;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .success-msg.show { display: block; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="employee.html"><img src="logo.jpg" alt="Logo" class="logo"></a>
+        <h1>Edit Profile</h1>
+        <a href="employee.html" style="color:#0ea5e9;text-decoration:none;font-weight:bold">← Back</a>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h2>✏️ Update Your Profile</h2>
+            
+            <div class="success-msg" id="successMsg">Profile updated successfully!</div>
+            
+            <form id="profileForm">
+                <div class="form-group full">
+                    <label>Profile Photo</label>
+                    <div class="photo-upload">
+                        <img id="photoPreview" src="logo.jpg" alt="Preview" class="photo-preview">
+                        <input type="url" id="photoUrl" placeholder="Photo URL (https://...)">
+                    </div>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="email" readonly style="background:#111;color:#666">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="phone" placeholder="+91 XXXXX XXXXX">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Department</label>
+                        <input type="text" id="department" placeholder="e.g., IT, Operations">
+                    </div>
+                    
+                    <div class="form-group full">
+                        <label>Education</label>
+                        <input type="text" id="education" placeholder="e.g., B.Tech in Computer Science">
+                    </div>
+                    
+                    <div class="form-group full">
+                        <label>Address</label>
+                        <textarea id="address" placeholder="Your full address"></textarea>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn">💾 Save Changes</button>
+                <a href="employee.html" class="btn btn-secondary" style="display:block;text-align:center;text-decoration:none;margin-top:10px">Cancel</a>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getMe, updateProfile } from './api.js';
+
+        let currentProfile = null;
+
+        async function loadProfile() {
+            try {
+                currentProfile = await getMe();
+                
+                document.getElementById('name').value = currentProfile.name || '';
+                document.getElementById('email').value = currentProfile.email || '';
+                document.getElementById('phone').value = currentProfile.phone || '';
+                document.getElementById('education').value = currentProfile.education || '';
+                document.getElementById('address').value = currentProfile.address || '';
+                document.getElementById('department').value = currentProfile.department || '';
+                document.getElementById('photoUrl').value = currentProfile.photo_url || '';
+                
+                if (currentProfile.photo_url) {
+                    document.getElementById('photoPreview').src = currentProfile.photo_url;
+                }
+            } catch (e) {
+                alert('Failed to load profile: ' + e.message);
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Update photo preview
+        document.getElementById('photoUrl').addEventListener('input', (e) => {
+            const url = e.target.value.trim();
+            if (url) {
+                document.getElementById('photoPreview').src = url;
+            }
+        });
+
+        // Save profile
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                await updateProfile({
+                    name: document.getElementById('name').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    education: document.getElementById('education').value.trim(),
+                    address: document.getElementById('address').value.trim(),
+                    department: document.getElementById('department').value.trim(),
+                    photo_url: document.getElementById('photoUrl').value.trim() || null
+                });
+                
+                document.getElementById('successMsg').classList.add('show');
+                setTimeout(() => {
+                    window.location.href = 'employee.html';
+                }, 1500);
+            } catch (e) {
+                alert('Failed to update profile: ' + e.message);
+            }
+        });
+
+        loadProfile();
+    </script>
+</body>
+</html>
