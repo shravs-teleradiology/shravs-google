@@ -95,11 +95,7 @@
     .tab.active{ border-color:#0ea5e9; color:#0ea5e9; background:#071018; }
     .tab:hover{ border-color:#06b6d4; color:#06b6d4; }
 
-    .empty{
-      padding:18px;
-      text-align:center;
-      color:#777;
-    }
+    .empty{ padding:18px; text-align:center; color:#777; }
 
     table{ width:100%; border-collapse:collapse; }
     th{
@@ -134,6 +130,9 @@
     }
     .pill.pending{ border-color:#f59e0b; color:#f59e0b; background:rgba(245,158,11,0.08); }
     .pill.done{ border-color:#22c55e; color:#22c55e; background:rgba(34,197,94,0.08); }
+    .pill.priority-high{ border-color:#ef4444; color:#ef4444; background:rgba(239,68,68,0.08); }
+    .pill.priority-medium{ border-color:#f59e0b; color:#f59e0b; background:rgba(245,158,11,0.08); }
+    .pill.priority-low{ border-color:#22c55e; color:#22c55e; background:rgba(34,197,94,0.08); }
 
     .row-actions{ display:flex; gap:8px; flex-wrap:wrap; }
     .mini{
@@ -150,7 +149,7 @@
     }
     .mini:hover{ background:#0ea5e9; color:#000; }
 
-    /* ===== Chat overlay (Slack-like) ===== */
+    /* ===== Chat overlay ===== */
     .overlay{
       position:fixed; inset:0;
       background:rgba(0,0,0,0.75);
@@ -188,9 +187,7 @@
       border-bottom:1px solid #1c1c1c;
       display:flex; justify-content:space-between; align-items:center; gap:10px;
     }
-    .sb-me{
-      min-width:0;
-    }
+    .sb-me{ min-width:0; }
     .sb-me .name{ font-weight:900; color:#fff; font-size:0.95em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .sb-me .role{ color:#9aa; font-size:0.8em; margin-top:2px; }
 
@@ -225,9 +222,7 @@
     .sb-item.active{ background:#071018; border-color:#0ea5e9; }
     .sb-item small{ color:#888; font-weight:700; }
 
-    .main{
-      display:flex; flex-direction:column; min-width:0;
-    }
+    .main{ display:flex; flex-direction:column; min-width:0; }
     .chat-top{
       padding:12px;
       border-bottom:1px solid #1c1c1c;
@@ -254,11 +249,7 @@
     }
     .chat-close:hover{ background:#ff6b6b; color:#000; }
 
-    .messages{
-      flex:1;
-      padding:12px;
-      overflow:auto;
-    }
+    .messages{ flex:1; padding:12px; overflow:auto; }
     .msg{
       border:1px solid #1f1f1f;
       background:#101010;
@@ -274,10 +265,7 @@
     .msg-time{ color:#777; font-size:0.75em; }
     .msg-text{ color:#ddd; white-space:pre-wrap; font-size:0.95em; }
 
-    .attach{
-      margin-top:6px;
-      font-size:0.85em;
-    }
+    .attach{ margin-top:6px; font-size:0.85em; }
     .attach a{ color:#22c55e; text-decoration:none; }
     .attach a:hover{ text-decoration:underline; }
 
@@ -288,7 +276,6 @@
       transition: background 0.2s ease, border-color 0.2s ease;
     }
     .composer.drag-over{ background:#04151f; border-top-color:#0ea5e9; }
-
     .composer-top{
       display:flex; align-items:center; gap:10px; flex-wrap:wrap;
       margin-bottom:8px;
@@ -339,7 +326,7 @@
     <div class="topbar-left">
       <img class="logo" src="https://i.ibb.co/FL6BLkS/P-Untitled-design.png" alt="Logo">
       <div>
-        <div class="title">Employee</div>
+        <div class="title">Staff</div>
         <div class="sub" id="employeeInfo">Loading...</div>
       </div>
     </div>
@@ -351,29 +338,17 @@
 
   <div class="container">
     <div class="cards">
-      <div class="card">
-        <div class="num" id="countPending">0</div>
-        <div class="lbl">Pending works</div>
-      </div>
-      <div class="card">
-        <div class="num" id="countAll">0</div>
-        <div class="lbl">Total assigned</div>
-      </div>
-      <div class="card">
-        <div class="num" id="countDueToday">0</div>
-        <div class="lbl">Due today</div>
-      </div>
-      <div class="card">
-        <div class="num" id="countDone">0</div>
-        <div class="lbl">Completed</div>
-      </div>
+      <div class="card"><div class="num" id="countPending">0</div><div class="lbl">Pending works</div></div>
+      <div class="card"><div class="num" id="countAll">0</div><div class="lbl">Total assigned</div></div>
+      <div class="card"><div class="num" id="countDueToday">0</div><div class="lbl">Due today</div></div>
+      <div class="card"><div class="num" id="countDone">0</div><div class="lbl">Completed</div></div>
     </div>
 
     <div class="panel">
       <div class="panel-head">
         <div>
           <div class="panel-title">My Works</div>
-          <div class="sub" style="margin-top:6px;">You will see pending works first (assigned by Admin).</div>
+          <div class="sub" style="margin-top:6px;">Pending works first (assigned by Admin).</div>
         </div>
 
         <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
@@ -387,7 +362,7 @@
 
       <div id="tasksTable"></div>
       <div class="sub" style="margin-top:10px; color:#888;">
-        Tip: “Mark done” updates your task status in this browser’s local storage.
+        Tip: “Mark done” updates status in localStorage (same browser/device).
       </div>
     </div>
   </div>
@@ -395,18 +370,17 @@
   <!-- Chat overlay -->
   <div class="overlay" id="chatOverlay" aria-hidden="true">
     <div class="chat-shell">
-      <!-- Sidebar -->
       <div class="sidebar" id="sidebar">
         <div class="sb-head">
           <div class="sb-me">
-            <div class="name" id="sbName">Employee</div>
+            <div class="name" id="sbName">Staff</div>
             <div class="role" id="sbRole">employee</div>
           </div>
           <button class="sb-btn" onclick="closeChat()">Close</button>
         </div>
 
         <div class="sb-section">Channels</div>
-        <div class="sb-list" id="channelList">
+        <div class="sb-list">
           <div class="sb-item active" id="sbCommon" onclick="selectRoomCommon()">
             <div># common</div>
             <small>chat</small>
@@ -415,11 +389,10 @@
 
         <div class="sb-section">Direct messages</div>
         <div class="sb-list" id="dmList">
-          <div class="empty">No users yet.</div>
+          <div class="empty">No staff yet.</div>
         </div>
       </div>
 
-      <!-- Main chat -->
       <div class="main">
         <div class="chat-top">
           <div class="chat-room" id="roomTitle"># common</div>
@@ -451,29 +424,48 @@
   </div>
 
 <script>
-  // ===== AUTH =====
-  const TASKS_KEY = "tasks_v1";                 // Admin assigns tasks into this key
-  const COMMON_KEY = "commonChatMessages_v1";   // Shared chat channel storage
-  const DM_KEY = "directMessages_v1";           // Object of DM conversations
+  const TASKS_KEY = "tasks_v1";
+  const COMMON_KEY = "commonChatMessages_v1";
+  const DM_KEY = "directMessages_v1";
 
   const MAX_FILE_MB = 3;
   const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024;
 
   let me = null;
-  let taskView = "pending"; // pending | all
+  let taskView = "pending";
 
-  // Chat state
   let chatOpen = false;
-  let activeRoom = { type: "common" }; // {type:"common"} or {type:"dm", peerEmail:"..."}
+  let activeRoom = { type:"common" };
   let pendingFile = null;
 
-  function ensureEmployeeAuth() {
+  function readJson(key, fallback) {
+    try { return JSON.parse(localStorage.getItem(key) || "null") ?? fallback; }
+    catch { return fallback; }
+  }
+  function writeJson(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); return true; }
+    catch { alert("Storage full. Delete old messages/tasks or use smaller files."); return false; }
+  }
+  function escapeHtml(text) {
+    return String(text ?? "")
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+  }
+  function prettyTime(iso) {
+    try { return new Date(iso).toLocaleString(); } catch { return iso; }
+  }
+  function convId(a, b) {
+    const x = String(a).toLowerCase();
+    const y = String(b).toLowerCase();
+    return x < y ? `dm:${x}|${y}` : `dm:${y}|${x}`;
+  }
+
+  function ensureStaffAuth() {
     const loggedIn = sessionStorage.getItem("isLoggedIn") === "true";
-    const isAdmin = sessionStorage.getItem("isAdmin") === "true";
     const currentUser = JSON.parse(sessionStorage.getItem("currentUser") || "null");
 
-    if (!loggedIn || isAdmin || !currentUser || currentUser.role !== "employee") {
-      alert("Please login as employee.");
+    if (!loggedIn || !currentUser || (currentUser.role !== "employee" && currentUser.role !== "admin")) {
+      alert("Please login as staff.");
       window.location.href = "login.html";
       return false;
     }
@@ -484,35 +476,9 @@
     document.getElementById("sbRole").textContent = me.role;
 
     document.getElementById("chatNote").textContent =
-      `Drag & drop supported. Max file size ${MAX_FILE_MB} MB.`;
+      `Common + DM. Drag & drop supported. Max file size ${MAX_FILE_MB} MB.`;
 
     return true;
-  }
-
-  // ===== Storage helpers =====
-  function readJson(key, fallback) {
-    try { return JSON.parse(localStorage.getItem(key) || "null") ?? fallback; }
-    catch { return fallback; }
-  }
-  function writeJson(key, value) {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-      return true;
-    } catch (e) {
-      alert("Storage full. Please delete old messages/tasks or use smaller files.");
-      return false;
-    }
-  }
-  function escapeHtml(text) {
-    return String(text ?? "")
-      .replace(/&/g,"&amp;")
-      .replace(/</g,"&lt;")
-      .replace(/>/g,"&gt;")
-      .replace(/"/g,"&quot;")
-      .replace(/'/g,"&#039;");
-  }
-  function prettyTime(iso) {
-    try { return new Date(iso).toLocaleString(); } catch { return iso; }
   }
 
   // ===== Tasks =====
@@ -526,8 +492,7 @@
     const pending = all.filter(t => t.status === "pending").length;
     const done = all.filter(t => t.status === "done").length;
 
-    const today = new Date();
-    const todayStr = today.toISOString().slice(0,10);
+    const todayStr = new Date().toISOString().slice(0,10);
     const dueToday = all.filter(t => (t.dueDate || "") === todayStr && t.status === "pending").length;
 
     document.getElementById("countAll").textContent = all.length;
@@ -562,10 +527,17 @@
     tasks = tasks.filter(t =>
       (t.title || "").toLowerCase().includes(q) ||
       (t.description || "").toLowerCase().includes(q) ||
-      (t.dueDate || "").toLowerCase().includes(q)
+      (t.dueDate || "").toLowerCase().includes(q) ||
+      (t.priority || "").toLowerCase().includes(q)
     );
 
-    tasks.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+    tasks.sort((a,b) => {
+      const pr = {high:3, medium:2, low:1};
+      const ap = pr[a.priority || "low"] || 1;
+      const bp = pr[b.priority || "low"] || 1;
+      if (ap !== bp) return bp - ap;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
 
     const box = document.getElementById("tasksTable");
     if (!tasks.length) {
@@ -577,6 +549,7 @@
       <table>
         <thead>
           <tr>
+            <th>Priority</th>
             <th>Status</th>
             <th>Work</th>
             <th>Due</th>
@@ -586,6 +559,7 @@
         <tbody>
           ${tasks.map(t => `
             <tr>
+              <td><span class="pill priority-${escapeHtml(t.priority || "low")}">${escapeHtml(t.priority || "low")}</span></td>
               <td><span class="pill ${escapeHtml(t.status)}">${escapeHtml(t.status)}</span></td>
               <td>
                 <div style="font-weight:900;">${escapeHtml(t.title || "")}</div>
@@ -609,31 +583,21 @@
     `;
   }
 
-  // ===== Chat: people list =====
+  // ===== DM people list (staff only: employee/admin) =====
   function getAllPeopleForDM() {
-    // "users" list contains users + employees (created by admin), excludes admin by design
     const users = readJson("users", []);
     const meEmail = String(me.email).toLowerCase();
 
-    const seen = new Set();
-    const out = [];
-    for (const u of users) {
-      if (!u || !u.email) continue;
-      const email = String(u.email).toLowerCase();
-      if (email === meEmail) continue;
-      if (email === "admin@shravsteleradiology.com") continue; // keep admin out of DMs
-      if (seen.has(email)) continue;
-      seen.add(email);
-      out.push({ name: u.name || u.email, email: u.email, role: u.role || "user" });
-    }
-    out.sort((a,b) => (a.name || "").localeCompare(b.name || ""));
-    return out;
-  }
+    const staff = users.filter(u => u && (u.role === "employee" || u.role === "admin"));
+    const uniq = new Map();
 
-  function convId(a, b) {
-    const x = String(a).toLowerCase();
-    const y = String(b).toLowerCase();
-    return x < y ? `dm:${x}|${y}` : `dm:${y}|${x}`;
+    for (const u of staff) {
+      const email = String(u.email || "").toLowerCase();
+      if (!email || email === meEmail) continue;
+      if (!uniq.has(email)) uniq.set(email, { name: u.name || u.email, email: u.email, role: u.role || "staff" });
+    }
+
+    return Array.from(uniq.values()).sort((a,b) => (a.name || "").localeCompare(b.name || ""));
   }
 
   function selectRoomCommon() {
@@ -653,8 +617,7 @@
   }
 
   function setSidebarActive() {
-    const sbCommon = document.getElementById("sbCommon");
-    sbCommon.classList.toggle("active", activeRoom.type === "common");
+    document.getElementById("sbCommon").classList.toggle("active", activeRoom.type === "common");
 
     document.querySelectorAll(".dm-item").forEach(el => {
       const email = el.getAttribute("data-email") || "";
@@ -670,7 +633,7 @@
     const people = getAllPeopleForDM();
 
     if (!people.length) {
-      box.innerHTML = `<div class="empty">No users yet.</div>`;
+      box.innerHTML = `<div class="empty">No staff yet.</div>`;
       return;
     }
 
@@ -690,21 +653,15 @@
     setSidebarActive();
   }
 
-  // ===== Chat: messages =====
   function getRoomMessages() {
-    if (activeRoom.type === "common") {
-      return readJson(COMMON_KEY, []);
-    }
-
+    if (activeRoom.type === "common") return readJson(COMMON_KEY, []);
     const store = readJson(DM_KEY, {});
     const id = convId(me.email, activeRoom.peerEmail);
     return store[id] || [];
   }
 
   function saveRoomMessages(list) {
-    if (activeRoom.type === "common") {
-      return writeJson(COMMON_KEY, list);
-    }
+    if (activeRoom.type === "common") return writeJson(COMMON_KEY, list);
 
     const store = readJson(DM_KEY, {});
     const id = convId(me.email, activeRoom.peerEmail);
@@ -728,7 +685,7 @@
       html += `
         <div class="msg">
           <div class="msg-head">
-            <div class="msg-author">${escapeHtml(msg.authorName || "User")}</div>
+            <div class="msg-author">${escapeHtml(msg.authorName || "User")} <span style="color:#777;">(${escapeHtml(msg.authorRole || "")})</span></div>
             <div class="msg-time">${prettyTime(msg.timestamp || "")}</div>
           </div>
           <div class="msg-text">${escapeHtml(msg.text || "")}</div>
@@ -759,12 +716,10 @@
 
   function handleSelectedFile(file) {
     if (!file) return clearPendingFile();
-
     if (file.size > MAX_FILE_BYTES) {
       alert(`File too large. Max ${MAX_FILE_MB} MB.`);
       return clearPendingFile();
     }
-
     const reader = new FileReader();
     reader.onload = (e) => {
       pendingFile = {
@@ -781,12 +736,8 @@
   function sendMessage() {
     const textEl = document.getElementById("chatText");
     const text = (textEl.value || "").trim();
-
     if (!text && !pendingFile) return;
-    if (activeRoom.type === "dm" && !activeRoom.peerEmail) {
-      alert("Select a person to send a DM.");
-      return;
-    }
+    if (activeRoom.type === "dm" && !activeRoom.peerEmail) return alert("Select a person to DM.");
 
     const list = getRoomMessages();
     list.push({
@@ -809,7 +760,6 @@
 
   function setupDropZone() {
     const zone = document.getElementById("composerDropZone");
-
     const prevent = (e) => { e.preventDefault(); e.stopPropagation(); };
 
     ["dragenter","dragover","dragleave","drop"].forEach(evt => zone.addEventListener(evt, prevent, false));
@@ -822,7 +772,6 @@
     }, false);
   }
 
-  // ===== Chat overlay control =====
   function openChat() {
     chatOpen = true;
     const ov = document.getElementById("chatOverlay");
@@ -838,38 +787,31 @@
     ov.setAttribute("aria-hidden", "true");
   }
   function toggleSidebar() {
-    const sb = document.getElementById("sidebar");
-    sb.classList.toggle("show");
+    document.getElementById("sidebar").classList.toggle("show");
   }
 
-  // ===== Logout =====
   function logout() {
     if (!confirm("Logout?")) return;
     sessionStorage.clear();
     window.location.href = "login.html";
   }
 
-  // ===== Init =====
   window.addEventListener("load", () => {
-    if (!ensureEmployeeAuth()) return;
+    if (!ensureStaffAuth()) return;
 
-    // Tasks
-    refreshTaskStats();
-    renderTasks();
-
-    // Chat
     selectRoomCommon();
     setupDropZone();
     document.getElementById("chatFile").addEventListener("change", function () {
       handleSelectedFile(this.files[0]);
     });
 
-    // Click outside chat to close
     document.getElementById("chatOverlay").addEventListener("click", (e) => {
       if (e.target.id === "chatOverlay") closeChat();
     });
 
-    // Auto refresh tasks + chat
+    refreshTaskStats();
+    renderTasks();
+
     setInterval(() => {
       refreshTaskStats();
       renderTasks();
