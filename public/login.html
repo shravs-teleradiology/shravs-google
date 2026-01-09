@@ -3,82 +3,212 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login - Shravs Teleradiology</title>
+  <title>Login / Signup - Shravs</title>
   <style>
-    body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;background:#000;color:#fff;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:20px}
-    .card{width:100%;max-width:520px;border:2px solid #0ea5e9;border-radius:16px;background:#0a0a0a;padding:26px}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Segoe UI,Tahoma,sans-serif;background:#000;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    .wrap{width:100%;max-width:980px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    @media(max-width:900px){.wrap{grid-template-columns:1fr}}
+    .card{background:#0a0a0a;border:2px solid #0ea5e9;border-radius:30px;padding:25px}
+    .brand{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+    .logo{width:64px;height:64px;border-radius:50%;border:2px solid #fff;object-fit:cover}
+    h1{font-size:1.2rem;letter-spacing:.5px;text-transform:uppercase}
+    .tabs{display:flex;gap:10px;margin:10px 0 16px}
+    .tab{flex:1;padding:10px;border-radius:999px;border:1px solid #333;background:#000;color:#ddd;cursor:pointer;font-weight:800;text-transform:uppercase;font-size:.85rem}
+    .tab.active{border-color:#0ea5e9;color:#000;background:linear-gradient(135deg,#0ea5e9,#06b6d4)}
     .row{margin-top:12px}
-    label{display:block;margin-bottom:6px;color:#cfcfcf;font-weight:800;font-size:.85em;text-transform:uppercase}
-    input{width:100%;padding:12px;border-radius:10px;border:1px solid #333;background:#000;color:#fff}
-    input:focus{outline:none;border-color:#0ea5e9}
+    label{display:block;margin-bottom:6px;color:#cfcfcf;font-weight:800;font-size:.82rem;text-transform:uppercase}
+    input,select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid #333;background:#000;color:#fff}
+    input:focus,select:focus{outline:none;border-color:#0ea5e9}
     .btn{margin-top:14px;width:100%;padding:12px 14px;border-radius:999px;border:1px solid #0ea5e9;background:#0ea5e9;color:#000;font-weight:900;text-transform:uppercase;cursor:pointer}
     .btn:hover{filter:brightness(1.05)}
     .msg{margin-top:14px;padding:10px;border-radius:10px;display:none}
     .msg.ok{display:block;background:#0f2f1c;border:1px solid #22c55e;color:#22c55e}
     .msg.err{display:block;background:#2f0f0f;border:1px solid #ef4444;color:#ef4444}
-    .muted{color:#aaa;font-size:.9em;margin-top:10px;line-height:1.4}
-    .logo{width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid #fff;display:block;margin:0 auto 10px}
-    h1{text-align:center;margin:0 0 8px}
-    .links{display:flex;justify-content:space-between;margin-top:14px;font-size:.9em}
-    .links a{color:#0ea5e9;text-decoration:none}
+    .muted{color:#aaa;font-size:.92rem;line-height:1.5;margin-top:10px}
+    .hide{display:none}
   </style>
 </head>
 <body>
-  <div class="card">
-    <img class="logo" src="logo.jpg" alt="Shravs Teleradiology Logo" />
-    <h1>Secure Login</h1>
+  <div class="wrap">
 
-    <div id="msg" class="msg"></div>
-
-    <form id="loginForm">
-      <div class="row">
-        <label>Email</label>
-        <input id="email" type="email" required placeholder="admin@... or employee@... or doctor@..." />
+    <div class="card">
+      <div class="brand">
+        <img class="logo" src="logo.jpg" alt="Shravs Logo">
+        <div>
+          <h1>Secure Login</h1>
+          <div class="muted">Common login for Admin, Employee, Doctor.</div>
+        </div>
       </div>
-      <div class="row">
-        <label>Password</label>
-        <input id="password" type="password" required placeholder="Enter password" />
-      </div>
-      <button class="btn" type="submit">Login</button>
-    </form>
 
-    <div class="links">
-      <a href="doctor-signup.html">Doctor signup</a>
-      <a href="index.html">Back to home</a>
+      <div class="tabs">
+        <button class="tab active" id="tabLogin">Login</button>
+        <button class="tab" id="tabSignup">Signup</button>
+      </div>
+
+      <div id="msg" class="msg"></div>
+
+      <!-- LOGIN -->
+      <form id="loginForm">
+        <div class="row">
+          <label>Email</label>
+          <input id="loginEmail" type="email" required placeholder="your@email.com">
+        </div>
+        <div class="row">
+          <label>Password</label>
+          <input id="loginPassword" type="password" required placeholder="••••••••">
+        </div>
+        <button class="btn" type="submit">Login</button>
+
+        <div class="muted">
+          Employees are typically created by Admin. Doctors can request signup and wait for approval.
+        </div>
+      </form>
+
+      <!-- SIGNUP -->
+      <form id="signupForm" class="hide">
+        <div class="row">
+          <label>Signup As</label>
+          <select id="signupRole" required>
+            <option value="">Select role</option>
+            <option value="doctor">Doctor</option>
+            <option value="patient">Patient</option>
+            <option value="diagnostic">Diagnostic center</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <label>Full name</label>
+          <input id="signupName" required placeholder="Full name">
+        </div>
+
+        <div class="row">
+          <label>Email</label>
+          <input id="signupEmail" type="email" required placeholder="your@email.com">
+        </div>
+
+        <div class="row">
+          <label>Password</label>
+          <input id="signupPassword" type="password" required placeholder="Create a password">
+        </div>
+
+        <!-- Doctor extra fields -->
+        <div id="doctorFields" class="hide">
+          <div class="row">
+            <label>Doctor type</label>
+            <select id="doctorType">
+              <option value="radiology">Radiology</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="row">
+            <label>Speciality</label>
+            <input id="doctorSpeciality" placeholder="e.g., Radiology, Cardiology, Orthopedics">
+          </div>
+
+          <div class="row">
+            <label>Organization / Hospital</label>
+            <input id="doctorOrg" placeholder="Your hospital/clinic name">
+          </div>
+        </div>
+
+        <!-- Patient / Diagnostic message -->
+        <div id="otherFields" class="hide">
+          <div class="muted" style="margin-top:10px">
+            Patient / Diagnostic center signup UI is ready, but backend endpoints for creating these accounts were not included in the shared files.
+            Once those endpoints exist, this form can be wired the same way as doctor signup.
+          </div>
+        </div>
+
+        <button class="btn" type="submit">Submit Signup</button>
+      </form>
     </div>
 
-    <div class="muted">
-      Note: Employees are created by Admin in the Admin dashboard. Doctors can signup and wait for admin approval.
-    </div>
+    
   </div>
 
   <script type="module">
-    import { login, getMe } from "./js/api.js";
+    import { login, getMe, requestDoctorSignup } from "./api.js";
 
+    const tabLogin = document.getElementById("tabLogin");
+    const tabSignup = document.getElementById("tabSignup");
+    const loginForm = document.getElementById("loginForm");
+    const signupForm = document.getElementById("signupForm");
     const msg = document.getElementById("msg");
-    function show(text, type){
+
+    const signupRole = document.getElementById("signupRole");
+    const doctorFields = document.getElementById("doctorFields");
+    const otherFields = document.getElementById("otherFields");
+
+    function showMessage(text, type) {
       msg.textContent = text;
       msg.className = "msg " + type;
-      msg.style.display = "block";
     }
 
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    function setMode(mode) {
+      const isLogin = mode === "login";
+      tabLogin.classList.toggle("active", isLogin);
+      tabSignup.classList.toggle("active", !isLogin);
+      loginForm.classList.toggle("hide", !isLogin);
+      signupForm.classList.toggle("hide", isLogin);
+      msg.className = "msg";
+      msg.textContent = "";
+    }
+
+    tabLogin.addEventListener("click", () => setMode("login"));
+    tabSignup.addEventListener("click", () => setMode("signup"));
+
+    signupRole.addEventListener("change", () => {
+      const role = signupRole.value;
+      doctorFields.classList.toggle("hide", role !== "doctor");
+      otherFields.classList.toggle("hide", role === "doctor" || role === "");
+    });
+
+    // LOGIN (common for all roles)
+    loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      msg.style.display = "none";
+      try {
+        showMessage("Logging in...", "ok");
+        await login(
+          document.getElementById("loginEmail").value.trim(),
+          document.getElementById("loginPassword").value
+        );
+        const me = await getMe();
 
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
-      try{
-        await login(email, password);
-        const profile = await getMe();
-
-        if (profile.role === "admin") window.location.href = "admin.html";
-        else if (profile.role === "employee") window.location.href = "employee.html";
-        else if (profile.role === "doctor") window.location.href = "doctor.html";
+        // Redirect by role (admin/employee/doctor)
+        if (me?.role === "admin") window.location.href = "admin.html";
+        else if (me?.role === "employee") window.location.href = "employee.html";
+        else if (me?.role === "doctor") window.location.href = "doctor.html";
         else window.location.href = "index.html";
-      } catch(err){
-        show(err.message || "Login failed", "err");
+      } catch (err) {
+        showMessage(err.message || "Login failed", "err");
+      }
+    });
+
+    // SIGNUP
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const role = signupRole.value;
+
+      try {
+        if (role === "doctor") {
+          showMessage("Submitting doctor signup request...", "ok");
+          await requestDoctorSignup({
+            name: document.getElementById("signupName").value.trim(),
+            email: document.getElementById("signupEmail").value.trim(),
+            password: document.getElementById("signupPassword").value,
+            organization: document.getElementById("doctorOrg").value.trim() || "Doctor",
+          });
+          showMessage("Request submitted. Wait for admin approval, then login.", "ok");
+          setMode("login");
+          return;
+        }
+
+        // Patient / Diagnostic: UI ready, backend endpoint not present in provided files
+        showMessage("Signup submitted (backend endpoint not connected yet).", "err");
+      } catch (err) {
+        showMessage(err.message || "Signup failed", "err");
       }
     });
   </script>
