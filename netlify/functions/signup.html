@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signup - Shravs</title>
+  <style>
+    body{font-family:Segoe UI, sans-serif;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+    .card{width:100%;max-width:560px;border:2px solid #ff6b6b;border-radius:16px;background:#0a0a0a;padding:26px}
+    .tabs{display:flex;gap:10px;margin-bottom:16px}
+    .tab{flex:1;padding:10px;border-radius:999px;border:1px solid #333;background:#000;color:#ccc;cursor:pointer;font-weight:900;text-transform:uppercase}
+    .tab.active{border-color:#ff6b6b;color:#ff6b6b}
+    label{display:block;margin-top:12px;color:#ff6b6b;font-weight:800;font-size:.85em;text-transform:uppercase}
+    input{width:100%;padding:12px;border-radius:10px;border:1px solid #333;background:#000;color:#fff;margin-top:6px}
+    .btn{margin-top:14px;width:100%;padding:12px 14px;border-radius:999px;border:1px solid #ff6b6b;background:#ff6b6b;color:#000;font-weight:900;text-transform:uppercase;cursor:pointer}
+    .btn:hover{filter:brightness(1.05)}
+    .msg{margin-top:14px;padding:10px;border-radius:10px;display:none}
+    .msg.ok{display:block;background:#0f2f1c;border:1px solid #22c55e;color:#22c55e}
+    .msg.err{display:block;background:#2f0f0f;border:1px solid #ef4444;color:#ef4444}
+    a{color:#0ea5e9}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div style="text-align:center;margin-bottom:10px">
+      <img src="https://i.ibb.co/FL6BLkSP-Untitled-design.png" style="width:84px;height:84px;border-radius:50%;border:2px solid #fff" alt="Logo" />
+      <h2 style="margin:10px 0 0;color:#fff">Signup Request</h2>
+      <div style="color:#aaa;font-size:.9em">Admin will approve and then login will work.</div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" id="tabDoctor">Doctor</button>
+      <button class="tab" id="tabDiagnostic">Diagnostic</button>
+    </div>
+
+    <div id="msg" class="msg"></div>
+
+    <form id="form">
+      <label>Full Name *</label>
+      <input id="name" required placeholder="Full name" />
+
+      <label>Email *</label>
+      <input id="email" type="email" required placeholder="email@example.com" />
+
+      <label>Organization *</label>
+      <input id="org" required placeholder="Hospital / Lab name" />
+
+      <button class="btn" type="submit">Submit Request</button>
+    </form>
+
+    <div style="margin-top:12px;color:#aaa;font-size:.9em">
+      Already have login? <a href="login.html">Go to login</a>
+    </div>
+  </div>
+
+  <script>
+    let mode = "doctor";
+    const msg = document.getElementById("msg");
+    const tabDoctor = document.getElementById("tabDoctor");
+    const tabDiagnostic = document.getElementById("tabDiagnostic");
+
+    function setMode(m){
+      mode = m;
+      tabDoctor.classList.toggle("active", m==="doctor");
+      tabDiagnostic.classList.toggle("active", m==="diagnostic");
+    }
+    tabDoctor.onclick = () => setMode("doctor");
+    tabDiagnostic.onclick = () => setMode("diagnostic");
+
+    function show(text, type){
+      msg.textContent = text;
+      msg.className = "msg " + (type || "ok");
+    }
+
+    document.getElementById("form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      msg.className = "msg";
+
+      const payload = {
+        name: document.getElementById("name").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        organization: document.getElementById("org").value.trim()
+      };
+
+      const url = mode === "doctor" ? "/api/doctor-signup" : "/api/diagnostic-signup";
+
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json().catch(()=>({}));
+        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+
+        show("Request submitted. Wait for admin approval.", "ok");
+        e.target.reset();
+      } catch (err) {
+        show(err.message || "Failed", "err");
+      }
+    });
+  </script>
+</body>
+</html>
