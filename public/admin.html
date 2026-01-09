@@ -6,33 +6,30 @@
   <title>Admin Dashboard - Shravs Teleradiology</title>
   <style>
     *{ margin:0; padding:0; box-sizing:border-box; }
-    body{ font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif; background:#000; color:#fff; }
+    body{ font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif; background:#000; color:#fff; }
 
     .header{
       background:linear-gradient(135deg,#0a0a0a,#1a1a1a);
       border-bottom:2px solid #0ea5e9;
       padding:18px 22px;
       display:flex; justify-content:space-between; align-items:center; gap:10px;
+      position:sticky; top:0; z-index:10;
     }
     .header-left{ display:flex; align-items:center; gap:14px; }
     .logo{ width:58px; height:58px; border-radius:50%; border:2px solid #fff; object-fit:cover; }
     .header h1{ font-size:1.2em; text-transform:uppercase; letter-spacing:1.5px; }
-
     .header-actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    .chat-btn{
-      padding:10px 14px; border-radius:18px;
-      background:linear-gradient(135deg,#0ea5e9,#06b6d4);
-      color:#fff; border:none;
+
+    .btn{
+      padding:10px 14px; border-radius:999px; cursor:pointer;
       font-weight:900; text-transform:uppercase; letter-spacing:0.6px;
-      cursor:pointer;
+      border:1px solid #0ea5e9; background:#0ea5e9; color:#000;
     }
-    .chat-btn:hover{ filter:brightness(1.08); }
-    .logout-btn{
-      padding:10px 18px; border-radius:20px;
-      background:transparent; border:2px solid #ff6b6b; color:#ff6b6b;
-      cursor:pointer; font-weight:900; text-transform:uppercase; letter-spacing:0.8px;
-    }
-    .logout-btn:hover{ background:#ff6b6b; color:#000; }
+    .btn:hover{ filter:brightness(1.06); }
+    .btn-ghost{ background:transparent; color:#0ea5e9; }
+    .btn-ghost:hover{ background:#0ea5e9; color:#000; }
+    .btn-danger{ border-color:#ef4444; background:#ef4444; color:#fff; }
+    .btn-danger:hover{ filter:brightness(1.05); }
 
     .container{ max-width:1400px; margin:0 auto; padding:22px 16px 40px; }
 
@@ -48,6 +45,9 @@
     .stat .num{ font-size:2.4em; font-weight:900; color:#0ea5e9; }
     .stat .lbl{ color:#999; text-transform:uppercase; letter-spacing:1px; font-size:0.85em; }
 
+    .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    @media (max-width: 920px){ .grid2{ grid-template-columns:1fr; } }
+
     .section{
       background:#0a0a0a;
       border:2px solid #333; border-radius:14px;
@@ -59,18 +59,15 @@
       flex-wrap:wrap;
     }
     .section-title{
-      color:#0ea5e9; font-size:1.1em; font-weight:900;
+      color:#0ea5e9; font-size:1.05em; font-weight:900;
       text-transform:uppercase; letter-spacing:1px;
     }
     .search{
       width:320px; max-width:100%;
-      padding:10px 12px; border-radius:18px;
+      padding:10px 12px; border-radius:999px;
       border:1px solid #333; background:#000; color:#fff;
     }
     .search:focus{ outline:none; border-color:#0ea5e9; }
-
-    .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-    @media (max-width: 920px){ .grid2{ grid-template-columns:1fr; } }
 
     .form-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
     @media (max-width: 700px){ .form-row{ grid-template-columns:1fr; } }
@@ -85,16 +82,6 @@
     textarea{ min-height:90px; resize:vertical; }
     input:focus, select:focus, textarea:focus{ outline:none; border-color:#0ea5e9; }
 
-    .btn{
-      padding:10px 14px; border-radius:18px; cursor:pointer;
-      font-weight:900; text-transform:uppercase; letter-spacing:0.6px;
-      border:1px solid #0ea5e9; background:#0ea5e9; color:#000;
-    }
-    .btn:hover{ filter:brightness(1.06); }
-    .btn-danger{ border-color:#ef4444; background:#ef4444; color:#fff; }
-    .btn-ghost{ background:transparent; color:#0ea5e9; }
-    .btn-ghost:hover{ background:#0ea5e9; color:#000; }
-
     table{ width:100%; border-collapse:collapse; }
     th{
       text-align:left; color:#0ea5e9;
@@ -108,8 +95,9 @@
     tr:hover{ background:rgba(14,165,233,0.05); }
 
     .pill{
-      display:inline-block; padding:4px 10px; border-radius:15px;
+      display:inline-block; padding:4px 10px; border-radius:999px;
       font-size:0.78em; font-weight:900; text-transform:uppercase;
+      border:1px solid #333; color:#bbb; background:rgba(255,255,255,0.03);
     }
     .pill.priority-high{ background:rgba(239,68,68,0.2); color:#ef4444; border:1px solid #ef4444; }
     .pill.priority-medium{ background:rgba(245,158,11,0.2); color:#f59e0b; border:1px solid #f59e0b; }
@@ -120,7 +108,7 @@
     .muted{ color:#888; font-size:0.9em; }
     .actions{ display:flex; gap:8px; flex-wrap:wrap; }
 
-    /* ===== Chat overlay (admin common chat only) ===== */
+    /* ===== Chat overlay (Common + DM) ===== */
     .overlay{
       position:fixed; inset:0;
       background:rgba(0,0,0,0.75);
@@ -136,10 +124,63 @@
       background:#050505;
       border:2px solid #0ea5e9;
       border-radius:14px;
+      display:grid;
+      grid-template-columns: 280px 1fr;
       overflow:hidden;
-      display:flex; flex-direction:column;
       box-shadow:0 18px 70px rgba(14,165,233,0.25);
     }
+    @media (max-width: 880px){
+      .chat-shell{ grid-template-columns: 1fr; }
+      .sidebar{ display:none; }
+      .sidebar.show{ display:block; }
+    }
+
+    .sidebar{
+      background:#070707;
+      border-right:1px solid #1c1c1c;
+      display:flex; flex-direction:column;
+      min-width:0;
+    }
+    .sb-head{
+      padding:12px;
+      border-bottom:1px solid #1c1c1c;
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+    }
+    .sb-me{ min-width:0; }
+    .sb-me .name{ font-weight:900; color:#fff; font-size:0.95em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .sb-me .role{ color:#9aa; font-size:0.8em; margin-top:2px; }
+    .sb-btn{
+      padding:8px 12px; border-radius:999px;
+      border:1px solid #333; background:transparent; color:#bbb;
+      cursor:pointer; font-weight:900; text-transform:uppercase; letter-spacing:0.6px; font-size:0.75em;
+    }
+    .sb-btn:hover{ border-color:#0ea5e9; color:#0ea5e9; }
+
+    .sb-section{
+      padding:10px 12px 6px;
+      color:#888;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:0.8px;
+      font-size:0.72em;
+    }
+    .sb-list{ padding:0 8px 10px; overflow:auto; }
+    .sb-item{
+      padding:10px 10px;
+      border-radius:10px;
+      cursor:pointer;
+      color:#ddd;
+      border:1px solid transparent;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+    }
+    .sb-item:hover{ background:#0f0f0f; }
+    .sb-item.active{ background:#071018; border-color:#0ea5e9; }
+    .sb-item small{ color:#888; font-weight:700; }
+
+    .main{ display:flex; flex-direction:column; min-width:0; }
     .chat-top{
       padding:12px;
       border-bottom:1px solid #1c1c1c;
@@ -151,7 +192,12 @@
       letter-spacing:0.8px;
       font-size:0.92em;
       color:#0ea5e9;
+      min-width:0;
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .chat-top .mobile-controls{ display:none; gap:8px; }
+    @media (max-width: 880px){
+      .chat-top .mobile-controls{ display:flex; }
     }
     .chat-close{
       padding:8px 12px; border-radius:999px;
@@ -160,11 +206,7 @@
     }
     .chat-close:hover{ background:#ff6b6b; color:#000; }
 
-    .messages{
-      flex:1;
-      padding:12px;
-      overflow:auto;
-    }
+    .messages{ flex:1; padding:12px; overflow:auto; }
     .msg{
       border:1px solid #1f1f1f;
       background:#101010;
@@ -179,6 +221,7 @@
     .msg-author{ color:#0ea5e9; font-weight:900; font-size:0.9em; }
     .msg-time{ color:#777; font-size:0.75em; }
     .msg-text{ color:#ddd; white-space:pre-wrap; font-size:0.95em; }
+
     .attach{ margin-top:6px; font-size:0.85em; }
     .attach a{ color:#22c55e; text-decoration:none; }
     .attach a:hover{ text-decoration:underline; }
@@ -190,10 +233,7 @@
       transition: background 0.2s ease, border-color 0.2s ease;
     }
     .composer.drag-over{ background:#04151f; border-top-color:#0ea5e9; }
-    .composer-top{
-      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
-      margin-bottom:8px;
-    }
+    .composer-top{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
     .file-pill{
       padding:6px 10px;
       border-radius:999px;
@@ -241,21 +281,21 @@
       <h1>Admin Dashboard</h1>
     </div>
     <div class="header-actions">
-      <button class="chat-btn" onclick="openChat()">Chat</button>
-      <button class="logout-btn" onclick="logout()">Logout</button>
+      <button class="btn" onclick="openChat()">Chat</button>
+      <button class="btn btn-danger" onclick="logout()">Logout</button>
     </div>
   </div>
 
   <div class="container">
     <div class="stats">
       <div class="stat"><div class="num" id="statUsers">0</div><div class="lbl">Total Users</div></div>
-      <div class="stat"><div class="num" id="statEmployees">0</div><div class="lbl">Employees</div></div>
+      <div class="stat"><div class="num" id="statStaff">0</div><div class="lbl">Staff (Emp+Admin)</div></div>
       <div class="stat"><div class="num" id="statTasks">0</div><div class="lbl">Total Tasks</div></div>
       <div class="stat"><div class="num" id="statPending">0</div><div class="lbl">Pending Tasks</div></div>
     </div>
 
     <div class="grid2">
-      <!-- Employee Management -->
+      <!-- Create Employee -->
       <div class="section">
         <div class="section-header">
           <div class="section-title">Create Employee</div>
@@ -282,14 +322,14 @@
 
         <div style="margin-top:12px;">
           <button class="btn" onclick="createEmployee()">Create Employee</button>
-          <div class="muted" style="margin-top:8px;">Employees cannot sign up from login page.</div>
+          <div class="muted" style="margin-top:8px;">Employees sign in using Staff Login tab.</div>
         </div>
       </div>
 
-      <!-- Assign Work -->
+      <!-- Assign Task -->
       <div class="section">
         <div class="section-header">
-          <div class="section-title">Assign Work</div>
+          <div class="section-title">Assign Task</div>
         </div>
 
         <div class="form-row">
@@ -321,16 +361,16 @@
 
         <div style="margin-top:12px;">
           <button class="btn" onclick="assignTask()">Assign Task</button>
-          <div class="muted" style="margin-top:8px;">Assigned staff see tasks immediately after login.</div>
+          <div class="muted" style="margin-top:8px;">Priority sorts: High → Medium → Low.</div>
         </div>
       </div>
     </div>
 
-    <!-- Staff List -->
+    <!-- Staff list -->
     <div class="section">
       <div class="section-header">
-        <div class="section-title">Employees / Admins</div>
-        <input class="search" id="empSearch" placeholder="Search..." oninput="renderStaff()"/>
+        <div class="section-title">Staff (Employees/Admins)</div>
+        <input class="search" id="staffSearch" placeholder="Search staff..." oninput="renderStaff()"/>
       </div>
       <div id="staffTable"></div>
     </div>
@@ -338,88 +378,127 @@
     <!-- Tasks -->
     <div class="section">
       <div class="section-header">
-        <div class="section-title">Assigned Works</div>
+        <div class="section-title">Tasks</div>
         <input class="search" id="taskSearch" placeholder="Search tasks..." oninput="renderTasks()"/>
       </div>
       <div id="tasksTable"></div>
     </div>
   </div>
 
-  <!-- Chat overlay: common chat only -->
+  <!-- Chat overlay -->
   <div class="overlay" id="chatOverlay" aria-hidden="true">
     <div class="chat-shell">
-      <div class="chat-top">
-        <div class="chat-room" id="roomTitle"># common</div>
-        <button class="chat-close" onclick="closeChat()">Close</button>
+      <div class="sidebar" id="sidebar">
+        <div class="sb-head">
+          <div class="sb-me">
+            <div class="name" id="sbName">Admin</div>
+            <div class="role" id="sbRole">admin</div>
+          </div>
+          <button class="sb-btn" onclick="closeChat()">Close</button>
+        </div>
+
+        <div class="sb-section">Channels</div>
+        <div class="sb-list">
+          <div class="sb-item active" id="sbCommon" onclick="selectRoomCommon()">
+            <div># common</div>
+            <small>chat</small>
+          </div>
+        </div>
+
+        <div class="sb-section">Direct messages</div>
+        <div class="sb-list" id="dmList">
+          <div class="muted" style="padding:12px; text-align:center;">No staff yet.</div>
+        </div>
       </div>
 
-      <div class="messages" id="chatMessages"></div>
-
-      <div class="composer" id="composerDropZone">
-        <div class="composer-top">
-          <label class="file-pill">
-            Attach
-            <input id="chatFile" type="file" style="display:none"
-                   accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.txt"/>
-            <span class="file-name" id="fileName">No file</span>
-          </label>
-          <div class="note" id="chatNote"></div>
+      <div class="main">
+        <div class="chat-top">
+          <div class="chat-room" id="roomTitle"># common</div>
+          <div class="mobile-controls">
+            <button class="sb-btn" onclick="toggleSidebar()">Menu</button>
+          </div>
+          <button class="chat-close" onclick="closeChat()">Close</button>
         </div>
-        <div class="composer-bottom">
-          <textarea id="chatText" placeholder="Type message..."></textarea>
-          <button class="send" onclick="sendCommon()">Send</button>
+
+        <div class="messages" id="chatMessages"></div>
+
+        <div class="composer" id="composerDropZone">
+          <div class="composer-top">
+            <label class="file-pill">
+              Attach
+              <input id="chatFile" type="file" style="display:none"
+                     accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.txt"/>
+              <span class="file-name" id="fileName">No file</span>
+            </label>
+            <div class="note" id="chatNote"></div>
+          </div>
+          <div class="composer-bottom">
+            <textarea id="chatText" placeholder="Type message..."></textarea>
+            <button class="send" onclick="sendMessage()">Send</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
 <script>
-  // ===== AUTH: allow master admin (isAdmin=true) or promoted staff admin (currentUser.role=admin) =====
-  const isAdminSession = sessionStorage.getItem("isAdmin") === "true";
+  // ===== AUTH =====
   const currentUser = JSON.parse(sessionStorage.getItem("currentUser") || "null");
-  const isPromotedAdmin = currentUser && currentUser.role === "admin";
+  const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true";
+  const isAdmin = sessionStorage.getItem("isAdmin") === "true" || (currentUser && currentUser.role === "admin");
 
-  if (!isAdminSession && !isPromotedAdmin) {
-    alert("Unauthorized access. Please login as admin.");
+  if (!isLoggedIn || !isAdmin) {
+    alert("Unauthorized. Please login as admin.");
     window.location.href = "login.html";
   }
 
-  // Who is chatting / acting as admin
-  const me = currentUser || { name:"Admin", email:"admin@shravsteleradiology.com", role:"admin" };
+  const me = currentUser || { name:"Master Admin", email:"admin@shravsteleradiology.com", role:"admin" };
+  document.getElementById("sbName").textContent = me.name || "Admin";
+  document.getElementById("sbRole").textContent = me.role || "admin";
 
+  // ===== Storage keys =====
   const TASKS_KEY = "tasks_v1";
   const COMMON_KEY = "commonChatMessages_v1";
+  const DM_KEY = "directMessages_v1";
 
   const MAX_FILE_MB = 3;
   const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024;
 
   let chatOpen = false;
+  let activeRoom = { type:"common" }; // {type:"common"} or {type:"dm", peerEmail:"..."}
   let pendingFile = null;
 
+  // ===== Helpers =====
   function readJson(key, fallback){
     try { return JSON.parse(localStorage.getItem(key) || "null") ?? fallback; }
     catch { return fallback; }
   }
   function writeJson(key, value){
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-      return true;
-    } catch (e) {
-      alert("Storage full. Please delete old messages/tasks or use smaller files.");
-      return false;
-    }
+    try { localStorage.setItem(key, JSON.stringify(value)); return true; }
+    catch { alert("Storage full. Delete old data or smaller files."); return false; }
   }
   function escapeHtml(text){
     return String(text ?? "")
-      .replace(/&/g,"&amp;")
-      .replace(/</g,"&lt;")
-      .replace(/>/g,"&gt;")
-      .replace(/"/g,"&quot;")
-      .replace(/'/g,"&#039;");
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
   }
   function prettyTime(iso){
     try { return new Date(iso).toLocaleString(); } catch { return iso; }
   }
+  function makeId(){
+    return "t_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8);
+  }
+
+  function getUsers(){ return readJson("users", []); }
+  function saveUsers(users){ return writeJson("users", users); }
+
+  function getStaff(){
+    // staff means employee + admin (admins appear in DM list)
+    return getUsers().filter(u => u.role === "employee" || u.role === "admin");
+  }
+
+  function getTasks(){ return readJson(TASKS_KEY, []); }
+  function saveTasks(tasks){ return writeJson(TASKS_KEY, tasks); }
 
   function logout(){
     if (!confirm("Logout?")) return;
@@ -427,37 +506,20 @@
     window.location.href = "login.html";
   }
 
-  function getUsers(){ return readJson("users", []); }
-  function saveUsers(users){ writeJson("users", users); }
-
-  function getStaff(){
-    // staff = employees + promoted admins (stored in users[])
-    return getUsers().filter(u => u.role === "employee" || u.role === "admin");
-  }
-
-  function getEmployees(){
-    return getUsers().filter(u => u.role === "employee");
-  }
-
-  function makeId(){
-    return "t_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8);
-  }
-
-  function getTasks(){ return readJson(TASKS_KEY, []); }
-  function saveTasks(tasks){ writeJson(TASKS_KEY, tasks); }
-
+  // ===== Stats =====
   function refreshStats(){
     const users = getUsers();
-    const employees = users.filter(u => u.role === "employee");
+    const staff = getStaff();
     const tasks = getTasks();
     const pending = tasks.filter(t => t.status === "pending").length;
 
     document.getElementById("statUsers").textContent = users.length;
-    document.getElementById("statEmployees").textContent = employees.length;
+    document.getElementById("statStaff").textContent = staff.length;
     document.getElementById("statTasks").textContent = tasks.length;
     document.getElementById("statPending").textContent = pending;
   }
 
+  // ===== Employee creation =====
   function createEmployee(){
     const name = document.getElementById("empName").value.trim();
     const email = document.getElementById("empEmail").value.trim();
@@ -467,12 +529,14 @@
     if (!name || !email || !pw) { alert("Name, email, password required."); return; }
 
     const users = getUsers();
-    if (users.some(u => u.email === email)) { alert("Email already exists."); return; }
+    if (users.some(u => (u.email || "").toLowerCase() === email.toLowerCase())) { alert("Email already exists."); return; }
 
     users.push({
-      name, email, phone:"", organization:org, role:"employee",
-      password:pw, createdAt:new Date().toISOString()
+      name, email, phone:"", organization:org,
+      role:"employee", password:pw,
+      createdAt:new Date().toISOString()
     });
+
     saveUsers(users);
 
     document.getElementById("empName").value = "";
@@ -480,16 +544,23 @@
     document.getElementById("empOrg").value = "";
     document.getElementById("empPassword").value = "";
 
-    alert("Employee created successfully.");
+    alert("Employee created.");
     populateAssigneeDropdown();
     renderStaff();
     refreshStats();
+    renderDMList();
   }
 
-  function promoteDemote(email){
+  // ===== Promote/Demote =====
+  function toggleRole(email){
     const users = getUsers();
-    const u = users.find(x => x.email === email);
+    const u = users.find(x => (x.email || "").toLowerCase() === String(email).toLowerCase());
     if (!u) return;
+
+    if (u.email === "admin@shravsteleradiology.com" && u.role === "admin") {
+      alert("Master admin cannot be demoted in frontend mode.");
+      return;
+    }
 
     if (u.role === "employee") {
       if (!confirm(`Promote ${u.name} to Admin?`)) return;
@@ -502,9 +573,10 @@
     populateAssigneeDropdown();
     renderStaff();
     refreshStats();
-    alert("Updated successfully.");
+    renderDMList();
   }
 
+  // ===== Tasks =====
   function populateAssigneeDropdown(){
     const sel = document.getElementById("taskAssignee");
     const staff = getStaff();
@@ -523,24 +595,24 @@
     const title = document.getElementById("taskTitle").value.trim();
     const desc = document.getElementById("taskDesc").value.trim();
 
-    if (!assigneeEmail || !title) { alert("Assignee and title are required."); return; }
+    if (!assigneeEmail || !title) { alert("Assignee and title required."); return; }
 
     const staff = getStaff();
-    const person = staff.find(e => e.email === assigneeEmail);
-    if (!person) { alert("Selected assignee is not staff."); return; }
+    const person = staff.find(s => (s.email || "").toLowerCase() === assigneeEmail.toLowerCase());
+    if (!person) { alert("Invalid assignee."); return; }
 
     const tasks = getTasks();
     tasks.push({
       id: makeId(),
       title,
       description: desc,
-      priority, // high | medium | low
+      priority,            // high | medium | low
       assignedToEmail: person.email,
       assignedToName: person.name,
       dueDate: due || "",
       status: "pending",
       createdAt: new Date().toISOString(),
-      createdBy: me.email
+      createdByEmail: me.email
     });
     saveTasks(tasks);
 
@@ -548,7 +620,7 @@
     document.getElementById("taskDesc").value = "";
     document.getElementById("taskDue").value = "";
 
-    alert("Task assigned successfully.");
+    alert("Task assigned.");
     renderTasks();
     refreshStats();
   }
@@ -572,12 +644,12 @@
   }
 
   function renderStaff(){
-    const q = (document.getElementById("empSearch").value || "").toLowerCase();
+    const q = (document.getElementById("staffSearch").value || "").toLowerCase();
     const staff = getStaff().filter(s =>
       (s.name || "").toLowerCase().includes(q) ||
       (s.email || "").toLowerCase().includes(q) ||
-      (s.organization || "").toLowerCase().includes(q) ||
-      (s.role || "").toLowerCase().includes(q)
+      (s.role || "").toLowerCase().includes(q) ||
+      (s.organization || "").toLowerCase().includes(q)
     );
 
     const box = document.getElementById("staffTable");
@@ -602,7 +674,7 @@
               <td>${escapeHtml(s.organization || "-")}</td>
               <td>
                 <div class="actions">
-                  <button class="btn btn-ghost" onclick="promoteDemote('${escapeHtml(s.email)}')">
+                  <button class="btn btn-ghost" onclick="toggleRole('${escapeHtml(s.email)}')">
                     ${s.role === "admin" ? "Demote" : "Promote to admin"}
                   </button>
                 </div>
@@ -628,10 +700,10 @@
     );
 
     tasks.sort((a,b) => {
-      const prio = {high:3, medium:2, low:1};
-      const aPrio = prio[a.priority || "low"] || 1;
-      const bPrio = prio[b.priority || "low"] || 1;
-      if (aPrio !== bPrio) return bPrio - aPrio;
+      const pr = {high:3, medium:2, low:1};
+      const ap = pr[a.priority || "low"] || 1;
+      const bp = pr[b.priority || "low"] || 1;
+      if (ap !== bp) return bp - ap;
       return new Date(b.createdAt) - new Date(a.createdAt);
     });
 
@@ -656,7 +728,6 @@
               <td>
                 <div style="font-weight:900;">${escapeHtml(t.title)}</div>
                 <div class="muted" style="margin-top:4px; white-space:pre-wrap;">${escapeHtml(t.description || "")}</div>
-                <div class="muted" style="margin-top:4px;">Created: ${prettyTime(t.createdAt || "")}</div>
               </td>
               <td>${escapeHtml(t.assignedToName)}<div class="muted">${escapeHtml(t.assignedToEmail)}</div></td>
               <td>${t.dueDate ? escapeHtml(t.dueDate) : "-"}</td>
@@ -675,33 +746,96 @@
     `;
   }
 
-  // ===== Admin Chat (common only) =====
-  function openChat(){
-    chatOpen = true;
-    const ov = document.getElementById("chatOverlay");
-    ov.classList.add("show");
-    ov.setAttribute("aria-hidden", "false");
-    renderCommon();
+  // ===== Chat (Common + DM) =====
+  function convId(a, b) {
+    const x = String(a).toLowerCase();
+    const y = String(b).toLowerCase();
+    return x < y ? `dm:${x}|${y}` : `dm:${y}|${x}`;
   }
 
-  function closeChat(){
-    chatOpen = false;
-    const ov = document.getElementById("chatOverlay");
-    ov.classList.remove("show");
-    ov.setAttribute("aria-hidden", "true");
+  function getDMStore(){ return readJson(DM_KEY, {}); }
+  function saveDMStore(obj){ return writeJson(DM_KEY, obj); }
+
+  function getAllPeopleForDM() {
+    // STAFF-only DMs: employee/admin. Includes Master Admin (stored in users by login.html master admin flow).
+    const staff = getStaff();
+    const meEmail = String(me.email).toLowerCase();
+    return staff
+      .filter(u => String(u.email).toLowerCase() !== meEmail)
+      .map(u => ({ name: u.name || u.email, email: u.email, role: u.role || "staff" }))
+      .sort((a,b) => (a.name || "").localeCompare(b.name || ""));
   }
 
-  function getCommonMessages(){
-    return readJson(COMMON_KEY, []);
+  function selectRoomCommon(){
+    activeRoom = { type:"common" };
+    document.getElementById("roomTitle").textContent = "# common";
+    setSidebarActive();
+    renderChatMessages();
   }
 
-  function saveCommonMessages(list){
-    return writeJson(COMMON_KEY, list);
+  function selectRoomDM(peerEmail){
+    activeRoom = { type:"dm", peerEmail };
+    const people = getAllPeopleForDM();
+    const p = people.find(x => String(x.email).toLowerCase() === String(peerEmail).toLowerCase());
+    document.getElementById("roomTitle").textContent = p ? `DM: ${p.name}` : "DM";
+    setSidebarActive();
+    renderChatMessages();
   }
 
-  function renderCommon(){
+  function renderDMList(){
+    const box = document.getElementById("dmList");
+    const people = getAllPeopleForDM();
+
+    if (!people.length) {
+      box.innerHTML = `<div class="muted" style="padding:12px; text-align:center;">No staff yet.</div>`;
+      return;
+    }
+
+    box.innerHTML = people.map(p => `
+      <div class="sb-item dm-item" data-email="${escapeHtml(p.email)}"
+           onclick="selectRoomDM('${escapeHtml(p.email)}')">
+        <div style="min-width:0;">
+          <div style="font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            ${escapeHtml(p.name)}
+          </div>
+          <small>${escapeHtml(p.role)}</small>
+        </div>
+        <small>DM</small>
+      </div>
+    `).join("");
+
+    setSidebarActive();
+  }
+
+  function setSidebarActive(){
+    document.getElementById("sbCommon").classList.toggle("active", activeRoom.type === "common");
+    document.querySelectorAll(".dm-item").forEach(el => {
+      const email = el.getAttribute("data-email") || "";
+      el.classList.toggle("active",
+        activeRoom.type === "dm" &&
+        String(email).toLowerCase() === String(activeRoom.peerEmail || "").toLowerCase()
+      );
+    });
+  }
+
+  function getRoomMessages(){
+    if (activeRoom.type === "common") return readJson(COMMON_KEY, []);
+    const store = getDMStore();
+    const id = convId(me.email, activeRoom.peerEmail);
+    return store[id] || [];
+  }
+
+  function saveRoomMessages(list){
+    if (activeRoom.type === "common") return writeJson(COMMON_KEY, list);
+    const store = getDMStore();
+    const id = convId(me.email, activeRoom.peerEmail);
+    store[id] = list;
+    return saveDMStore(store);
+  }
+
+  function renderChatMessages(){
     const box = document.getElementById("chatMessages");
-    const list = getCommonMessages();
+    const list = getRoomMessages();
 
     if (!list.length) {
       box.innerHTML = `<div class="muted" style="padding:14px; text-align:center;">No messages yet.</div>`;
@@ -746,10 +880,12 @@
 
   function handleSelectedFile(file){
     if (!file) return clearPendingFile();
+
     if (file.size > MAX_FILE_BYTES) {
       alert(`File too large. Max ${MAX_FILE_MB} MB.`);
       return clearPendingFile();
     }
+
     const reader = new FileReader();
     reader.onload = (e) => {
       pendingFile = {
@@ -763,27 +899,51 @@
     document.getElementById("fileName").textContent = file.name;
   }
 
-  function sendCommon(){
+  function sendMessage(){
     const textEl = document.getElementById("chatText");
     const text = (textEl.value || "").trim();
-    if (!text && !pendingFile) return;
 
-    const list = getCommonMessages();
+    if (!text && !pendingFile) return;
+    if (activeRoom.type === "dm" && !activeRoom.peerEmail) return alert("Select a DM person.");
+
+    const list = getRoomMessages();
     list.push({
       authorEmail: me.email,
       authorName: me.name,
       authorRole: me.role,
+      toEmail: (activeRoom.type === "dm") ? activeRoom.peerEmail : "",
       text,
       timestamp: new Date().toISOString(),
       attachment: pendingFile
     });
 
-    const ok = saveCommonMessages(list);
+    const ok = saveRoomMessages(list);
     if (!ok) return;
 
     textEl.value = "";
     clearPendingFile();
-    renderCommon();
+    renderChatMessages();
+  }
+
+  function openChat(){
+    chatOpen = true;
+    const ov = document.getElementById("chatOverlay");
+    ov.classList.add("show");
+    ov.setAttribute("aria-hidden", "false");
+    renderDMList();
+    renderChatMessages();
+  }
+
+  function closeChat(){
+    chatOpen = false;
+    const ov = document.getElementById("chatOverlay");
+    ov.classList.remove("show");
+    ov.setAttribute("aria-hidden", "true");
+  }
+
+  function toggleSidebar(){
+    const sb = document.getElementById("sidebar");
+    sb.classList.toggle("show");
   }
 
   function setupDropZone(){
@@ -800,14 +960,17 @@
     }, false);
   }
 
+  // ===== Init =====
   window.addEventListener("load", () => {
-    document.getElementById("chatNote").textContent = `Common chat only. Max file ${MAX_FILE_MB} MB.`;
+    document.getElementById("chatNote").textContent =
+      `Common + DM. Drag & drop supported. Max file size ${MAX_FILE_MB} MB.`;
 
     populateAssigneeDropdown();
     renderStaff();
     renderTasks();
     refreshStats();
 
+    selectRoomCommon();
     setupDropZone();
     document.getElementById("chatFile").addEventListener("change", function () {
       handleSelectedFile(this.files[0]);
@@ -817,10 +980,15 @@
       if (e.target.id === "chatOverlay") closeChat();
     });
 
+    // refresh view
     setInterval(() => {
-      renderTasks();
       refreshStats();
-      if (chatOpen) renderCommon();
+      renderTasks();
+      renderStaff();
+      if (chatOpen) {
+        renderDMList();
+        renderChatMessages();
+      }
     }, 5000);
   });
 </script>
