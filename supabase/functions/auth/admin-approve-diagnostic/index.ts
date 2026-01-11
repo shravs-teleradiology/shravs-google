@@ -1,67 +1,64 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { corsHeaders, json, requireAdmin, randPassword, supabaseAdmin } from "../_shared.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Content-Type': 'application/json',
+}
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  if (req.method !== "POST") return json({ error: "Use POST" }, 405);
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
   try {
-    const { user } = await requireAdmin(req);
-    const body = await req.json();
-    const request_id = body.request_id || body.requestId || body.id;
+    const supabaseAdmin = createClient(
+      'https://xksqdjwbiojwyfllwtvh.supabase.co',
+      'sb_secret_0WpYpxW795cxtCcPEuBRcA_aoQyXZtR'
+    )
 
-    if (!request_id) return json({ error: "request_id required" }, 400);
+    const supabase = createClient(
+      'https://xksqdjwbiojwyfllwtvh.supabase.co',
+      'sb_publishable_zZe-aVVerbOt7joJQMt6QQ_bq3Ej7Ze'
+    )
 
-    const admin = supabaseAdmin();
+    // Admin auth check
+    const token = req.headers.get('Authorization')?.replace('Bearer ', '')
+    const { data: { user } } = await supabase.auth.getUser(token || '')
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user?.id).single()
+    if (!profile || profile.role !== 'admin') {
+      return new Response(JSON.stringify({ error: 'Admin access required' }), { status: 403, headers: corsHeaders })
+    }
 
-    const { data: reqRow, error: reqErr } = await admin
-      .from("diagnostic_requests")
-      .select("id,name,email,organization,status")
-      .eq("id", request_id)
-      .single();
+    const { id } = await req.json()
+    const { data: diagnostic } = await supabaseAdmin
+      .from('pending_diagnostics')
+      .select('*')
+      .eq('id', id)
+      .single()
+    
+    if (!diagnostic) throw new Error('Diagnostic not found')
 
-    if (reqErr) return json({ error: reqErr.message }, 400);
-    if (!reqRow || reqRow.status !== "pending") return json({ error: "Request not pending" }, 400);
-
-    const temp_password = randPassword("DIA");
-
-    const { data: created, error: cErr } = await admin.auth.admin.createUser({
-      email: reqRow.email,
-      password: temp_password,
+    // Create diagnostic user
+    const { data: newUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
+      email: diagnostic.email,
       email_confirm: true,
-      user_metadata: { name: reqRow.name, role: "diagnostic" },
-    });
+      user_metadata: { name: diagnostic.name, speciality: diagnostic.speciality }
+    })
+    if (authError) throw authError
 
-    if (cErr || !created?.user) return json({ error: cErr?.message || "Failed to create diagnostic user" }, 400);
+    // Create profile
+    await supabaseAdmin.from('profiles').upsert({
+      id: newUser.user.id,
+      name: diagnostic.name,
+      email: diagnostic.email,
+      role: 'diagnostic'
+    })
 
-    const { error: pErr } = await admin.from("profiles").upsert({
-      id: created.user.id,
-      email: reqRow.email,
-      name: reqRow.name,
-      role: "diagnostic",
-      organization: reqRow.organization || "",
-      approved: true,
-    });
-    if (pErr) return json({ error: pErr.message }, 400);
+    // Remove from pending
+    await supabaseAdmin.from('pending_diagnostics').delete().eq('id', id)
 
-    const { error: uErr } = await admin
-      .from("diagnostic_requests")
-      .update({
-        status: "approved",
-        approved_by: user.id,
-        approved_at: new Date().toISOString(),
-      })
-      .eq("id", request_id);
-
-    if (uErr) return json({ error: uErr.message }, 400);
-
-    return json({
-      message: "Diagnostic approved",
-      email: reqRow.email,
-      user_id: created.user.id,
-      temp_password,
-    }, 200);
-  } catch (e) {
-    return json({ error: e?.message || String(e) }, 401);
+    return new Response(JSON.stringify({ success: true }), { headers: corsHeaders })
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), { status: 400, headers: corsHeaders })
   }
-});
+})
