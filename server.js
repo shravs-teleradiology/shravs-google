@@ -1,3 +1,4 @@
+// server.js (project root)
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -8,7 +9,6 @@ const app = express();
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// CORS for all origins
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -16,81 +16,81 @@ app.use(cors({
   credentials: true
 }));
 
-// Handle preflight
 app.options('*', cors());
 
-// Serve static files (public folder)
+// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// API Proxy - Netlify-style functions under /netlify/functions
-function toNetlifyEvent(req) {
-  return {
-    httpMethod: req.method,
-    headers: req.headers,
-    queryStringParameters: req.query,
-    body: req.body && Object.keys(req.body).length ? JSON.stringify(req.body) : null,
-  };
-}
+/**
+ * IMPORTANT:
+ * Map your frontend routes to Supabase Edge Function names.
+ * Adjust the right-side values to match the names you deployed in Supabase.
+ *
+ * If your Supabase function is named "admin-create-employee", keep it as is.
+ * If you deployed it under some other name, update it here.
+ */
+const SUPABASE_FUNCTIONS_BASE = 'https://xksqdjwbiojwyfllwtvh.supabase.co/functions/v1';
+
+const FN_MAP = {
+  // Auth/Admin
+  'admin-create-employee': 'admin-create-employee',
+  'admin-set-role': 'admin-set-role',
+  'admin-pending-doctors': 'admin-pending-doctors',
+  'admin-approve-doctor': 'admin-approve-doctor',
+  'admin-pending-diagnostics': 'admin-pending-diagnostics',
+  'admin-approve-diagnostics': 'admin-approve-diagnostics',
+
+  // API
+  'tasks': 'tasks',
+  'team': 'team',
+
+  // If you have these in frontend
+  'auth-login': 'auth-login',
+  'auth-me': 'auth-me',
+};
 
 app.all('/api/:fn', async (req, res) => {
   try {
-    const fnName = req.params.fn.replace(/[^a-zA-Z0-9_-]/g, ''); // Sanitize
-    const fnPath = path.join(__dirname, 'netlify', 'functions', `${fnName}.js`);
-    
-    // Security: only allow specific functions
-    const allowedFns = [
-      'auth-login',
-      'auth-me',
-      'admin-create-employee',
-      'admin-set-role',
-      'admin-pending-doctors',
-      'admin-approve-doctor',
-      'admin-pending-diagnostics',
-      'admin-approve-diagnostics',
-      'tasks',
-      'team'
-    ];
-    if (!allowedFns.includes(fnName)) {
-      return res.status(404).json({ error: 'Function not found' });
+    const fnName = (req.params.fn || '').replace(/[^a-zA-Z0-9_-]/g, '');
+    const mapped = FN_MAP[fnName];
+    if (!mapped) return res.status(404).json({ error: 'Function not found' });
+
+    // Build Supabase function URL
+    const url = new URL(`${SUPABASE_FUNCTIONS_BASE}/${mapped}`);
+
+    // Preserve query params
+    for (const [k, v] of Object.entries(req.query || {})) {
+      if (v === undefined || v === null) continue;
+      url.searchParams.set(k, String(v));
     }
 
-    // Load function
-    let mod;
+    // Forward headers (especially Authorization)
+    const headers = {
+      'Content-Type': req.headers['content-type'] || 'application/json',
+    };
+    if (req.headers.authorization) headers['Authorization'] = req.headers.authorization;
+
+    // Prepare body
+    const method = req.method.toUpperCase();
+    const hasBody = !['GET', 'HEAD'].includes(method);
+    const body = hasBody ? JSON.stringify(req.body || {}) : undefined;
+
+    // Node 18+ has global fetch (Cloud Run uses Node 18/20 typically)
+    const resp = await fetch(url.toString(), { method, headers, body });
+
+    // Pass through status + body
+    const text = await resp.text();
+    res.status(resp.status);
+
+    // Try to return JSON if possible
     try {
-      mod = require(fnPath);
-    } catch (e) {
-      console.error(`Function ${fnName} not found at ${fnPath}:`, e.message);
-      return res.status(404).json({ error: `Function ${fnName} not found` });
-    }
-
-    const handler = mod.handler || mod.default || mod;
-    if (typeof handler !== 'function') {
-      return res.status(500).json({ error: `Invalid function export for ${fnName}` });
-    }
-
-    const out = await handler(toNetlifyEvent(req));
-    const status = out?.statusCode || 200;
-    
-    // Copy headers
-    const headers = out?.headers || {};
-    Object.entries(headers).forEach(([k, v]) => {
-      if (v !== undefined) res.setHeader(k, v);
-    });
-
-    const body = out?.body;
-    if (body === undefined || body === null || body === '') {
-      return res.status(status).end();
-    }
-
-    // Parse JSON or send raw
-    try {
-      const parsed = JSON.parse(body);
-      return res.status(status).json(parsed);
+      const json = JSON.parse(text);
+      return res.json(json);
     } catch {
-      return res.status(status).send(body);
+      return res.send(text);
     }
   } catch (e) {
-    console.error('API error:', e);
+    console.error('API proxy error:', e);
     return res.status(500).json({ error: e.message || String(e) });
   }
 });
@@ -105,16 +105,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Error handling
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Internal server error' });
-});
-
-// Cloud Run: listen on PORT env var
 const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${port}`);
-  console.log(`📱 Health: http://localhost:${port}/health`);
-  console.log(`🌐 Admin: http://localhost:${port}/admin.html`);
 });
