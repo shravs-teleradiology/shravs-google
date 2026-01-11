@@ -1,64 +1,46 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { corsHeaders, json, requireAdmin, supabaseAdmin } from "../../_shared.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Content-Type': 'application/json',
-}
-
-serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
+export async function handler(req: Request): Promise<Response> {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method !== "POST") return json({ error: "Use POST" }, 405);
 
   try {
-    const supabaseAdmin = createClient(
-      'https://xksqdjwbiojwyfllwtvh.supabase.co',
-      'sb_secret_0WpYpxW795cxtCcPEuBRcA_aoQyXZtR'
-    )
+    await requireAdmin(req);
 
-    const supabase = createClient(
-      'https://xksqdjwbiojwyfllwtvh.supabase.co',
-      'sb_publishable_zZe-aVVerbOt7joJQMt6QQ_bq3Ej7Ze'
-    )
+    const { id } = await req.json();
+    if (!id) return json({ error: "id required" }, 400);
 
-    // Admin auth check
-    const token = req.headers.get('Authorization')?.replace('Bearer ', '')
-    const { data: { user } } = await supabase.auth.getUser(token || '')
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user?.id).single()
-    if (!profile || profile.role !== 'admin') {
-      return new Response(JSON.stringify({ error: 'Admin access required' }), { status: 403, headers: corsHeaders })
-    }
+    const admin = supabaseAdmin();
 
-    const { id } = await req.json()
-    const { data: doctor } = await supabaseAdmin
-      .from('pending_doctors')
-      .select('*')
-      .eq('id', id)
-      .single()
-    
-    if (!doctor) throw new Error('Doctor not found')
+    const { data: doctor, error: dErr } = await admin
+      .from("pending_doctors")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-    // Create doctor user
-    const { data: newUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
+    if (dErr) return json({ error: dErr.message }, 400);
+    if (!doctor) return json({ error: "Doctor not found" }, 404);
+
+    const { data: created, error: cErr } = await admin.auth.admin.createUser({
       email: doctor.email,
+      password: doctor.password || undefined, // if you stored one; else remove this line
       email_confirm: true,
       user_metadata: { name: doctor.name, speciality: doctor.speciality }
-    })
-    if (authError) throw authError
+    });
+    if (cErr || !created?.user) return json({ error: cErr?.message || "Create user failed" }, 400);
 
-    // Create profile
-    await supabaseAdmin.from('profiles').upsert({
-      id: newUser.user.id,
+    const { error: pErr } = await admin.from("profiles").upsert({
+      id: created.user.id,
       name: doctor.name,
       email: doctor.email,
-      role: 'doctor'
-    })
+      role: "doctor"
+    });
+    if (pErr) return json({ error: pErr.message }, 400);
 
-    // Remove from pending
-    await supabaseAdmin.from('pending_doctors').delete().eq('id', id)
+    await admin.from("pending_doctors").delete().eq("id", id);
 
-    return new Response(JSON.stringify({ success: true }), { headers: corsHeaders })
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), { status: 400, headers: corsHeaders })
+    return json({ success: true }, 200);
+  } catch (e) {
+    return json({ error: e?.message || String(e) }, 401);
   }
-})
+}
