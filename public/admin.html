@@ -307,6 +307,13 @@
                 });
                 const data = await res.json();
                 const employees = data.items || data || [];
+                if (!Array.isArray(employees)) {
+                    console.error('Team API returned:', data);
+                    document.getElementById('employeesList').innerHTML =
+                    '<div class="empty-state">Unauthorized. Please login again.</div>';
+                      return;
+                }
+
                 
                 const taskSelect = document.getElementById('taskEmployee');
                 const promoteSelect = document.getElementById('promoteEmployee');
