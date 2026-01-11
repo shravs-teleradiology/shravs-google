@@ -61,8 +61,14 @@ app.all('/api/:fn', async (req, res) => {
 
     // Forward headers
     const headers = {
-      'Content-Type': req.headers['content-type'] || 'application/json',
-    };
+  'Content-Type': req.headers['content-type'] || 'application/json',
+  'apikey': process.env.SUPABASE_ANON_KEY,  // Always required
+};
+
+// ONLY forward real user JWTs - NEVER fake with anon key
+if (req.headers.authorization && !req.headers.authorization.includes('sb_publishable')) {
+  headers['Authorization'] = req.headers.authorization;
+}
 
     // Pass JWT through (required for admin/team endpoints)
     if (req.headers.authorization) {
