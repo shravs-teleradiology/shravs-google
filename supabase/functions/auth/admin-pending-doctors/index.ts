@@ -10,7 +10,7 @@ serve(async (req) => {
 
     const admin = supabaseAdmin();
     const { data, error } = await admin
-      .from("doctor_requests")
+      .from("pending_doctors")  // or "doctor_requests" if that's your table name
       .select("id,name,email,organization,status,created_at")
       .eq("status", "pending")
       .order("created_at", { ascending: false });
