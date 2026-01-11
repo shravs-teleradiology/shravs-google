@@ -19,10 +19,10 @@ app.use(cors({
 // Handle preflight
 app.options('*', cors());
 
-// Serve static files
+// Serve static files (public folder)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// API Proxy - Load Netlify-style functions
+// API Proxy - Netlify-style functions under /netlify/functions
 function toNetlifyEvent(req) {
   return {
     httpMethod: req.method,
@@ -39,8 +39,16 @@ app.all('/api/:fn', async (req, res) => {
     
     // Security: only allow specific functions
     const allowedFns = [
-      'auth-login', 'auth-me', 'admin-create-employee', 'admin-set-role',
-      'admin-pending-doctors', 'admin-approve-doctor', 'tasks', 'team'
+      'auth-login',
+      'auth-me',
+      'admin-create-employee',
+      'admin-set-role',
+      'admin-pending-doctors',
+      'admin-approve-doctor',
+      'admin-pending-diagnostics',
+      'admin-approve-diagnostics',
+      'tasks',
+      'team'
     ];
     if (!allowedFns.includes(fnName)) {
       return res.status(404).json({ error: 'Function not found' });
@@ -103,6 +111,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
+// Cloud Run: listen on PORT env var
 const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${port}`);
