@@ -1,4 +1,3 @@
-// server.js (project root)
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -22,61 +21,43 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const SUPABASE_FUNCTIONS_BASE = 'https://xksqdjwbiojwyfllwtvh.supabase.co/functions/v1';
 
-/**
- * IMPORTANT:
- * These right-side names MUST match the function names that appear in
- * Supabase Dashboard → Edge Functions.
- *
- * Based on your screenshot, your folders are under api/ and auth/.
- * In Supabase, nested folders are not invoked as /api/team.
- * Usually you deploy with a flat function name like:
- *   api-team, api-tasks, auth-admin-pending-doctors, etc.
- *
- * So we map /api/team -> api-team, etc.
- */
+// EXACT MATCH to your deployed function names
 const FN_MAP = {
-  // Admin/Auth group
-  'admin-create-employee': 'auth-admin-create-employee',
-  'admin-set-role': 'auth-admin-set-role',
-  'admin-pending-doctors': 'auth-admin-pending-doctors',
-  'admin-approve-doctor': 'auth-admin-approve-doctor',
-  'admin-pending-diagnostics': 'auth-admin-pending-diagnostics',
+  'admin-create-employee': 'admin-create-employee',
+  'admin-set-role': 'admin-set-role',
+  'admin-pending-doctors': 'admin-pending-doctors',  // ✅ You have this
+  'admin-approve-doctor': 'admin-approve-doctor',
+  'admin-pending-diagnostics': 'admin-pending-diagnostics',
+  'admin-approve-diagnostics': 'admin-approve-diagnostic',  // ✅ singular from your screenshot
 
-  // IMPORTANT: Your screenshot shows "admin-approve-diagnostic" (singular)
-  'admin-approve-diagnostics': 'auth-admin-approve-diagnostic',
+  'team': 'team',    // ✅ You have this
+  'tasks': 'tasks',  // ✅ You have this
 
-  // API group
-  'team': 'api-team',
-  'tasks': 'api-tasks',
-
-  // If used
-  'auth-login': 'auth-auth-login',
-  'auth-me': 'auth-auth-me',
+  // Auth (if needed)
+  'auth-login': 'auth-login',
+  'auth-me': 'auth-me',
 };
 
+// CRITICAL: API routes BEFORE SPA fallback
 app.all('/api/:fn', async (req, res) => {
   try {
     const fnName = (req.params.fn || '').replace(/[^a-zA-Z0-9_-]/g, '');
     const mapped = FN_MAP[fnName];
-    if (!mapped) return res.status(404).json({ error: 'Function not found' });
+    if (!mapped) return res.status(404).json({ error: `Function ${fnName} not found` });
 
     const url = new URL(`${SUPABASE_FUNCTIONS_BASE}/${mapped}`);
 
-    // query params
     for (const [k, v] of Object.entries(req.query || {})) {
-      if (v === undefined || v === null) continue;
-      url.searchParams.set(k, String(v));
+      if (v !== undefined && v !== null) url.searchParams.set(k, String(v));
     }
 
-    // forward headers (CRITICAL)
     const headers = {
       'Content-Type': req.headers['content-type'] || 'application/json'
     };
     if (req.headers.authorization) headers['Authorization'] = req.headers.authorization;
 
     const method = req.method.toUpperCase();
-    const hasBody = !['GET', 'HEAD'].includes(method);
-    const body = hasBody ? JSON.stringify(req.body || {}) : undefined;
+    const body = !['GET', 'HEAD'].includes(method) ? JSON.stringify(req.body || {}) : undefined;
 
     const resp = await fetch(url.toString(), { method, headers, body });
 
@@ -99,7 +80,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// SPA fallback
+// SPA fallback AFTER API routes
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
