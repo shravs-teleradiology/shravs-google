@@ -259,319 +259,324 @@
     </div>
 
     <script type="module">
+  import { logout as apiLogout } from './api.js';
 
-        // CREATE EMPLOYEE
-        document.getElementById('createEmployeeForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const employeeData = {
-                name: document.getElementById('empName').value.trim(),
-                email: document.getElementById('empEmail').value.trim(),
-                password: document.getElementById('empPassword').value
-            };
-            
-            try {
-                const res = await fetch('/api/admin-create-employee', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: JSON.stringify(employeeData)
-                });
-                
-                if (!res.ok) {
-                    const error = await res.json();
-                    throw new Error(error.error || 'Failed to create employee');
-                }
-                
-                document.getElementById('createEmployeeSuccess').classList.add('show');
-                document.getElementById('createEmployeeForm').reset();
-                
-                setTimeout(() => {
-                    document.getElementById('createEmployeeSuccess').classList.remove('show');
-                }, 3000);
-                
-                loadEmployees();
-            } catch (e) {
-                alert('Failed to create employee: ' + e.message);
-            }
-        });
+  // CREATE EMPLOYEE
+  document.getElementById('createEmployeeForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-        // LOAD EMPLOYEES
-        async function loadEmployees() {
-            try {
-                const res = await fetch('/api/team?role=employee', {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
-                const data = await res.json();
-                const employees = data.items || data || [];
-                if (!Array.isArray(employees)) {
-                    console.error('Team API returned:', data);
-                    document.getElementById('employeesList').innerHTML =
-                    '<div class="empty-state">Unauthorized. Please login again.</div>';
-                      return;
-                }
+    const employeeData = {
+      name: document.getElementById('empName').value.trim(),
+      email: document.getElementById('empEmail').value.trim(),
+      password: document.getElementById('empPassword').value
+    };
 
-                
-                const taskSelect = document.getElementById('taskEmployee');
-                const promoteSelect = document.getElementById('promoteEmployee');
-                const options = employees.map(e => 
-                    `<option value="${e.id}">${e.name} (${e.email})</option>`
-                ).join('');
-                
-                taskSelect.innerHTML = '<option value="">-- Select Employee --</option>' + options;
-                promoteSelect.innerHTML = '<option value="">-- Select Employee --</option>' + options;
-                
-                const listContainer = document.getElementById('employeesList');
-                if (!employees.length) {
-                    listContainer.innerHTML = '<div class="empty-state">No employees found.</div>';
-                    return;
-                }
-                
-                let html = '<table><tr><th>Name</th><th>Email</th><th>Joined</th></tr>';
-                employees.forEach(e => {
-                    html += `<tr>
-                        <td>${e.name}</td>
-                        <td>${e.email}</td>
-                        <td>${new Date(e.created_at || Date.now()).toLocaleDateString()}</td>
-                    </tr>`;
-                });
-                html += '</table>';
-                listContainer.innerHTML = html;
-            } catch (e) {
-                console.error('Failed to load employees:', e);
-            }
-        }
+    try {
+      const res = await fetch('/api/admin-create-employee', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        },
+        body: JSON.stringify(employeeData)
+      });
 
-        // ASSIGN TASK
-        document.getElementById('assignTaskForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const employeeId = document.getElementById('taskEmployee').value;
-            const title = document.getElementById('taskTitle').value.trim();
-            const description = document.getElementById('taskDescription').value.trim();
-            const priority = document.getElementById('taskPriority').value;
-            const dueDate = document.getElementById('taskDueDate').value;
-            
-            if (!employeeId) return alert('Select an employee');
-            
-            try {
-                const res = await fetch('/api/tasks', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: JSON.stringify({
-                        assigned_to: employeeId,
-                        title,
-                        description,
-                        priority,
-                        due_date: dueDate || null,
-                        status: 'pending'
-                    })
-                });
-                
-                if (!res.ok) throw new Error('Failed to assign task');
-                
-                document.getElementById('assignTaskSuccess').classList.add('show');
-                document.getElementById('assignTaskForm').reset();
-                
-                setTimeout(() => {
-                    document.getElementById('assignTaskSuccess').classList.remove('show');
-                }, 3000);
-            } catch (e) {
-                alert('Failed to assign task: ' + e.message);
-            }
-        });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(out.error || out.message || 'Failed to create employee');
 
-        // 🔥 NEW: LOAD PENDING DIAGNOSTICS
-        async function loadPendingDiagnostics() {
-            try {
-                const res = await fetch('/api/admin-pending-diagnostics', {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
-                const diagnostics = await res.json();
-                
-                const container = document.getElementById('pendingDiagnosticsList');
-                if (!diagnostics || !diagnostics.length) {
-                    container.innerHTML = '<div class="empty-state">No pending diagnostics.</div>';
-                    return;
-                }
+      document.getElementById('createEmployeeSuccess').classList.add('show');
+      document.getElementById('createEmployeeForm').reset();
 
-                let html = '<table><tr><th>Name</th><th>Email</th><th>Speciality</th><th>Action</th></tr>';
-                diagnostics.forEach(d => {
-                    html += `<tr>
-                        <td>${d.name}</td>
-                        <td>${d.email}</td>
-                        <td>${d.speciality || 'N/A'}</td>
-                        <td><button onclick="approveDiagnostic('${d.id}')">✓ Approve</button></td>
-                    </tr>`;
-                });
-                html += '</table>';
-                container.innerHTML = html;
-            } catch (e) {
-                document.getElementById('pendingDiagnosticsList').innerHTML = 
-                    '<div class="empty-state">Error: ' + e.message + '</div>';
-            }
-        }
+      setTimeout(() => {
+        document.getElementById('createEmployeeSuccess').classList.remove('show');
+      }, 3000);
 
-        // 🔥 NEW: APPROVE DIAGNOSTIC
-        window.approveDiagnostic = async (id) => {
-            if (!confirm('Approve this diagnostic professional?')) return;
-            try {
-                const res = await fetch('/api/admin-approve-diagnostics', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: JSON.stringify({ id })
-                });
-                
-                if (!res.ok) {
-                    const error = await res.json();
-                    throw new Error(error.error || 'Approval failed');
-                }
-                
-                document.getElementById('pendingDiagnosticsSuccess').classList.add('show');
-                setTimeout(() => {
-                    document.getElementById('pendingDiagnosticsSuccess').classList.remove('show');
-                }, 3000);
-                loadPendingDiagnostics();
-            } catch (e) {
-                alert('Approval failed: ' + e.message);
-            }
-        };
+      loadEmployees();
+    } catch (e) {
+      alert('Failed to create employee: ' + e.message);
+    }
+  });
 
-        // 🔥 NEW: LOAD PENDING DOCTORS
-        async function loadPendingDoctors() {
-            try {
-                const res = await fetch('/api/admin-pending-doctors', {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
-                const doctors = await res.json();
-                
-                const container = document.getElementById('pendingDoctorsList');
-                if (!doctors || !doctors.length) {
-                    container.innerHTML = '<div class="empty-state">No pending doctors.</div>';
-                    return;
-                }
+  // LOAD EMPLOYEES
+  async function loadEmployees() {
+    try {
+      const res = await fetch('/api/team?role=employee', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` }
+      });
 
-                let html = '<table><tr><th>Name</th><th>Email</th><th>Speciality</th><th>Action</th></tr>';
-                doctors.forEach(d => {
-                    html += `<tr>
-                        <td>${d.name}</td>
-                        <td>${d.email}</td>
-                        <td>${d.speciality || 'N/A'}</td>
-                        <td><button onclick="approveDoctor('${d.id}')">✓ Approve</button></td>
-                    </tr>`;
-                });
-                html += '</table>';
-                container.innerHTML = html;
-            } catch (e) {
-                document.getElementById('pendingDoctorsList').innerHTML = 
-                    '<div class="empty-state">Error: ' + e.message + '</div>';
-            }
-        }
+      const data = await res.json().catch(() => ({}));
 
-        // 🔥 NEW: APPROVE DOCTOR
-        window.approveDoctor = async (id) => {
-            if (!confirm('Approve this doctor?')) return;
-            try {
-                const res = await fetch('/api/admin-approve-doctor', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: JSON.stringify({ id })
-                });
-                
-                if (!res.ok) {
-                    const error = await res.json();
-                    throw new Error(error.error || 'Approval failed');
-                }
-                
-                document.getElementById('approveDoctorSuccess').classList.add('show');
-                setTimeout(() => {
-                    document.getElementById('approveDoctorSuccess').classList.remove('show');
-                }, 3000);
-                loadPendingDoctors();
-            } catch (e) {
-                alert('Approval failed: ' + e.message);
-            }
-        };
+      // Team function may return {items:[...]} OR just [...]
+      const employees = Array.isArray(data) ? data : (data.items || []);
 
-        // PROMOTE TO ADMIN
-        window.promoteToAdmin = async () => {
-            const userId = document.getElementById('promoteEmployee').value;
-            if (!userId) return alert('Select an employee');
-            if (!confirm('Promote this employee to admin? They will have full admin access.')) return;
-            
-            try {
-                const res = await fetch('/api/admin-set-role', {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: JSON.stringify({ user_id: userId, role: 'admin' })
-                });
-                
-                if (!res.ok) {
-                    const error = await res.json();
-                    throw new Error(error.error || 'Failed to promote');
-                }
-                
-                alert('Employee promoted to admin successfully!');
-                loadEmployees();
-            } catch (e) {
-                alert('Promotion failed: ' + e.message);
-            }
-        };
+      if (!Array.isArray(employees)) {
+        console.error('Team API returned:', data);
+        document.getElementById('employeesList').innerHTML =
+          '<div class="empty-state">Unauthorized or invalid response. Please login again.</div>';
+        return;
+      }
 
-        // LOAD QUERIES
-        function loadQueries() {
-            const queries = JSON.parse(localStorage.getItem('queries') || '[]');
-            const container = document.getElementById('allQueries');
-            
-            if (!queries.length) {
-                container.innerHTML = '<div class="empty-state">No queries yet.</div>';
-                return;
-            }
-            
-            let html = '<table><tr><th>Type</th><th>Name</th><th>Email</th><th>Message</th><th>Date</th></tr>';
-            queries.forEach(q => {
-                html += `<tr>
-                    <td style="text-transform:capitalize">${q.type}</td>
-                    <td>${q.name}</td>
-                    <td>${q.email}</td>
-                    <td>${q.message.substring(0, 60)}${q.message.length > 60 ? '...' : ''}</td>
-                    <td>${new Date(q.timestamp).toLocaleDateString()}</td>
-                </tr>`;
-            });
-            html += '</table>';
-            container.innerHTML = html;
-        }
+      const taskSelect = document.getElementById('taskEmployee');
+      const promoteSelect = document.getElementById('promoteEmployee');
 
-        window.logout = () => {
-            apiLogout();
-        };
+      const options = employees.map(e =>
+        `<option value="${e.id}">${(e.name || 'NoName')} (${e.email || ''})</option>`
+      ).join('');
 
-        // 🔥 INIT - LOAD ALL DATA
-        loadEmployees();
-        loadPendingDiagnostics();  // 🔥 NEW
-        loadPendingDoctors();       // 🔥 NEW
-        loadQueries();
-        
-        // 🔥 REFRESH EVERY 30s
-        setInterval(() => {
-            loadPendingDiagnostics();  // 🔥 NEW
-            loadPendingDoctors();       // 🔥 NEW
-            loadQueries();
-        }, 30000);
-    </script>
+      taskSelect.innerHTML = '<option value="">-- Select Employee --</option>' + options;
+      promoteSelect.innerHTML = '<option value="">-- Select Employee --</option>' + options;
+
+      const listContainer = document.getElementById('employeesList');
+      if (!employees.length) {
+        listContainer.innerHTML = '<div class="empty-state">No employees found.</div>';
+        return;
+      }
+
+      let html = '<table><tr><th>Name</th><th>Email</th><th>Joined</th></tr>';
+      employees.forEach(e => {
+        html += `<tr>
+          <td>${e.name || ''}</td>
+          <td>${e.email || ''}</td>
+          <td>${new Date(e.created_at || Date.now()).toLocaleDateString()}</td>
+        </tr>`;
+      });
+      html += '</table>';
+      listContainer.innerHTML = html;
+    } catch (e) {
+      console.error('Failed to load employees:', e);
+      document.getElementById('employeesList').innerHTML =
+        '<div class="empty-state">Failed to load employees. Please login again.</div>';
+    }
+  }
+
+  // ASSIGN TASK
+  document.getElementById('assignTaskForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const employeeId = document.getElementById('taskEmployee').value;
+    const title = document.getElementById('taskTitle').value.trim();
+    const description = document.getElementById('taskDescription').value.trim();
+    const priority = document.getElementById('taskPriority').value;
+    const dueDate = document.getElementById('taskDueDate').value;
+
+    if (!employeeId) return alert('Select an employee');
+
+    try {
+      const res = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        },
+        body: JSON.stringify({
+          assigned_to: employeeId,
+          title,
+          description,
+          priority,
+          due_date: dueDate || null,
+          status: 'pending'
+        })
+      });
+
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(out.error || out.message || 'Failed to assign task');
+
+      document.getElementById('assignTaskSuccess').classList.add('show');
+      document.getElementById('assignTaskForm').reset();
+
+      setTimeout(() => {
+        document.getElementById('assignTaskSuccess').classList.remove('show');
+      }, 3000);
+    } catch (e) {
+      alert('Failed to assign task: ' + e.message);
+    }
+  });
+
+  // LOAD PENDING DIAGNOSTICS
+  async function loadPendingDiagnostics() {
+    try {
+      const res = await fetch('/api/admin-pending-diagnostics', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` }
+      });
+
+      const data = await res.json().catch(() => ({}));
+      const diagnostics = Array.isArray(data) ? data : (data.items || []);
+
+      const container = document.getElementById('pendingDiagnosticsList');
+      if (!diagnostics.length) {
+        container.innerHTML = '<div class="empty-state">No pending diagnostics.</div>';
+        return;
+      }
+
+      let html = '<table><tr><th>Name</th><th>Email</th><th>Org</th><th>Action</th></tr>';
+      diagnostics.forEach(d => {
+        html += `<tr>
+          <td>${d.name || ''}</td>
+          <td>${d.email || ''}</td>
+          <td>${d.organization || ''}</td>
+          <td><button onclick="approveDiagnostic('${d.id}')">✓ Approve</button></td>
+        </tr>`;
+      });
+      html += '</table>';
+      container.innerHTML = html;
+    } catch (e) {
+      document.getElementById('pendingDiagnosticsList').innerHTML =
+        '<div class="empty-state">Error: ' + e.message + '</div>';
+    }
+  }
+
+  // APPROVE DIAGNOSTIC
+  window.approveDiagnostic = async (id) => {
+    if (!confirm('Approve this diagnostic professional?')) return;
+
+    try {
+      const res = await fetch('/api/admin-approve-diagnostics', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        },
+        body: JSON.stringify({ id })
+      });
+
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(out.error || out.message || 'Approval failed');
+
+      document.getElementById('pendingDiagnosticsSuccess').classList.add('show');
+      setTimeout(() => {
+        document.getElementById('pendingDiagnosticsSuccess').classList.remove('show');
+      }, 3000);
+
+      loadPendingDiagnostics();
+    } catch (e) {
+      alert('Approval failed: ' + e.message);
+    }
+  };
+
+  // LOAD PENDING DOCTORS
+  async function loadPendingDoctors() {
+    try {
+      const res = await fetch('/api/admin-pending-doctors', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` }
+      });
+
+      const data = await res.json().catch(() => ({}));
+      const doctors = Array.isArray(data) ? data : (data.items || []);
+
+      const container = document.getElementById('pendingDoctorsList');
+      if (!doctors.length) {
+        container.innerHTML = '<div class="empty-state">No pending doctors.</div>';
+        return;
+      }
+
+      let html = '<table><tr><th>Name</th><th>Email</th><th>Org</th><th>Action</th></tr>';
+      doctors.forEach(d => {
+        html += `<tr>
+          <td>${d.name || ''}</td>
+          <td>${d.email || ''}</td>
+          <td>${d.organization || ''}</td>
+          <td><button onclick="approveDoctor('${d.id}')">✓ Approve</button></td>
+        </tr>`;
+      });
+      html += '</table>';
+      container.innerHTML = html;
+    } catch (e) {
+      document.getElementById('pendingDoctorsList').innerHTML =
+        '<div class="empty-state">Error: ' + e.message + '</div>';
+    }
+  }
+
+  // APPROVE DOCTOR
+  window.approveDoctor = async (id) => {
+    if (!confirm('Approve this doctor?')) return;
+
+    try {
+      const res = await fetch('/api/admin-approve-doctor', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        },
+        body: JSON.stringify({ id })
+      });
+
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(out.error || out.message || 'Approval failed');
+
+      document.getElementById('approveDoctorSuccess').classList.add('show');
+      setTimeout(() => {
+        document.getElementById('approveDoctorSuccess').classList.remove('show');
+      }, 3000);
+
+      loadPendingDoctors();
+    } catch (e) {
+      alert('Approval failed: ' + e.message);
+    }
+  };
+
+  // PROMOTE TO ADMIN
+  window.promoteToAdmin = async () => {
+    const userId = document.getElementById('promoteEmployee').value;
+    if (!userId) return alert('Select an employee');
+    if (!confirm('Promote this employee to admin?')) return;
+
+    try {
+      const res = await fetch('/api/admin-set-role', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        },
+        body: JSON.stringify({ user_id: userId, role: 'admin' })
+      });
+
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(out.error || out.message || 'Failed to promote');
+
+      alert('Employee promoted to admin successfully!');
+      loadEmployees();
+    } catch (e) {
+      alert('Promotion failed: ' + e.message);
+    }
+  };
+
+  // LOAD QUERIES (localStorage based)
+  function loadQueries() {
+    const queries = JSON.parse(localStorage.getItem('queries') || '[]');
+    const container = document.getElementById('allQueries');
+
+    if (!queries.length) {
+      container.innerHTML = '<div class="empty-state">No queries yet.</div>';
+      return;
+    }
+
+    let html = '<table><tr><th>Type</th><th>Name</th><th>Email</th><th>Message</th><th>Date</th></tr>';
+    queries.forEach(q => {
+      html += `<tr>
+        <td style="text-transform:capitalize">${q.type}</td>
+        <td>${q.name}</td>
+        <td>${q.email}</td>
+        <td>${(q.message || '').substring(0, 60)}${(q.message || '').length > 60 ? '...' : ''}</td>
+        <td>${new Date(q.timestamp).toLocaleDateString()}</td>
+      </tr>`;
+    });
+    html += '</table>';
+    container.innerHTML = html;
+  }
+
+  window.logout = () => apiLogout();
+
+  // INIT
+  loadEmployees();
+  loadPendingDiagnostics();
+  loadPendingDoctors();
+  loadQueries();
+
+  setInterval(() => {
+    loadPendingDiagnostics();
+    loadPendingDoctors();
+    loadQueries();
+  }, 30000);
+</script>
 </body>
 </html>
