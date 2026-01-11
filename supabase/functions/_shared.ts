@@ -21,9 +21,8 @@ export function getBearerToken(req: Request) {
 
 export function supabaseAdmin() {
   const url = Deno.env.get("SUPABASE_URL")!;
-  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ||
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY".toLowerCase()); // just in case
-  if (!serviceKey) throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY secret");
+  const serviceKey = Deno.env.get("SERVICE_ROLE_KEY");                // ✅ Works
+  if (!serviceKey) throw new Error("Missing SERVICE_ROLE_KEY secret");
   return createClient(url, serviceKey, { auth: { persistSession: false } });
 }
 
