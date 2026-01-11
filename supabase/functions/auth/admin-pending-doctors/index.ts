@@ -1,7 +1,6 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { corsHeaders, json, requireAdmin, supabaseAdmin } from "../_shared.ts";
+import { corsHeaders, json, requireAdmin, supabaseAdmin } from "../../_shared.ts";
 
-serve(async (req) => {
+export async function handler(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "GET") return json({ error: "Use GET" }, 405);
 
@@ -10,7 +9,7 @@ serve(async (req) => {
 
     const admin = supabaseAdmin();
     const { data, error } = await admin
-      .from("pending_doctors")  // or "doctor_requests" if that's your table name
+      .from("doctor_requests")
       .select("id,name,email,organization,status,created_at")
       .eq("status", "pending")
       .order("created_at", { ascending: false });
@@ -20,4 +19,4 @@ serve(async (req) => {
   } catch (e) {
     return json({ error: e?.message || String(e) }, 401);
   }
-});
+}
