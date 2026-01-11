@@ -19,45 +19,50 @@ app.options('*', cors());
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Supabase Edge Functions base
 const SUPABASE_FUNCTIONS_BASE = 'https://xksqdjwbiojwyfllwtvh.supabase.co/functions/v1';
 
-// EXACT MATCH to your deployed function names
+// IMPORTANT: map only to functions that actually exist in Supabase right now
 const FN_MAP = {
+  // deployed
   'admin-create-employee': 'admin-create-employee',
   'admin-set-role': 'admin-set-role',
-  'admin-pending-doctors': 'admin-pending-doctors',  // ✅ You have this
-  'admin-approve-doctor': 'admin-approve-doctor',
-  'admin-pending-diagnostics': 'admin-pending-diagnostics',
-  'admin-approve-diagnostics': 'admin-approve-diagnostic',  // ✅ singular from your screenshot
+  'tasks': 'tasks',
+  'team': 'team',
+  'offer-letter': 'offer-letter',
+  'profile': 'profile',
+  'password-reset': 'password-reset',
+  'change-password': 'change-password',
+  'auth': 'auth'
 
-  'team': 'team',    // ✅ You have this
-  'tasks': 'tasks',  // ✅ You have this
-
-  // Auth (if needed)
-  'auth-login': 'auth-login',
-  'auth-me': 'auth-me',
+  // NOT deployed yet (these will 404 if called)
+  // 'admin-pending-doctors': 'admin-pending-doctors',
+  // 'admin-pending-diagnostics': 'admin-pending-diagnostics',
+  // 'admin-approve-doctor': 'admin-approve-doctor',
+  // 'admin-approve-diagnostics': 'admin-approve-diagnostics',
 };
 
-// CRITICAL: API routes BEFORE SPA fallback
 app.all('/api/:fn', async (req, res) => {
   try {
     const fnName = (req.params.fn || '').replace(/[^a-zA-Z0-9_-]/g, '');
     const mapped = FN_MAP[fnName];
-    if (!mapped) return res.status(404).json({ error: `Function ${fnName} not found` });
+    if (!mapped) return res.status(404).json({ error: 'Function not found' });
 
     const url = new URL(`${SUPABASE_FUNCTIONS_BASE}/${mapped}`);
 
+    // Forward query params
     for (const [k, v] of Object.entries(req.query || {})) {
-      if (v !== undefined && v !== null) url.searchParams.set(k, String(v));
+      if (v === undefined || v === null) continue;
+      url.searchParams.set(k, String(v));
     }
 
-    const headers = {
-      'Content-Type': req.headers['content-type'] || 'application/json'
-    };
+    // Forward headers (CRITICAL for JWT)
+    const headers = {};
     if (req.headers.authorization) headers['Authorization'] = req.headers.authorization;
+    headers['Content-Type'] = req.headers['content-type'] || 'application/json';
 
     const method = req.method.toUpperCase();
-    const body = !['GET', 'HEAD'].includes(method) ? JSON.stringify(req.body || {}) : undefined;
+    const body = (method === 'GET' || method === 'HEAD') ? undefined : JSON.stringify(req.body || {});
 
     const resp = await fetch(url.toString(), { method, headers, body });
 
@@ -80,7 +85,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// SPA fallback AFTER API routes
+// SPA fallback
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
