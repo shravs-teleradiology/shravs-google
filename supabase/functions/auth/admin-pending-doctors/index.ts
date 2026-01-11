@@ -1,4 +1,7 @@
 import { corsHeaders, json, requireAdmin, supabaseAdmin } from "../../_shared.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { handler } from "../auth/admin-pending-doctors/index.ts";
+serve(handler);
 
 export async function handler(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
