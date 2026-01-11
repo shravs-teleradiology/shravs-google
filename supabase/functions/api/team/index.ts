@@ -1,31 +1,25 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { corsHeaders, json, requireAdmin, supabaseAdmin } from "../../_shared.ts";
 
-Deno.serve(async (req) => {
-  const supabase = createClient(
-    'https://xksqdjwbiojwyfllwtvh.supabase.co',
-    'sb_secret_0WpYpxW795cxtCcPEuBRcA_aoQyXZtR'
-  )
-
-  const { searchParams } = new URL(req.url)
-  const role = searchParams.get('role') || 'employee'
+export async function handler(req: Request): Promise<Response> {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method !== "GET") return json({ error: "Use GET" }, 405);
 
   try {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('role', role)
-      .order('created_at', { ascending: false })
-
-    if (error) throw error
+    await requireAdmin(req);
     
-    return new Response(
-      JSON.stringify({ items: data }), 
-      { headers: { 'Content-Type': 'application/json' } }
-    )
-  } catch (error) {
-    return new Response(
-      JSON.stringify({ error: error.message }), 
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    )
+    const admin = supabaseAdmin();
+    const url = new URL(req.url);
+    const role = url.searchParams.get("role") || "employee";
+    
+    const { data, error } = await admin
+      .from("profiles")
+      .select("id, name, email, role, created_at")
+      .eq("role", role)
+      .order("created_at", { ascending: false });
+
+    if (error) return json({ error: error.message }, 400);
+    return json({ items: data || [] }, 200);
+  } catch (e) {
+    return json({ error: e?.message || String(e) }, 401);
   }
-})
+}
