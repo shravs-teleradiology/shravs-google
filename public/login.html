@@ -190,7 +190,7 @@
         const { data: profile } = await supabase
           .from('profiles')
           .select('*')
-          .eq('user_id', data.user.id)
+          .eq('id', data.user.id)
           .single();
 
         if (profile?.first_login === true) {
