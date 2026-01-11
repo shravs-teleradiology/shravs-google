@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'apikey'],
   credentials: true
 }));
 app.options('*', cors());
@@ -19,27 +19,30 @@ app.options('*', cors());
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Supabase Edge Functions base
-const SUPABASE_FUNCTIONS_BASE = 'https://xksqdjwbiojwyfllwtvh.supabase.co/functions/v1';
+// Supabase Functions
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://xksqdjwbiojwyfllwtvh.supabase.co';
+const SUPABASE_FUNCTIONS_BASE = `${SUPABASE_URL}/functions/v1`;
 
-// IMPORTANT: map only to functions that actually exist in Supabase right now
+// IMPORTANT: set this in Cloud Run env vars
+// (same value as your SB publishable anon key)
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
+
+/**
+ * Frontend endpoint -> Supabase Edge Function name.
+ * NOTE: your frontend uses "admin-approve-diagnostics" but your function is "admin-approve-diagnostic".
+ */
 const FN_MAP = {
-  // deployed
   'admin-create-employee': 'admin-create-employee',
   'admin-set-role': 'admin-set-role',
+
+  'admin-pending-doctors': 'admin-pending-doctors',
+  'admin-approve-doctor': 'admin-approve-doctor',
+
+  'admin-pending-diagnostics': 'admin-pending-diagnostics',
+  'admin-approve-diagnostics': 'admin-approve-diagnostic', // singular function name
+
   'tasks': 'tasks',
   'team': 'team',
-  'offer-letter': 'offer-letter',
-  'profile': 'profile',
-  'password-reset': 'password-reset',
-  'change-password': 'change-password',
-  'auth': 'auth'
-
-  // NOT deployed yet (these will 404 if called)
-  // 'admin-pending-doctors': 'admin-pending-doctors',
-  // 'admin-pending-diagnostics': 'admin-pending-diagnostics',
-  // 'admin-approve-doctor': 'admin-approve-doctor',
-  // 'admin-approve-diagnostics': 'admin-approve-diagnostics',
 };
 
 app.all('/api/:fn', async (req, res) => {
@@ -56,13 +59,26 @@ app.all('/api/:fn', async (req, res) => {
       url.searchParams.set(k, String(v));
     }
 
-    // Forward headers (CRITICAL for JWT)
-    const headers = {};
-    if (req.headers.authorization) headers['Authorization'] = req.headers.authorization;
-    headers['Content-Type'] = req.headers['content-type'] || 'application/json';
+    // Forward headers
+    const headers = {
+      'Content-Type': req.headers['content-type'] || 'application/json',
+    };
+
+    // Pass JWT through (required for admin/team endpoints)
+    if (req.headers.authorization) {
+      headers['Authorization'] = req.headers.authorization;
+    }
+
+    // Add apikey header (recommended for Supabase HTTP calls)
+    if (SUPABASE_ANON_KEY) {
+      headers['apikey'] = SUPABASE_ANON_KEY;
+      // If no Authorization provided, fall back to anon key so public functions can still be called.
+      if (!headers['Authorization']) headers['Authorization'] = `Bearer ${SUPABASE_ANON_KEY}`;
+    }
 
     const method = req.method.toUpperCase();
-    const body = (method === 'GET' || method === 'HEAD') ? undefined : JSON.stringify(req.body || {});
+    const hasBody = !['GET', 'HEAD'].includes(method);
+    const body = hasBody ? JSON.stringify(req.body || {}) : undefined;
 
     const resp = await fetch(url.toString(), { method, headers, body });
 
