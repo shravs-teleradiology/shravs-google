@@ -2,34 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login - Shravs Teleradiology</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Shravs</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Segoe UI',Tahoma,sans-serif;background:#000;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-    .wrap{width:100%;max-width:500px}
-    .logo-header{text-align:center;margin-bottom:30px}
-    .logo{width:80px;height:80px;border-radius:50%;border:3px solid #0ea5e9;object-fit:cover;margin-bottom:15px}
-    .brand-name{font-size:1.8em;font-weight:bold;letter-spacing:1px;margin-bottom:5px}
-    .brand-tagline{color:#999;font-size:0.9em}
-    .card{background:#0a0a0a;border:2px solid #0ea5e9;border-radius:20px;padding:30px;box-shadow:0 10px 40px rgba(14,165,233,0.3)}
-    .tabs{display:flex;gap:10px;margin-bottom:25px}
-    .tab{flex:1;padding:12px;border-radius:25px;border:2px solid #333;background:#000;color:#ddd;cursor:pointer;font-weight:800;text-transform:uppercase;font-size:.85rem;transition:all 0.3s ease}
-    .tab:hover{border-color:#0ea5e9}
-    .tab.active{border-color:#0ea5e9;color:#fff;background:linear-gradient(135deg,#0ea5e9,#06b6d4)}
-    .row{margin-top:15px}
-    label{display:block;margin-bottom:6px;color:#0ea5e9;font-weight:800;font-size:.82rem;text-transform:uppercase}
-    input,select{width:100%;padding:12px 15px;border-radius:10px;border:2px solid #333;background:#000;color:#fff;font-size:0.95em;transition:all 0.3s ease}
-    input:focus,select:focus{outline:none;border-color:#0ea5e9;box-shadow:0 0 10px rgba(14,165,233,0.2)}
-    .btn{margin-top:18px;width:100%;padding:14px;border-radius:25px;border:none;background:linear-gradient(135deg,#0ea5e9,#06b6d4);color:#fff;font-weight:900;text-transform:uppercase;cursor:pointer;font-size:0.95em;letter-spacing:0.5px;transition:all 0.3s ease}
-    .btn:hover{background:linear-gradient(135deg,#06b6d4,#0ea5e9);transform:translateY(-2px);box-shadow:0 5px 15px rgba(14,165,233,0.4)}
-    .msg{margin-top:14px;padding:12px;border-radius:10px;display:none;font-size:0.9em}
-    .msg.ok{display:block;background:#0f2f1c;border:2px solid #22c55e;color:#22c55e}
-    .msg.err{display:block;background:#2f0f0f;border:2px solid #ef4444;color:#ef4444}
-    .muted{color:#999;font-size:.88rem;line-height:1.5;margin-top:12px;text-align:center}
-    .link{color:#0ea5e9;cursor:pointer;text-decoration:underline;font-weight:bold}
-    .link:hover{color:#06b6d4}
-    .hide{display:none!important}
+    body{
+      font-family:Segoe UI,Tahoma,sans-serif;
+      background:#ffffff;color:#111827;
+      min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+    }
+    .wrap{width:100%;max-width:520px}
+    .logo-header{text-align:center;margin-bottom:18px}
+    .logo{width:78px;height:78px;border-radius:50%;border:3px solid #d32f2f;object-fit:cover;margin-bottom:10px}
+    .brand-name{font-size:1.7em;font-weight:900;letter-spacing:.5px;color:#b71c1c}
+    .brand-tagline{color:#6b7280;font-size:.92em;margin-top:6px}
+    .card{
+      background:#ffffff;border:1px solid #ef4444;border-radius:18px;
+      padding:28px;box-shadow:0 10px 30px rgba(220,38,38,.15);
+    }
+    label{display:block;margin:12px 0 6px;color:#b91c1c;font-weight:800;font-size:.82rem;text-transform:uppercase}
+    input{
+      width:100%;padding:12px 14px;border-radius:10px;border:1px solid #e5e7eb;
+      background:#fff;color:#111827;font-size:.98em;outline:none;
+    }
+    input:focus{border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.15)}
+    .btn{
+      margin-top:16px;width:100%;padding:14px;border-radius:999px;border:none;
+      background:linear-gradient(135deg,#ef4444,#b91c1c);
+      color:#fff;font-weight:900;text-transform:uppercase;cursor:pointer;font-size:.95em;
+    }
+    .msg{margin-top:14px;padding:12px;border-radius:10px;display:none;font-size:.92em}
+    .msg.ok{display:block;background:#ecfdf5;border:1px solid #10b981;color:#047857}
+    .msg.err{display:block;background:#fef2f2;border:1px solid #ef4444;color:#b91c1c}
+    .muted{color:#6b7280;font-size:.9rem;line-height:1.5;margin-top:12px;text-align:center}
+    a.link{color:#b91c1c;text-decoration:underline;font-weight:800}
   </style>
 </head>
 <body>
@@ -37,245 +43,87 @@
     <div class="logo-header">
       <img class="logo" src="logo.jpg" alt="Shravs Logo" onerror="this.style.display='none'">
       <div class="brand-name">SHRAVS</div>
-      <div class="brand-tagline">Teleradiology & E-Care Services</div>
+      <div class="brand-tagline">Employee / Admin Login</div>
     </div>
 
     <div class="card">
-      <div class="tabs" id="tabsContainer">
-        <button class="tab active" id="tabLogin" type="button">Login</button>
-        <button class="tab" id="tabSignup" type="button">Signup</button>
-      </div>
-
       <div id="msg" class="msg"></div>
 
-      <!-- LOGIN FORM -->
       <form id="loginForm">
-        <div class="row">
-          <label for="loginEmail">Email</label>
-          <input id="loginEmail" type="email" required placeholder="your@email.com">
-        </div>
-        <div class="row">
-          <label for="loginPassword">Password</label>
-          <input id="loginPassword" type="password" required placeholder="••••••••">
-        </div>
+        <label for="loginEmail">Email</label>
+        <input id="loginEmail" type="email" required placeholder="you@example.com"/>
+
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" type="password" required placeholder="Enter password"/>
+
         <button class="btn" type="submit">Login</button>
-
-        <div class="muted">
-          <span class="link" id="forgotPasswordLink">Forgot Password?</span>
-        </div>
       </form>
 
-      <!-- FORGOT PASSWORD FORM -->
-      <form id="forgotPasswordForm" class="hide">
-        <div class="row">
-          <label for="forgotEmail">Enter Your Email</label>
-          <input id="forgotEmail" type="email" required placeholder="your@email.com">
-        </div>
-        <button class="btn" type="submit">Send Reset Link</button>
-        <div class="muted">
-          <span class="link" id="backToLoginLink">← Back to Login</span>
-        </div>
-      </form>
-
-      <!-- SIGNUP FORM -->
-      <form id="signupForm" class="hide">
-        <div class="row">
-          <label for="signupRole">Signup As</label>
-          <select id="signupRole" required>
-            <option value="">-- Select Role --</option>
-            <option value="doctor">Doctor</option>
-            <option value="patient">Patient</option>
-          </select>
-        </div>
-
-        <div class="row">
-          <label for="signupName">Full Name</label>
-          <input id="signupName" required placeholder="Your full name">
-        </div>
-
-        <div class="row">
-          <label for="signupEmail">Email</label>
-          <input id="signupEmail" type="email" required placeholder="your@email.com">
-        </div>
-
-        <div class="row">
-          <label for="signupPassword">Password</label>
-          <input id="signupPassword" type="password" required placeholder="Create a password" minlength="6">
-        </div>
-
-        <button class="btn" type="submit">Submit Signup Request</button>
-      </form>
+      <div class="muted">
+        Don’t have an account? <a class="link" href="signup.html">Send signup request</a>
+      </div>
     </div>
   </div>
 
   <script type="module">
-    const SUPABASE_URL = 'https://xksqdjwbiojwyfllwtvh.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_zZe-aVVerbOt7joJQMt6QQ_bq3Ej7Ze';
+    // Use your existing Supabase URL + ANON key from old login.html
+    const SUPABASE_URL = "https://xksqdjwbiojwyfllwtvh.supabase.co";
+    const SUPABASE_ANON_KEY = "REPLACE_WITH_YOUR_ANON_KEY";
 
-    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+    const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const tabLogin = document.getElementById('tabLogin');
-    const tabSignup = document.getElementById('tabSignup');
-    const tabsContainer = document.getElementById('tabsContainer');
-    const loginForm = document.getElementById('loginForm');
-    const signupForm = document.getElementById('signupForm');
-    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
-    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
-    const backToLoginLink = document.getElementById('backToLoginLink');
-    const msg = document.getElementById('msg');
-
-    function showMessage(text, type) {
+    const msg = document.getElementById("msg");
+    function showMessage(text, type){
       msg.textContent = text;
-      msg.className = 'msg ' + type;
-      setTimeout(() => { msg.className = 'msg'; }, 5000);
+      msg.className = "msg " + type;
+      setTimeout(()=>{ msg.className = "msg"; }, 5000);
     }
 
-    function showLogin() {
-      tabLogin.classList.add('active');
-      tabSignup.classList.remove('active');
-      tabsContainer.classList.remove('hide');
-      loginForm.classList.remove('hide');
-      signupForm.classList.add('hide');
-      forgotPasswordForm.classList.add('hide');
-      msg.className = 'msg';
-    }
-
-    function showSignup() {
-      tabLogin.classList.remove('active');
-      tabSignup.classList.add('active');
-      tabsContainer.classList.remove('hide');
-      loginForm.classList.add('hide');
-      signupForm.classList.remove('hide');
-      forgotPasswordForm.classList.add('hide');
-      msg.className = 'msg';
-    }
-
-    function showForgotPassword() {
-      tabLogin.classList.remove('active');
-      tabSignup.classList.remove('active');
-      tabsContainer.classList.add('hide');
-      loginForm.classList.add('hide');
-      signupForm.classList.add('hide');
-      forgotPasswordForm.classList.remove('hide');
-      msg.className = 'msg';
-    }
-
-    tabLogin.addEventListener('click', showLogin);
-    tabSignup.addEventListener('click', showSignup);
-    forgotPasswordLink.addEventListener('click', showForgotPassword);
-    backToLoginLink.addEventListener('click', showLogin);
-
-    // LOGIN
-    loginForm.addEventListener('submit', async (e) => {
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
 
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
+      try{
+        showMessage("Logging in...", "ok");
 
-      try {
-        showMessage('Logging in...', 'ok');
-
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
-
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
 
-        localStorage.setItem('token', data.session.access_token);
+        localStorage.setItem("token", data.session.access_token);
 
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', data.user.id)
+        // Fetch profile role and block anything except admin/employee
+        const { data: profile, error: pErr } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", data.user.id)
           .single();
 
+        if (pErr) throw pErr;
+
+        const role = (profile?.role || "").toLowerCase();
+        if (role !== "admin" && role !== "employee") {
+          await supabase.auth.signOut();
+          localStorage.removeItem("token");
+          throw new Error("Access denied. Only Admin/Employee accounts can login here.");
+        }
+
         if (profile?.first_login === true) {
-          showMessage('First login. Redirecting...', 'ok');
-          setTimeout(() => {
-            window.location.href = 'change-password.html';
-          }, 1000);
+          showMessage("First login. Redirecting...", "ok");
+          setTimeout(() => window.location.href = "change-password.html", 800);
           return;
         }
 
-        showMessage('Login successful!', 'ok');
+        showMessage("Login successful!", "ok");
         setTimeout(() => {
-          if (profile?.role === 'admin') {
-            window.location.href = 'admin.html';
-          } else if (profile?.role === 'employee') {
-            window.location.href = 'employee.html';
-          } else if (profile?.role === 'doctor') {
-            window.location.href = 'doctor.html';
-          } else {
-            window.location.href = 'index.html';
-          }
+          window.location.href = role === "admin" ? "admin.html" : "employee.html";
         }, 500);
-      } catch (err) {
-        showMessage(err.message || 'Login failed. Check credentials.', 'err');
+
+      }catch(err){
+        showMessage(err?.message || "Login failed", "err");
       }
     });
-
-    // FORGOT PASSWORD
-    forgotPasswordForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const email = document.getElementById('forgotEmail').value.trim();
-
-      try {
-        showMessage('Sending reset link...', 'ok');
-
-        await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: window.location.origin + '/reset-password.html'
-        });
-
-        showMessage('Reset link sent! Check your email.', 'ok');
-        document.getElementById('forgotEmail').value = '';
-        setTimeout(() => showLogin(), 3000);
-      } catch (err) {
-        showMessage('Reset link sent (if email exists).', 'ok');
-      }
-    });
-
-    // SIGNUP
-    signupForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const role = document.getElementById('signupRole').value;
-      const name = document.getElementById('signupName').value.trim();
-      const email = document.getElementById('signupEmail').value.trim();
-      const password = document.getElementById('signupPassword').value;
-
-      if (!role) {
-        showMessage('Please select a role', 'err');
-        return;
-      }
-
-      try {
-        showMessage('Creating account...', 'ok');
-
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              name,
-              role: role === 'doctor' ? 'doctor_pending' : 'patient'
-            }
-          }
-        });
-
-        if (error) throw error;
-
-        showMessage('Account created! Check email to verify, then login.', 'ok');
-        signupForm.reset();
-        setTimeout(() => showLogin(), 3000);
-      } catch (err) {
-        showMessage(err.message || 'Signup failed.', 'err');
-      }
-    });
-
-    showLogin();
   </script>
 </body>
 </html>
