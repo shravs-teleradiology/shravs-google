@@ -16,26 +16,23 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
+
       scriptSrc: [
         "'self'",
         "'unsafe-inline'",
         "'unsafe-eval'",
-        "https://cdn.jsdelivr.net",
-        "https://unpkg.com"
+        "https://cdn.jsdelivr.net"
       ],
+
+      // IMPORTANT: allow Supabase API + Realtime websockets
       connectSrc: [
         "'self'",
-        "https://*.supabase.co"
+        "https://*.supabase.co",
+        "wss://*.supabase.co"
       ],
-      imgSrc: [
-        "'self'",
-        "data:",
-        "https:"
-      ],
-      styleSrc: [
-        "'self'",
-        "'unsafe-inline'"
-      ]
+
+      imgSrc: ["'self'", "data:", "https:"],
+      styleSrc: ["'self'", "'unsafe-inline'"]
     }
   }
 }));
