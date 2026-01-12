@@ -1,3 +1,4 @@
+// supabase/functions/_shared.ts
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 export const corsHeaders = {
@@ -20,15 +21,27 @@ export function getBearerToken(req: Request) {
 }
 
 export function supabaseAdmin() {
-  const url = Deno.env.get("PROJECT_URL") || "https://xksqdjwbiojwyfllwtvh.supabase.co";
+  const url =
+    Deno.env.get("PROJECT_URL") ||
+    Deno.env.get("SUPABASE_URL") ||
+    "https://xksqdjwbiojwyfllwtvh.supabase.co";
+
   const serviceKey = Deno.env.get("SERVICE_ROLE_KEY");
   if (!serviceKey) throw new Error("Missing SERVICE_ROLE_KEY secret");
+
   return createClient(url, serviceKey, { auth: { persistSession: false } });
 }
 
 export function supabaseAnon() {
-  const url = Deno.env.get("SUPABASE_URL")!;
-  const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+  const url =
+    Deno.env.get("PROJECT_URL") ||
+    Deno.env.get("SUPABASE_URL") ||
+    "https://xksqdjwbiojwyfllwtvh.supabase.co";
+
+  const anonKey =
+    Deno.env.get("SUPABASE_ANON_KEY") ||
+    "sb_publishable_zZe-aVVerbOt7joJQMt6QQ_bq3Ej7Ze";
+
   return createClient(url, anonKey, { auth: { persistSession: false } });
 }
 
@@ -51,8 +64,4 @@ export async function requireAdmin(req: Request) {
   if (profile.role !== "admin") throw new Error("Admin only");
 
   return { user: u.user, profile };
-}
-
-export function randPassword(prefix: string) {
-  return `${prefix}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 }
