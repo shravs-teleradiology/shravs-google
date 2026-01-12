@@ -1,32 +1,80 @@
-# Deploy to Google Cloud Run (single service: static + API)
+# Shravs Teleradiology Backend README
 
-## 1) Prerequisites
-- Google Cloud account + a project
-- gcloud CLI installed
+## 🚀 Quick Deploy (Google Workspace/Cloud Run)
 
-## 2) Set env vars on Cloud Run
-Set these in Cloud Run service (NOT in git):
-- SUPABASE_URL
-- SUPABASE_ANON_KEY
-- SUPABASE_SERVICE_ROLE_KEY
+1. **Repo Structure**
+```
+/
+├── Dockerfile       # Backend (Node/Express)
+├── package.json     # Backend deps
+├── server.js        # Full-stack server
+├── routes/          # API endpoints
+├── middleware/
+├── db/schema.sql    # Run in Supabase
+├── public/          # Frontend HTML/JS
+└── .env             # Secrets (gitignore)
+```
 
-## 3) Deploy
-From this folder:
+2. **Supabase Setup**
+   - New project → Run `db/schema.sql`
+   - Copy DATABASE_URL (%40 encode `@` in password)
+   - Update .env with Supabase creds
 
-gcloud auth login
-gcloud config set project YOUR_PROJECT_ID
+3. **.env Required**
+```
+DATABASE_URL=postgresql://postgres.[ref]:[password]@host:port/db
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIs... # From dashboard
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIs... # From dashboard
+JWT_SECRET=generate-32-random-chars-here
+PORT=8080
+```
 
-gcloud services enable run.googleapis.com cloudbuild.googleapis.com
+4. **Git Push → Auto-Deploy**
+   - Google Workspace/Cloud Build detects Dockerfile
+   - Deploys full-stack: `/` serves public/, `/api/*` backend
+   - api.js relative paths work (no frontend changes)
 
-gcloud run deploy shravs-app   --source .   --region asia-south1   --allow-unauthenticated   --set-env-vars SUPABASE_URL=...,SUPABASE_ANON_KEY=...,SUPABASE_SERVICE_ROLE_KEY=...
+## 🛠 Local Dev
+```bash
+cd backend/  # Or root
+npm install
+npm start    # http://localhost:8080
+```
 
-## 4) Test
-- Website: https://<service-url>/
-- API:     https://<service-url>/api/auth-login
-- 
+## 📋 Endpoints
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/api/team?role=employee` | Admin | List users |
+| POST | `/api/admin-create-employee` | Admin | Create employee |
+| POST | `/api/tasks` | Admin | Assign task |
+| GET | `/api/queries` | Admin | Contact queries |
+| POST | `/api/auth/change-password` | User | First login |
 
-## 5) Connect your domain (Squarespace DNS)
-In Google Cloud Console:
-- Cloud Run -> your service -> Custom Domains (Domain mapping)
-Google will show DNS records to add.
-In Squarespace DNS settings, add the exact CNAME/A records Google provides.
+## 🔒 Security
+- RLS disabled (backend middleware handles auth)
+- JWT from Supabase tokens
+- Service role key for server-side ops
+- Never commit .env
+
+## 🐛 Troubleshooting
+- **Build fails**: URL-encode password `%40`
+- **Auth errors**: Check Supabase service key
+- **CORS**: `cors({ origin: '*' })` in server.js
+- Logs: Cloud Run → Logs Explorer
+
+Full-stack ready! 🚀
+
+[1]employee-profile.html
+[2]employee.html
+[3]index-1.html
+[4]employees-chat.html
+[5]reset-password.html
+[6]teleradiology.html
+[7]login.html
+[8]change-password.html
+[9]ecare.html
+[10]api.js)
+[11]admin.html
+[12]file.env
+[13] logo.jpg
