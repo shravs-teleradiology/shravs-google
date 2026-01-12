@@ -1,24 +1,14 @@
 {
-  "name": "shravs-teleradiology-gcp",
+  "name": "shravs-backend",
   "version": "1.0.0",
-  "description": "Shravs Admin Dashboard",
   "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "dev": "PORT=8080 node server.js",
-    "db:connect": "psql \"postgresql://postgres:Shravs%4020256@db.xksqdjwbiojwyfllwtvh.supabase.co:5432/postgres\"",
-    "db:migrate": "psql -f supabase/migrations/001_initial.sql \"postgresql://postgres:Shravs%4020256@db.xksqdjwbiojwyfllwtvh.supabase.co:5432/postgres\"",
-    "db:migrate:reset": "psql -c \"DROP SCHEMA public CASCADE; CREATE SCHEMA public;\" \"postgresql://postgres:Shravs%4020256@db.xksqdjwbiojwyfllwtvh.supabase.co:5432/postgres\" && npm run db:migrate",
-    "db:status": "psql \"postgresql://postgres:Shravs%4020256@db.xksqdjwbiojwyfllwtvh.supabase.co:5432/postgres\" -c \"SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';\"",
-    "functions:serve": "supabase functions serve --env-file .env",
-    "functions:deploy": "supabase functions deploy",
-    "functions:new": "supabase functions new"
-  },
+  "scripts": { "start": "node server.js" },
   "dependencies": {
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
     "cors": "^2.8.5",
-    "express": "^4.22.1"
-  },
-  "devDependencies": {
-    "supabase": "^1.164.9"
+    "helmet": "^7.1.0",
+    "@supabase/supabase-js": "^2.45.4",
+    "pg": "^8.12.0"
   }
 }
