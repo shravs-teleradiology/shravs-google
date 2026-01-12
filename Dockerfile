@@ -1,9 +1,8 @@
 FROM node:20-alpine
 WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
+COPY package.json ./
+RUN npm install --omit=dev
 COPY . .
-# Build step for safety
-RUN npm run build || true
+ENV PORT=8080
 EXPOSE 8080
-CMD ["npm", "start"]
+CMD ["npm","start"]
