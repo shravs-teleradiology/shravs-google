@@ -1,6 +1,5 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { handler } from "../api/team/index.ts";  // your real handler
-serve(handler);
+// supabase/functions/api/team/index.ts
+import { corsHeaders, json, requireAdmin, supabaseAdmin } from "../../_shared.ts";
 
 export async function handler(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -8,11 +7,11 @@ export async function handler(req: Request): Promise<Response> {
 
   try {
     await requireAdmin(req);
-    
+
     const admin = supabaseAdmin();
     const url = new URL(req.url);
     const role = url.searchParams.get("role") || "employee";
-    
+
     const { data, error } = await admin
       .from("profiles")
       .select("id, name, email, role, created_at")
