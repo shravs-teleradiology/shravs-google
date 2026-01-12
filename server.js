@@ -25,4 +25,7 @@ app.use('/api/team', teamRoutes);
 app.use('/api/tasks', tasksRoutes);
 app.use('/api/queries', queriesRoutes);
 
+app.use(express.static('shravs-public'));
+app.get('*', (req, res) => res.sendFile('public/index.html', { root: __dirname }));
+
 app.listen(PORT, () => console.log(`Server on port ${PORT}`));
