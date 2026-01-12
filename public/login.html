@@ -42,8 +42,8 @@
 
     <div class="card">
       <div class="tabs" id="tabsContainer">
-        <button class="tab active" id="tabLogin">Login</button>
-        <button class="tab" id="tabSignup">Signup</button>
+        <button class="tab active" id="tabLogin" type="button">Login</button>
+        <button class="tab" id="tabSignup" type="button">Signup</button>
       </div>
 
       <div id="msg" class="msg"></div>
@@ -51,15 +51,15 @@
       <!-- LOGIN FORM -->
       <form id="loginForm">
         <div class="row">
-          <label>Email</label>
+          <label for="loginEmail">Email</label>
           <input id="loginEmail" type="email" required placeholder="your@email.com">
         </div>
         <div class="row">
-          <label>Password</label>
+          <label for="loginPassword">Password</label>
           <input id="loginPassword" type="password" required placeholder="••••••••">
         </div>
         <button class="btn" type="submit">Login</button>
-        
+
         <div class="muted">
           <span class="link" id="forgotPasswordLink">Forgot Password?</span>
         </div>
@@ -68,7 +68,7 @@
       <!-- FORGOT PASSWORD FORM -->
       <form id="forgotPasswordForm" class="hide">
         <div class="row">
-          <label>Enter Your Email</label>
+          <label for="forgotEmail">Enter Your Email</label>
           <input id="forgotEmail" type="email" required placeholder="your@email.com">
         </div>
         <button class="btn" type="submit">Send Reset Link</button>
@@ -80,7 +80,7 @@
       <!-- SIGNUP FORM -->
       <form id="signupForm" class="hide">
         <div class="row">
-          <label>Signup As</label>
+          <label for="signupRole">Signup As</label>
           <select id="signupRole" required>
             <option value="">-- Select Role --</option>
             <option value="doctor">Doctor</option>
@@ -89,17 +89,17 @@
         </div>
 
         <div class="row">
-          <label>Full Name</label>
+          <label for="signupName">Full Name</label>
           <input id="signupName" required placeholder="Your full name">
         </div>
 
         <div class="row">
-          <label>Email</label>
+          <label for="signupEmail">Email</label>
           <input id="signupEmail" type="email" required placeholder="your@email.com">
         </div>
 
         <div class="row">
-          <label>Password</label>
+          <label for="signupPassword">Password</label>
           <input id="signupPassword" type="password" required placeholder="Create a password" minlength="6">
         </div>
 
@@ -112,11 +112,9 @@
     const SUPABASE_URL = 'https://xksqdjwbiojwyfllwtvh.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_zZe-aVVerbOt7joJQMt6QQ_bq3Ej7Ze';
 
-    // Import Supabase
     const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Get elements
     const tabLogin = document.getElementById('tabLogin');
     const tabSignup = document.getElementById('tabSignup');
     const tabsContainer = document.getElementById('tabsContainer');
@@ -171,22 +169,22 @@
     // LOGIN
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value;
-      
+
       try {
         showMessage('Logging in...', 'ok');
-        
+
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password
         });
 
         if (error) throw error;
-        
+
         localStorage.setItem('token', data.session.access_token);
-        
+
         const { data: profile } = await supabase
           .from('profiles')
           .select('*')
@@ -221,16 +219,16 @@
     // FORGOT PASSWORD
     forgotPasswordForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const email = document.getElementById('forgotEmail').value.trim();
-      
+
       try {
         showMessage('Sending reset link...', 'ok');
-        
+
         await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: window.location.origin + '/reset-password.html'
         });
-        
+
         showMessage('Reset link sent! Check your email.', 'ok');
         document.getElementById('forgotEmail').value = '';
         setTimeout(() => showLogin(), 3000);
@@ -242,7 +240,7 @@
     // SIGNUP
     signupForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const role = document.getElementById('signupRole').value;
       const name = document.getElementById('signupName').value.trim();
       const email = document.getElementById('signupEmail').value.trim();
