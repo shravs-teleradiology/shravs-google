@@ -12,7 +12,16 @@ const queriesRoutes = require('./routes/queries');
 const app = express();
 const PORT = process.env.PORT || 8080;  // Cloud Run default
 
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      "style-src": ["'self'", "'unsafe-inline'"]
+    }
+  }
+}));
+
 app.use(cors({ origin: '*' }));
 app.use(express.json({ limit: '10mb' }));
 
