@@ -1,21 +1,36 @@
 const jwt = require('jsonwebtoken');
 const { createClient } = require('@supabase/supabase-js');
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY =
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+
+if (!SUPABASE_URL) throw new Error('SUPABASE_URL missing');
+if (!SUPABASE_KEY) throw new Error('SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_ANON_KEY) missing');
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 module.exports = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.replace('Bearer ', '');
     if (!token) return res.status(401).json({ error: 'No token' });
 
-    // Decode Supabase JWT or generate custom
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret-change-this');
-    const { data: profile } = await supabase.from('profiles').select('*').eq('id', decoded.sub).single();
-    if (!profile || profile.role !== 'admin') return res.status(403).json({ error: 'Admin only' });
+    // If you are using Supabase JWT, simplest is: ask Supabase who user is
+    const { data, error } = await supabase.auth.getUser(token);
+    if (error || !data?.user) return res.status(401).json({ error: 'Invalid token' });
+
+    // Load profile & role
+    const { data: profile, error: pErr } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', data.user.id)
+      .single();
+
+    if (pErr || !profile) return res.status(403).json({ error: 'Profile not found' });
 
     req.user = profile;
     next();
   } catch (err) {
-    res.status(401).json({ error: 'Invalid token' });
+    return res.status(401).json({ error: err.message || 'Unauthorized' });
   }
 };
