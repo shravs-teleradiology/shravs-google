@@ -1,0 +1,102 @@
+/* Shravs Hospital Theme (White + Red) */
+:root{
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+
+  --red: #d32f2f;
+  --red2: #b71c1c;
+  --redSoft: #fff1f2;
+  --shadow: 0 12px 30px rgba(211, 47, 47, 0.12);
+}
+
+html, body{
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+/* Generic containers/cards */
+.card, .profile-card, .feature-card, .contact-box, .contact-dropdown-panel{
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border-color: #fecaca !important;
+  box-shadow: var(--shadow) !important;
+}
+
+/* Headers/nav bars (many pages use .header) */
+.header, header{
+  background: linear-gradient(135deg, #ffffff, var(--redSoft)) !important;
+  border-bottom-color: var(--red) !important;
+  color: var(--text) !important;
+}
+
+/* Hero sections on landing pages */
+.hero{
+  background: linear-gradient(135deg, #ffffff 0%, #fff5f5 50%, #ffffff 100%) !important;
+}
+.hero:before{ display:none !important; }
+
+/* Headings */
+h1, h2, h3, .header-title, .brand-name, .section-title{
+  color: var(--red2) !important;
+}
+
+/* Paragraphs/muted text */
+p, .muted, .brand-tagline, .feature-text{
+  color: var(--muted) !important;
+}
+
+/* Links */
+a, .link, .footer-link{
+  color: var(--red2) !important;
+}
+a:hover, .link:hover, .footer-link:hover{
+  color: var(--red) !important;
+}
+
+/* Inputs */
+input, select, textarea{
+  background: #ffffff !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}
+input:focus, select:focus, textarea:focus{
+  outline: none !important;
+  border-color: var(--red) !important;
+  box-shadow: 0 0 0 3px rgba(211, 47, 47, .16) !important;
+}
+
+/* Buttons (many pages use .btn) */
+button, .btn, .btn-full, .submit-btn, .contact-dropdown-toggle{
+  background: linear-gradient(135deg, var(--red), var(--red2)) !important;
+  color: #ffffff !important;
+  border-color: var(--red) !important;
+}
+button:hover, .btn:hover, .submit-btn:hover, .contact-dropdown-toggle:hover{
+  filter: brightness(0.98) !important;
+}
+
+/* Tables */
+th{
+  color: var(--red2) !important;
+}
+td{
+  color: var(--text) !important;
+}
+th, td{
+  border-bottom-color: #f3f4f6 !important;
+}
+
+/* Footer */
+footer{
+  background: #ffffff !important;
+  border-top-color: var(--red) !important;
+  color: var(--muted) !important;
+}
+
+/* Small accent borders that were blue/white earlier */
+.logo, .profile-card img, .logo-header img, .header .logo{
+  border-color: var(--red) !important;
+}
