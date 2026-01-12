@@ -4,14 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Dashboard - Shravs</title>
+
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:Segoe UI,sans-serif;background:#fff;color:#111827}
     .header{
-      background:linear-gradient(135deg,#fff,#fff5f5);
       border-bottom:2px solid #ef4444;
       padding:14px 22px;display:flex;justify-content:space-between;align-items:center;
       position:sticky;top:0;z-index:100;
+      background:#fff;
     }
     .header-left{display:flex;align-items:center;gap:12px}
     .logo{width:52px;height:52px;border-radius:50%;border:2px solid #ef4444;object-fit:cover;background:#fff}
@@ -19,24 +20,21 @@
     .container{max-width:1400px;margin:26px auto;padding:0 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px}
     @media (max-width: 900px){.container{grid-template-columns:1fr}}
     .card{
-      background:#ffffff;border:1px solid #fee2e2;border-radius:16px;padding:22px;
+      background:#fff;border:1px solid #fecaca;border-radius:16px;padding:22px;
       box-shadow:0 10px 25px rgba(239,68,68,.10);transition:.2s;
     }
-    .card:hover{border-color:#ef4444}
     .card.full-width{grid-column:1 / -1}
-    h2{color:#b91c1c;margin-bottom:14px;font-size:1.15em;text-transform:uppercase;letter-spacing:.5px}
+    h2{color:#b91c1c;margin-bottom:14px;font-size:1.05em;text-transform:uppercase;letter-spacing:.5px}
     label{display:block;color:#b91c1c;font-weight:800;margin-top:10px;font-size:.86em;text-transform:uppercase}
     input,select,textarea{
       width:100%;padding:12px 14px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;
       margin:8px 0;font-size:.95em
     }
-    input:focus,select:focus,textarea:focus{outline:none;border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.14)}
     button{
       background:linear-gradient(135deg,#ef4444,#b91c1c);
       color:#fff;border:none;padding:12px 18px;border-radius:999px;cursor:pointer;font-weight:900;margin:6px 0;
       text-transform:uppercase;font-size:.85em;letter-spacing:.4px
     }
-    button:hover{filter:brightness(.98)}
     button.btn-full{width:100%;margin-top:10px}
     table{width:100%;border-collapse:collapse;margin-top:12px}
     th,td{text-align:left;padding:10px;border-bottom:1px solid #f3f4f6}
@@ -47,6 +45,8 @@
     .success-msg.show{display:block}
     .note{background:#fff5f5;border-left:3px solid #ef4444;padding:10px;border-radius:10px;color:#6b7280;font-size:.9em;margin-top:8px}
   </style>
+
+  <link rel="stylesheet" href="theme.css">
 </head>
 <body>
   <div class="header">
@@ -59,7 +59,6 @@
 
   <div class="container">
 
-    <!-- 1. CREATE NEW EMPLOYEE -->
     <div class="card">
       <h2>Create New Employee</h2>
       <div class="success-msg" id="createEmployeeSuccess">Employee created successfully!</div>
@@ -78,7 +77,6 @@
       </form>
     </div>
 
-    <!-- 2. ASSIGN TASK -->
     <div class="card">
       <h2>Assign Task</h2>
       <div class="success-msg" id="assignTaskSuccess">Task assigned successfully!</div>
@@ -108,7 +106,6 @@
       </form>
     </div>
 
-    <!-- 3. PROMOTE EMPLOYEE -->
     <div class="card">
       <h2>Promote Employee</h2>
       <label>Select Employee</label>
@@ -118,15 +115,13 @@
       <button onclick="promoteToAdmin()" class="btn-full">Promote to Admin</button>
     </div>
 
-    <!-- 4. ALL EMPLOYEES -->
     <div class="card">
       <h2>All Employees</h2>
       <div id="employeesList"><div class="empty-state">Loading...</div></div>
     </div>
 
-    <!-- 5. ALL QUERIES -->
     <div class="card full-width">
-      <h2>Signup / User Queries</h2>
+      <h2>All User Queries</h2>
       <div id="allQueries"><div class="empty-state">Loading...</div></div>
     </div>
 
@@ -134,7 +129,6 @@
 
   <script type="module">
     import { logout as apiLogout } from './api.js';
-
     window.logout = apiLogout;
 
     async function loadEmployees() {
@@ -174,7 +168,6 @@
       }
     }
 
-    // CREATE EMPLOYEE
     document.getElementById('createEmployeeForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const employeeData = {
@@ -204,7 +197,6 @@
       }
     });
 
-    // ASSIGN TASK
     document.getElementById('assignTaskForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const employeeId = document.getElementById('taskEmployee').value;
@@ -239,7 +231,6 @@
       }
     });
 
-    // PROMOTE TO ADMIN
     window.promoteToAdmin = async () => {
       const userId = document.getElementById('promoteEmployee').value;
       if (!userId) return alert('Select an employee');
@@ -264,7 +255,6 @@
       }
     };
 
-    // LOAD QUERIES (localStorage)
     function loadQueries() {
       const queries = JSON.parse(localStorage.getItem('queries') || '[]');
       const container = document.getElementById('allQueries');
@@ -291,7 +281,6 @@
       container.innerHTML = html;
     }
 
-    // INIT
     loadEmployees();
     loadQueries();
     setInterval(loadQueries, 30000);
