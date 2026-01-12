@@ -8,7 +8,7 @@
 ├── Dockerfile       # Backend (Node/Express)
 ├── package.json     # Backend deps
 ├── server.js        # Full-stack server
-|--- README.md
+├── README.md
 ├── routes/          # API endpoints
 ├── middleware/
 ├── db/schema.sql    # Run in Supabase
