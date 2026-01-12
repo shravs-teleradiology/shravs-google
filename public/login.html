@@ -2,23 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login - Shravs</title>
+
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{
       font-family:Segoe UI,Tahoma,sans-serif;
-      background:#ffffff;color:#111827;
-      min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+      min-height:100vh;
+      display:flex;align-items:center;justify-content:center;
+      padding:20px;
+      background:#fff;color:#111827;
     }
     .wrap{width:100%;max-width:520px}
     .logo-header{text-align:center;margin-bottom:18px}
-    .logo{width:78px;height:78px;border-radius:50%;border:3px solid #d32f2f;object-fit:cover;margin-bottom:10px}
+    .logo{
+      width:78px;height:78px;border-radius:50%;
+      border:3px solid #d32f2f;object-fit:cover;margin-bottom:10px
+    }
     .brand-name{font-size:1.7em;font-weight:900;letter-spacing:.5px;color:#b71c1c}
     .brand-tagline{color:#6b7280;font-size:.92em;margin-top:6px}
     .card{
-      background:#ffffff;border:1px solid #ef4444;border-radius:18px;
-      padding:28px;box-shadow:0 10px 30px rgba(220,38,38,.15);
+      background:#fff;border:1px solid #fecaca;border-radius:18px;
+      padding:28px;box-shadow:0 10px 30px rgba(220,38,38,.12);
     }
     label{display:block;margin:12px 0 6px;color:#b91c1c;font-weight:800;font-size:.82rem;text-transform:uppercase}
     input{
@@ -35,15 +41,16 @@
     .msg.ok{display:block;background:#ecfdf5;border:1px solid #10b981;color:#047857}
     .msg.err{display:block;background:#fef2f2;border:1px solid #ef4444;color:#b91c1c}
     .muted{color:#6b7280;font-size:.9rem;line-height:1.5;margin-top:12px;text-align:center}
-    a.link{color:#b91c1c;text-decoration:underline;font-weight:800}
   </style>
+
+  <link rel="stylesheet" href="theme.css">
 </head>
 <body>
   <div class="wrap">
     <div class="logo-header">
       <img class="logo" src="logo.jpg" alt="Shravs Logo" onerror="this.style.display='none'">
       <div class="brand-name">SHRAVS</div>
-      <div class="brand-tagline">Employee / Admin Login</div>
+      <div class="brand-tagline">Admin / Employee Login</div>
     </div>
 
     <div class="card">
@@ -60,15 +67,14 @@
       </form>
 
       <div class="muted">
-        Don’t have an account? <a class="link" href="signup.html">Send signup request</a>
+        Password reset is handled by admin (if required).
       </div>
     </div>
   </div>
 
   <script type="module">
-    // Use your existing Supabase URL + ANON key from old login.html
     const SUPABASE_URL = "https://xksqdjwbiojwyfllwtvh.supabase.co";
-    const SUPABASE_ANON_KEY = "REPLACE_WITH_YOUR_ANON_KEY";
+    const SUPABASE_ANON_KEY = "REPLACE_WITH_YOUR_ANON_KEY";  // keep same from your old login.html
 
     const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -93,7 +99,6 @@
 
         localStorage.setItem("token", data.session.access_token);
 
-        // Fetch profile role and block anything except admin/employee
         const { data: profile, error: pErr } = await supabase
           .from("profiles")
           .select("*")
@@ -106,7 +111,7 @@
         if (role !== "admin" && role !== "employee") {
           await supabase.auth.signOut();
           localStorage.removeItem("token");
-          throw new Error("Access denied. Only Admin/Employee accounts can login here.");
+          throw new Error("Access denied. Only Admin/Employee can login here.");
         }
 
         if (profile?.first_login === true) {
