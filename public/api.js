@@ -1,11 +1,13 @@
-function getToken() {
+export function getToken() {
   return localStorage.getItem('token') || '';
 }
 
-async function request(path, { method = 'GET', body = null } = {}) {
+export async function request(path, { method = 'GET', body = null } = {}) {
   const headers = {};
+
   if (body) headers['Content-Type'] = 'application/json';
-  if (getToken()) headers['Authorization'] = `Bearer ${getToken()}`;
+  const token = getToken();
+  if (token) headers['Authorization'] = `Bearer ${token}`;
 
   const res = await fetch(path, {
     method,
@@ -14,7 +16,7 @@ async function request(path, { method = 'GET', body = null } = {}) {
   });
 
   const text = await res.text();
-  let data;
+  let data = null;
   try { data = text ? JSON.parse(text) : null; } catch { data = text; }
 
   if (!res.ok) {
@@ -33,13 +35,7 @@ export function logout() {
   window.location.href = 'login.html';
 }
 
-// Optional helpers (not required, but safe)
+// Optional helper (safe)
 export async function getTeam(role = 'employee') {
   return request(`/api/team?role=${encodeURIComponent(role)}`);
-}
-export async function adminPendingDoctors() {
-  return request('/api/admin-pending-doctors');
-}
-export async function adminPendingDiagnostics() {
-  return request('/api/admin-pending-diagnostics');
 }
